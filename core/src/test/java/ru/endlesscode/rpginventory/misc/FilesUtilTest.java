@@ -77,17 +77,14 @@ public class FilesUtilTest extends FileTestBase {
 
     private void copyResourceToFile(@NotNull String resource, @NotNull Path targetFile) throws IOException {
         FilesUtil.copyResourceToFile(resource, targetFile);
-        assertArrayEquals(
-                new String[]{"This is a test resource file.", "Это тестовый файл ресурсов."},
-                Files.readAllLines(targetFile, StandardCharsets.UTF_8).toArray()
-        );
+        final String[] strings = Files.readAllLines(targetFile, StandardCharsets.UTF_8).toArray(new String[0]);
+        assertArrayEquals(new String[]{"This is a test resource file.", "Это тестовый файл ресурсов."}, strings);
     }
 
     @Test
     public void readFileToString_existingFileMustBeSuccessful() {
         Path target = testDir.resolve("existingFile");
         String expected = "Multi-line\nexisting\nfile.\nС русским\nтекстом.";
-
         assertEquals(expected, FilesUtil.readFileToString(target));
     }
 

@@ -36,7 +36,7 @@ public class FilesUtil {
 
     public static String readFileToString(@NotNull Path file, Charset charset) {
         try {
-            return new String(Files.readAllBytes(file), charset);
+            return new String(Files.readAllBytes(file), charset).replace(System.lineSeparator(), "\n");
         } catch (IOException e) {
             throw new IllegalArgumentException(String.format(
                     "Given file \"%s\" can't be read",
