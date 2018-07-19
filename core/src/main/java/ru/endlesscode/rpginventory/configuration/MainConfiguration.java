@@ -23,7 +23,7 @@ import ru.endlesscode.rpginventory.configuration.part.ResourcePackConfiguration;
 import ru.endlesscode.rpginventory.configuration.part.UpdatesConfiguration;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
-public class Configuration {
+public class MainConfiguration extends Configurable {
 
     @Setting(comment = "Make sure that you have correctly configured the \"resourcePack\" section before enabling the plugin.")
     private boolean enabled = false;
@@ -35,7 +35,7 @@ public class Configuration {
     private ResourcePackConfiguration resourcePackConfiguration = new ResourcePackConfiguration();
 
     @Setting(comment = "Default locale for use")
-    private String locale = "en_us";
+    private String locale = "null";
 
     public boolean isEnabled() {
         return enabled;
@@ -51,5 +51,15 @@ public class Configuration {
 
     public String getLocale() {
         return locale;
+    }
+
+    @Override
+    public final String getHeader() {
+        return "This is RPGInventory configuration blah-blah-blah enjoy new config blah-blah-blah";
+    }
+
+    @Override
+    public final String getNodeName() {
+        return "RPGInventory";
     }
 }

@@ -7,6 +7,9 @@ bukkit {
     version = '1.12.2'
     meta.authors = ["OsipXD", "EndlessCode Group"]
 
+    meta.name = 'RPGInventory'
+    meta.main = "ru.endlesscode.rpginventory.RPGInventory"
+
     run {
         eula = true
         dir = '../../server/'
@@ -23,7 +26,7 @@ shadowJar {
     classifier = null
 
     // Avoid conflicts with others
-    relocate 'com', 'ru.endlesscode.rpginventory.shaded.com'
+    relocate 'com.typesafe', 'ru.endlesscode.rpginventory.shaded.com.typesafe'
     relocate 'ninja', 'ru.endlesscode.rpginventory.shaded.ninja'
 }
 

@@ -18,14 +18,13 @@
 
 package ru.endlesscode.rpginventory.misc;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import ru.endlesscode.rpginventory.FileTestBase;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 
 public class I18NTest extends FileTestBase {
 
@@ -36,7 +35,7 @@ public class I18NTest extends FileTestBase {
     public void setUp() throws Exception {
         super.setUp();
 
-        this.i18n = spy(new SimpleI18N(tmpDir.toFile()));
+        this.i18n = Mockito.spy(new SimpleI18N(tmpDir.toFile()));
     }
 
     @Test
@@ -44,11 +43,11 @@ public class I18NTest extends FileTestBase {
         try {
             new SimpleI18N(testDir.toFile());
         } catch (I18NException e) {
-            assertEquals("Failed to create locales folder", e.getMessage());
+            Assert.assertEquals("Failed to create locales folder", e.getMessage());
             return;
         }
 
-        fail();
+        Assert.fail();
     }
 
     @Test
@@ -63,25 +62,25 @@ public class I18NTest extends FileTestBase {
 
     @Test
     public void getMessage_byKey() throws Exception {
-        assertEquals("Something value", i18n.getMessage("key"));
-        verify(i18n, never()).stripColor(anyString());
+        Assert.assertEquals("Something value", i18n.getMessage("key"));
+        Mockito.verify(i18n, Mockito.never()).stripColor(ArgumentMatchers.anyString());
     }
 
     @Test
     public void getMessage_byKeyWithStripColor() throws Exception {
         i18n.getMessage("key", true);
-        verify(i18n).stripColor(anyString());
+        Mockito.verify(i18n).stripColor(ArgumentMatchers.anyString());
     }
 
     @Test
     public void getMessage_notExistingKeyMustReturnKey() {
         String key = "not.existing.key";
-        assertEquals(key, i18n.getMessage(key));
+        Assert.assertEquals(key, i18n.getMessage(key));
     }
 
     @Test
     public void getMessage_byKeyWithArgs() throws Exception {
-        assertEquals(
+        Assert.assertEquals(
                 "Args: Text, 1",
                 i18n.getMessage("with.args", "Text", 1)
         );

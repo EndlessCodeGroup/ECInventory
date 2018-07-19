@@ -30,41 +30,61 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @SuppressWarnings("WeakerAccess")
-public class ConfigurationProvider {
-
-    private static final String HEADER = "This is RPGInventory configuration blah-blah-blah enjoy new config blah-blah-blah";
+public class ConfigurationProvider<T extends Configurable> {
 
     private final HoconConfigurationLoader loader;
-    private final ObjectMapper.BoundInstance configMapper;
+    private final ObjectMapper<T>.BoundInstance configMapper;
     private CommentedConfigurationNode root;
-    private Configuration configBase;
+    private String node;
+    private String header;
+    private T configBase;
 
-    public ConfigurationProvider(File configFolder) {
-        this(configFolder.toPath());
+    /**
+     * Create new instance of the ConfigurationProvider
+     *
+     * @param configFolder File that points to a directory.
+     * @param clazz        A class that extends Configurable.
+     */
+    public ConfigurationProvider(File configFolder, Class<T> clazz) {
+        this(configFolder.toPath(), clazz);
     }
 
-    public ConfigurationProvider(Path configFolder) {
+    /**
+     * Create new instance of the ConfigurationProvider
+     *
+     * @param configFolder Path that points to a directory.
+     * @param clazz        A class that extends Configurable.
+     */
+    public ConfigurationProvider(Path configFolder, Class<? extends Configurable> clazz) {
         try {
-            Files.createDirectory(configFolder);
+            if (!Files.exists(configFolder)) {
+                Files.createDirectory(configFolder);
+            }
 
-            final Path path = configFolder.resolve("config.conf");
+            final Configurable object = clazz.newInstance();
+            this.node = object.getNodeName();
+            this.header = object.getHeader();
+
+            final Path path = configFolder.resolve(object.fileName().concat(".conf"));
             this.loader = HoconConfigurationLoader.builder().setPath(path).build();
-            this.configMapper = ObjectMapper.forClass(Configuration.class).bindToNew();
+            final ObjectMapper<? extends Configurable> objectMapper = ObjectMapper.forClass(clazz);
+            //noinspection unchecked - How do we check it?
+            this.configMapper = (ObjectMapper<T>.BoundInstance) objectMapper.bindToNew();
             this.reload();
             this.save();
-        } catch (ObjectMappingException | IOException e) {
+        } catch (ObjectMappingException | IOException | IllegalAccessException | InstantiationException e) {
             throw new ConfigurationException("Failed to initialize configuration!", e);
         }
     }
 
-    public Configuration getConfig() {
+    public T getConfig() {
         return configBase;
     }
 
     public void reload() {
         try {
-            this.root = this.loader.load(ConfigurationOptions.defaults().setHeader(HEADER));
-            this.configBase = (Configuration) this.configMapper.populate(this.root.getNode("RPGInventory"));
+            this.root = this.loader.load(ConfigurationOptions.defaults().setHeader(this.header));
+            this.configBase = this.configMapper.populate(this.root.getNode(this.node));
         } catch (ObjectMappingException | IOException e) {
             throw new ConfigurationException("Failed to reload configuration!", e);
         }
@@ -72,7 +92,7 @@ public class ConfigurationProvider {
 
     public void save() {
         try {
-            this.configMapper.serialize(this.root.getNode("RPGInventory"));
+            this.configMapper.serialize(this.root.getNode(this.node));
             this.loader.save(this.root);
         } catch (ObjectMappingException | IOException e) {
             throw new ConfigurationException("Failed to save configuration!", e);

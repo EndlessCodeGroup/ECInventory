@@ -18,7 +18,9 @@
 
 package ru.endlesscode.rpginventory.misc;
 
+import org.hamcrest.CoreMatchers;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Assert;
 import org.junit.Test;
 import ru.endlesscode.rpginventory.FileTestBase;
 
@@ -28,9 +30,6 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.*;
 
 public class FilesUtilTest extends FileTestBase {
 
@@ -54,12 +53,12 @@ public class FilesUtilTest extends FileTestBase {
                     "Failed to copy \"/resource\" to given target: \"%s\"",
                     target.toAbsolutePath().toString()
             );
-            assertEquals(expectedMessage, e.getMessage());
-            assertThat(e.getCause(), instanceOf(FileAlreadyExistsException.class));
+            Assert.assertEquals(expectedMessage, e.getMessage());
+            Assert.assertThat(e.getCause(), CoreMatchers.instanceOf(FileAlreadyExistsException.class));
             return;
         }
 
-        fail();
+        Assert.fail();
     }
 
     @Test
@@ -67,25 +66,25 @@ public class FilesUtilTest extends FileTestBase {
         try {
             this.copyResourceToFile("/notExistingResource", tmpDir.resolve("newFile"));
         } catch (IllegalArgumentException e) {
-            assertEquals("Resource file \"/notExistingResource\" not exists", e.getMessage());
-            assertNull(e.getCause());
+            Assert.assertEquals("Resource file \"/notExistingResource\" not exists", e.getMessage());
+            Assert.assertNull(e.getCause());
             return;
         }
 
-        fail();
+        Assert.fail();
     }
 
     private void copyResourceToFile(@NotNull String resource, @NotNull Path targetFile) throws IOException {
         FilesUtil.copyResourceToFile(resource, targetFile);
         final String[] strings = Files.readAllLines(targetFile, StandardCharsets.UTF_8).toArray(new String[0]);
-        assertArrayEquals(new String[]{"This is a test resource file.", "Это тестовый файл ресурсов."}, strings);
+        Assert.assertArrayEquals(new String[]{"This is a test resource file.", "Это тестовый файл ресурсов."}, strings);
     }
 
     @Test
     public void readFileToString_existingFileMustBeSuccessful() {
         Path target = testDir.resolve("existingFile");
         String expected = "Multi-line\nexisting\nfile.\nС русским\nтекстом.";
-        assertEquals(expected, FilesUtil.readFileToString(target));
+        Assert.assertEquals(expected, FilesUtil.readFileToString(target));
     }
 
     @Test
@@ -98,11 +97,11 @@ public class FilesUtilTest extends FileTestBase {
                     "Given file \"%s\" can't be read",
                     target.toAbsolutePath().toString()
             );
-            assertEquals(expectedMessage, e.getMessage());
-            assertThat(e.getCause(), instanceOf(NoSuchFileException.class));
+            Assert.assertEquals(expectedMessage, e.getMessage());
+            Assert.assertThat(e.getCause(), CoreMatchers.instanceOf(NoSuchFileException.class));
             return;
         }
 
-        fail();
+        Assert.fail();
     }
 }

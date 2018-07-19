@@ -1,5 +1,5 @@
 dependencies {
-    compileOnly group: 'ninja.leaping.configurate', name: 'configurate-hocon', version: '3.3'
+    compile group: 'ninja.leaping.configurate', name: 'configurate-hocon', version: '3.3'
 }
 
 // Add core as dependency to all subprojects
