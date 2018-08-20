@@ -1,18 +1,18 @@
 plugins {
-    id 'ru.endlesscode.bukkitgradle' version '0.6.9'
+    id "ru.endlesscode.bukkitgradle" version '0.8.0'
     id 'com.github.johnrengelman.shadow' version '2.0.1'
 }
 
 bukkit {
     version = '1.12.2'
-    meta.authors = ["OsipXD", "EndlessCode Group"]
 
-    meta.name = 'RPGInventory'
-    meta.main = "ru.endlesscode.rpginventory.RPGInventory"
+    meta {
+        authors = ["OsipXD", "EndlessCode Group"]
+        main = "ru.endlesscode.rpginventory.RPGInventory"
+    }
 
     run {
         eula = true
-        dir = '../../server/'
     }
 }
 
