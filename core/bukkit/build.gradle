@@ -1,6 +1,6 @@
 plugins {
-    id "ru.endlesscode.bukkitgradle" version '0.8.0'
-    id 'com.github.johnrengelman.shadow' version '2.0.1'
+    id "ru.endlesscode.bukkitgradle" version '0.8.1'
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
 }
 
 bukkit {
@@ -13,6 +13,7 @@ bukkit {
 
     run {
         eula = true
+        core = "paper"
     }
 }
 
@@ -22,6 +23,7 @@ tasks.assemble.dependsOn shadowJar
 
 shadowJar {
     // Understandable filename
+    baseName = "$base.name-$project.name"
     classifier = null
 
     // Avoid conflicts with others
@@ -34,7 +36,7 @@ dependencies {
     compileOnly(bukkit())
 
     // Runtime dependencies will be bundled into the output jar
-    runtime(group: 'ninja.leaping.configurate', name: 'configurate-hocon', version: '3.3') {
+    runtime("ninja.leaping.configurate:configurate-hocon:3.3") {
         // Guava already in Bukkit
         exclude group: 'com.google.guava'
     }
