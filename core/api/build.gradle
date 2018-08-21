@@ -1,0 +1,4 @@
+dependencies {
+    compileOnly("ninja.leaping.configurate:configurate-hocon:3.3")
+    testCompile("ninja.leaping.configurate:configurate-hocon:3.3")
+}

@@ -22,7 +22,6 @@ tasks.assemble.dependsOn shadowJar
 
 shadowJar {
     // Understandable filename
-    baseName = "$base.name-$project.name"
     classifier = null
 
     // Avoid conflicts with others
@@ -31,6 +30,9 @@ shadowJar {
 }
 
 dependencies {
+    compile(project(":core:api"))
+    compileOnly(bukkit())
+
     // Runtime dependencies will be bundled into the output jar
     runtime(group: 'ninja.leaping.configurate', name: 'configurate-hocon', version: '3.3') {
         // Guava already in Bukkit
