@@ -1,4 +1,4 @@
-include ':core', ':core:bukkit'
+include ':core:api', ':core:bukkit'
 
 rootProject.name = name
 
