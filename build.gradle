@@ -1,11 +1,41 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 // Apply shared configuration to subprojects
-ext.base = project
-subprojects {
-    description = base.description
-    apply from: base.file('config/config.gradle')
+buildscript {
+    ext.kotlinVersion = "1.2.61"
+
+    repositories {
+        mavenCentral()
+    }
 
     dependencies {
-        testCompile group: 'junit', name: 'junit', version: '4.12'
-        testCompile group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+    }
+}
+
+plugins {
+    id("base")
+}
+
+ext.base = project
+
+subprojects {
+    apply(plugin: "kotlin")
+
+    description = base.description
+    apply(from: base.file("config/config.gradle"))
+
+    dependencies {
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+        testCompile("junit:junit:4.12")
+        testCompile("org.mockito:mockito-core:$mockitoVersion")
+    }
+
+    tasks.withType(KotlinCompile).all {
+        kotlinOptions {
+            jvmTarget = "1.8"
+            apiVersion = "1.2"
+            languageVersion = "1.2"
+        }
     }
 }
