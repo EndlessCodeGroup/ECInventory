@@ -1,25 +1,24 @@
 plugins {
-    id "ru.endlesscode.bukkitgradle" version '0.8.1'
-    id 'com.github.johnrengelman.shadow' version '2.0.4'
+    id("ru.endlesscode.bukkitgradle") version "0.8.1"
+    id("com.github.johnrengelman.shadow") version "2.0.4"
 }
 
 bukkit {
-    version = '1.12.2'
+    version = "1.13"
 
     meta {
-        authors = ["OsipXD", "EndlessCode Group"]
-        main = "ru.endlesscode.rpginventory.RPGInventory"
+        name = base.name
+        authors = ["osipxd", "Dereku", "EndlessCode Group"]
     }
 
     run {
         eula = true
-        core = "paper"
     }
 }
 
 // Replace 'jar' task by 'shadowJar'
 tasks.jar.enabled = false
-tasks.assemble.dependsOn shadowJar
+tasks.assemble.dependsOn(shadowJar)
 
 shadowJar {
     // Understandable filename
@@ -27,8 +26,8 @@ shadowJar {
     classifier = null
 
     // Avoid conflicts with others
-    relocate 'com.typesafe', 'ru.endlesscode.rpginventory.shaded.com.typesafe'
-    relocate 'ninja', 'ru.endlesscode.rpginventory.shaded.ninja'
+    relocate("com.typesafe", "ru.endlesscode.rpginventory.shaded.com.typesafe")
+    relocate("ninja", "ru.endlesscode.rpginventory.shaded.ninja")
 }
 
 dependencies {
@@ -38,6 +37,6 @@ dependencies {
     // Runtime dependencies will be bundled into the output jar
     runtime("ninja.leaping.configurate:configurate-hocon:3.3") {
         // Guava already in Bukkit
-        exclude group: 'com.google.guava'
+        exclude(group: "com.google.guava")
     }
 }
