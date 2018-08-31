@@ -144,15 +144,25 @@ class RPGInventory(
     }
 
     override fun firstEmpty(): Int {
-        return storageContents.indexOfFirst { it.isEmpty() }
+        return getStorageSlots().indexOfFirst { it.isEmpty() }
     }
 
-    override fun remove(material: Material?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun remove(material: Material) {
+        for (slot in getStorageSlots()) {
+            if (slot.content.type == material) {
+                clear(slot.id)
+            }
+        }
     }
 
     override fun remove(item: ItemStack?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (item.isEmpty()) return
+
+        for (slot in getStorageSlots()) {
+            if (slot.content == item) {
+                clear(slot.id)
+            }
+        }
     }
 
     override fun clear(index: Int) {
@@ -160,9 +170,7 @@ class RPGInventory(
     }
 
     override fun clear() {
-        for (i in 0 until size) {
-            clear(i)
-        }
+        slots.keys.forEach(::clear)
     }
 
     override fun getViewers(): List<HumanEntity> {
@@ -211,9 +219,9 @@ class RPGInventory(
      * @param slotId The id of the slot where to put the ItemStack.
      * @param item The ItemStack to set.
      */
-    fun setItem(slotId: String, item: ItemStack) {
+    fun setItem(slotId: String, item: ItemStack?) {
         slots[slotId]?.let { slot ->
-            slot.content = item
+            slot.content = item.orAir()
             syncSlotWithView(slot)
         }
     }
@@ -235,6 +243,15 @@ class RPGInventory(
      */
     fun getSlots(): List<InventorySlot> {
         return slots.values.toList()
+    }
+
+    /**
+     * Clears out a particular slot with given id.
+     *
+     * @param slotId The slot's id to empty.
+     */
+    fun clear(slotId: String) {
+        setItem(slotId, null)
     }
 
     /**
@@ -270,7 +287,7 @@ class RPGInventory(
      * @return The constructed inventory
      */
     fun constructView(): Inventory {
-        return Bukkit.createInventory(holder, viewSize, title).also { view ->
+        return view ?: Bukkit.createInventory(holder, viewSize, title).also { view ->
             view.maxStackSize = maxStackSize
             view.contents = buildViewContents()
             this.view = view
