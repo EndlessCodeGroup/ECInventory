@@ -8,7 +8,6 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.extensions.isEmpty
 import ru.endlesscode.rpginventory.extensions.orAir
 import java.util.*
 
@@ -135,12 +134,12 @@ class RPGInventory(
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun first(material: Material?): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun first(material: Material): Int {
+        return getStorageSlots().indexOfFirst { it.content.type == material }
     }
 
     override fun first(item: ItemStack?): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return first(item, true)
     }
 
     override fun firstEmpty(): Int {
@@ -155,9 +154,7 @@ class RPGInventory(
         }
     }
 
-    override fun remove(item: ItemStack?) {
-        if (item.isEmpty()) return
-
+    override fun remove(item: ItemStack) {
         for (slot in getStorageSlots()) {
             if (slot.content == item) {
                 clear(slot.id)
@@ -301,7 +298,6 @@ class RPGInventory(
         this.view = null
     }
 
-
     private fun setSlots(slots: List<InventorySlot>, items: Array<out ItemStack>) {
         if (slots.size < items.size) error("items.length should be ${slots.size} or less")
 
@@ -317,6 +313,14 @@ class RPGInventory(
             contents[slot.position] = slot.getContentOrHolder()
         }
         return contents
+    }
+
+    private fun first(item: ItemStack?, withAmount: Boolean): Int {
+        if (item == null) return -1
+
+        return getStorageSlots().indexOfFirst { slot ->
+            if (withAmount) item == slot.content else item.isSimilar(slot.content)
+        }
     }
 
     private fun syncSlotWithView(slot: InventorySlot) {
