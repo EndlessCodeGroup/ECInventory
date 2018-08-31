@@ -182,11 +182,13 @@ class RPGInventory(
     }
 
     override fun iterator(): MutableListIterator<ItemStack> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return InventoryIterator(this)
     }
 
     override fun iterator(index: Int): MutableListIterator<ItemStack> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // ie, with -1, previous() will return the last element
+        val validIndex = if (index < 0) index + size + 1 else index
+        return InventoryIterator(this, validIndex)
     }
 
     override fun getLocation(): Location {
