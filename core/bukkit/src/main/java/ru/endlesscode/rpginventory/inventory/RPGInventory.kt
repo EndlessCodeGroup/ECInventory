@@ -12,7 +12,6 @@ import ru.endlesscode.rpginventory.IndexedMap
 import ru.endlesscode.rpginventory.extensions.orAir
 import ru.endlesscode.rpginventory.toIndexedMap
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 /**
@@ -20,8 +19,6 @@ import kotlin.collections.ArrayList
  *
  * @param owner The Inventory's owner.
  * @param layout Layout of the inventory.
- *
- * @property view Temporary [Inventory], used to show RPGInventory to player.
  */
 class RPGInventory(
         private val owner: InventoryHolder,
@@ -37,17 +34,22 @@ class RPGInventory(
         const val DEFAULT_MAX_STACK = 1
     }
 
+    /**
+     * Temporary [Inventory], used to show RPGInventory to player.
+     */
     var view: Inventory? = null
 
-    private val slots = linkedMapOf<String, InventorySlot>()
+    private val slots: IndexedMap<String, InventorySlot>
     private val viewSize: Int
 
     private var maxStack = DEFAULT_MAX_STACK
 
     init {
+        val sortedSlots = linkedMapOf<String, InventorySlot>()
         for ((position, slot) in layout.slotsMap) {
-            slots[slot.id] = InventorySlot(slot, this, position)
+            sortedSlots[slot.id] = InventorySlot(slot, this, position)
         }
+        slots = sortedSlots.toIndexedMap()
 
         val maxSlotPosition = layout.slotsMap.lastKey()
         // Round view size to nine
@@ -72,11 +74,11 @@ class RPGInventory(
     }
 
     override fun getItem(index: Int): ItemStack {
-        return contents[index]
+        return slots.getByIndex(index).content
     }
 
     override fun setItem(index: Int, item: ItemStack?) {
-        val slot = getSlots()[index]
+        val slot = slots.getByIndex(index)
         slot.content = item.orAir()
         syncSlotWithView(slot)
     }
@@ -129,7 +131,7 @@ class RPGInventory(
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun all(material: Material?): HashMap<Int, out ItemStack> {
+    override fun all(material: Material): HashMap<Int, out ItemStack> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -138,7 +140,8 @@ class RPGInventory(
     }
 
     override fun first(material: Material): Int {
-        return getStorageSlots().indexOfFirst { it.content.type == material }
+        val slot = getStorageSlots().first { it.content.type == material }
+        return slots.getIndexOf(slot.id)
     }
 
     override fun first(item: ItemStack?): Int {
@@ -231,10 +234,15 @@ class RPGInventory(
     }
 
     /**
-     * Returns the inventory's slots.
+     * Returns the inventory's slots with the given [type] or all slots if type is null.
      */
-    fun getSlots(): List<InventorySlot> {
-        return slots.values.toList()
+    @JvmOverloads
+    fun getSlots(type: Slot.Type? = null): List<InventorySlot> {
+        return if (type == null) {
+            slots.values.toList()
+        } else {
+            slots.values.filter { it.type == type }
+        }
     }
 
     /**
@@ -248,21 +256,21 @@ class RPGInventory(
      * Returns the inventory's passive slots.
      */
     fun getPassiveSlots(): List<InventorySlot> {
-        return slots.values.filter { it.type == Slot.Type.PASSIVE }
+        return getSlots(Slot.Type.PASSIVE)
     }
 
     /**
      * Returns the inventory's storage slots.
      */
     fun getStorageSlots(): List<InventorySlot> {
-        return slots.values.filter { it.type == Slot.Type.STORAGE }
+        return getSlots(Slot.Type.STORAGE)
     }
 
     /**
      * Returns the inventory's active slots.
      */
     fun getActiveSlots(): List<InventorySlot> {
-        return slots.values.filter { it.type == Slot.Type.ACTIVE }
+        return getSlots(Slot.Type.ACTIVE)
     }
 
     /**
@@ -286,9 +294,8 @@ class RPGInventory(
     private fun setSlots(slots: List<InventorySlot>, items: Array<out ItemStack>) {
         if (slots.size < items.size) error("items.length should be ${slots.size} or less")
 
-        for (i in slots.indices) {
-            val item = if (i >= items.size) null else items[i]
-            setItem(i, item)
+        slots.forEachIndexed { index, slot ->
+            setItem(slot.id, items.getOrNull(index))
         }
     }
 
@@ -303,9 +310,11 @@ class RPGInventory(
     private fun first(item: ItemStack?, withAmount: Boolean): Int {
         if (item == null) return -1
 
-        return getStorageSlots().indexOfFirst { slot ->
-            if (withAmount) item == slot.content else item.isSimilar(slot.content)
+        val slot = getStorageSlots().first { slot ->
+            if (withAmount) item == slot.content
+            else item.isSimilar(slot.content)
         }
+        return slots.getIndexOf(slot.id)
     }
 
     private fun syncSlotWithView(slot: InventorySlot) {
