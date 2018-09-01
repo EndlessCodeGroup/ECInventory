@@ -8,8 +8,11 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
+import ru.endlesscode.rpginventory.IndexedMap
 import ru.endlesscode.rpginventory.extensions.orAir
+import ru.endlesscode.rpginventory.toIndexedMap
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 /**
@@ -201,17 +204,14 @@ class RPGInventory(
     }
 
     /**
-     * Returns the ItemStack found in the slot with the given id.
-     *
-     * @param slotId The id of the Slot's ItemStack to return
-     * @return The ItemStack in the slot or null if there no slot with the given id.
+     * Returns the ItemStack found in the slot with the given [slotId], or null if there no such slot.
      */
     fun getItem(slotId: String): ItemStack? {
         return slots[slotId]?.content
     }
 
     /**
-     * Stores the ItemStack at the given slot of the RPG inventory.
+     * Stores the ItemStack at the slot with given id.
      *
      * @param slotId The id of the slot where to put the ItemStack.
      * @param item The ItemStack to set.
@@ -224,10 +224,7 @@ class RPGInventory(
     }
 
     /**
-     * Returns the slot with the given id.
-     *
-     * @param slotId The id of the slot to return.
-     * @return The slot or null if there no slot with the given id.
+     * Returns the slot with the given [slotId], or null if there no such slot.
      */
     fun getSlot(slotId: String): InventorySlot? {
         return slots[slotId]
@@ -235,17 +232,13 @@ class RPGInventory(
 
     /**
      * Returns the inventory's slots.
-     *
-     * @return The slots.
      */
     fun getSlots(): List<InventorySlot> {
         return slots.values.toList()
     }
 
     /**
-     * Clears out a particular slot with given id.
-     *
-     * @param slotId The slot's id to empty.
+     * Clears out a particular slot with given [slotId].
      */
     fun clear(slotId: String) {
         setItem(slotId, null)
@@ -253,8 +246,6 @@ class RPGInventory(
 
     /**
      * Returns the inventory's passive slots.
-     *
-     * @return The passive slots.
      */
     fun getPassiveSlots(): List<InventorySlot> {
         return slots.values.filter { it.type == Slot.Type.PASSIVE }
@@ -262,8 +253,6 @@ class RPGInventory(
 
     /**
      * Returns the inventory's storage slots.
-     *
-     * @return The storage slots.
      */
     fun getStorageSlots(): List<InventorySlot> {
         return slots.values.filter { it.type == Slot.Type.STORAGE }
@@ -271,8 +260,6 @@ class RPGInventory(
 
     /**
      * Returns the inventory's active slots.
-     *
-     * @return The active slots.
      */
     fun getActiveSlots(): List<InventorySlot> {
         return slots.values.filter { it.type == Slot.Type.ACTIVE }
@@ -280,8 +267,6 @@ class RPGInventory(
 
     /**
      * Constructs and returns [Inventory] that can be shown to a player.
-     *
-     * @return The constructed inventory
      */
     fun constructView(): Inventory {
         return view ?: Bukkit.createInventory(holder, viewSize, title).also { view ->
