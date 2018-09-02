@@ -3,6 +3,8 @@ package ru.endlesscode.rpginventory.inventory
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.block.Container
+import org.bukkit.entity.Entity
 import org.bukkit.entity.HumanEntity
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
@@ -327,8 +329,6 @@ class RPGInventory(
         val leftover = hashMapOf<Int, ItemStack>()
         val itemsSlots = mutableMapOf<Material, InventorySlot>()
 
-        // TODO: optimization
-
         for (i in items.indices) {
             val item = items[i]
             var toDelete = item.amount
@@ -539,8 +539,13 @@ class RPGInventory(
         return InventoryIterator(this, validIndex)
     }
 
-    override fun getLocation(): Location {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getLocation(): Location? {
+        val holder = this.holder
+        return when (holder) {
+            is Container -> holder.location
+            is Entity -> holder.location
+            else -> null
+        }
     }
 
     internal fun syncSlotWithView(slot: InventorySlot) {
