@@ -31,11 +31,17 @@ class IndexedMap<K : Comparable<K>, V> private constructor(
     }
 
     override fun put(key: K, value: V): V? {
-        return content.put(key, value).also {
+        val replace = key in content
+        val result = content.put(key, value)
+        val index = content.keys.indexOfFirst { it == key }
+        if (replace) {
+            indexedKeys[index] = key
+        } else {
             @Suppress("NestedLambdaShadowedImplicitParameter")
-            val newIndex = content.keys.indexOfFirst{ it == key }
-            indexedKeys.add(newIndex, key)
+            indexedKeys.add(index, key)
         }
+
+        return result
     }
 
     override fun putAll(from: Map<out K, V>) {

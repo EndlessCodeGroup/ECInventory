@@ -40,20 +40,20 @@ class RPGInventory(
      */
     var view: Inventory? = null
 
-    private val slotsMap: IndexedMap<Int, Slot> = layout.slotsMap.toIndexedMap()
+    private val internalSlotsMap: IndexedMap<Int, Slot> = layout.slotsMap.toIndexedMap()
     private val slots: MutableMap<String, InventorySlot>
 
     /**
      * View size is maximal slot position rounded to nine
      */
     private val viewSize: Int
-        get() = slotsMap.lastKey().roundToPowerOf(9)
+        get() = internalSlotsMap.lastKey().roundToPowerOf(9)
 
     private var maxStack = DEFAULT_MAX_STACK
 
     init {
         val slots = mutableMapOf<String, InventorySlot>()
-        for ((position, slot) in slotsMap) {
+        for ((position, slot) in internalSlotsMap) {
             slots[slot.id] = InventorySlot(slot, this, position)
         }
         this.slots = slots
@@ -210,7 +210,7 @@ class RPGInventory(
     }
 
     /**
-     * Returns the ItemStack found in the slot with the given [slotId], or null if there no such slot.
+     * Returns the ItemStack found in the slot with the given [slotId], or `null` if there no such slot.
      */
     fun getItem(slotId: String): ItemStack? {
         return slots[slotId]?.content
@@ -230,7 +230,7 @@ class RPGInventory(
     }
 
     /**
-     * Returns the slot with the given [slotId], or null if there no such slot.
+     * Returns the slot with the given [slotId], or `null` if there no such slot.
      */
     fun getSlot(slotId: String): InventorySlot? {
         return slots[slotId]
@@ -242,8 +242,17 @@ class RPGInventory(
      * @throws IndexOutOfBoundsException when the inventory doesn't contain a slot for the specified index.
      */
     fun getSlot(index: Int): InventorySlot {
-        val slotId = slotsMap.getByIndex(index).id
+        val slotId = internalSlotsMap.getByIndex(index).id
         return slots.getValue(slotId)
+    }
+
+    /**
+     * Returns slot by theirs [position] or `null` if there no slot on given position.
+     */
+    fun getSlotAt(position: Int): InventorySlot? {
+        return internalSlotsMap[position]?.let {
+            slots[it.id]
+        }
     }
 
     /**
@@ -251,7 +260,7 @@ class RPGInventory(
      */
     fun getIndexOfSlot(slotId: String): Int {
         return slots[slotId]?.let {
-            slotsMap.getIndexOf(it.position)
+            internalSlotsMap.getIndexOf(it.position)
         } ?: -1
     }
 
@@ -260,11 +269,11 @@ class RPGInventory(
      */
     fun getIndexOfSlot(slot: InventorySlot): Int {
         return if (slot.holder != this) -1
-        else slotsMap.getIndexOf(slot.position)
+        else internalSlotsMap.getIndexOf(slot.position)
     }
 
     /**
-     * Returns the inventory's slots with the given [type] or all slots if type is null.
+     * Returns the inventory's slots with the given [type] or all slots if type is `null`.
      */
     @JvmOverloads
     fun getSlots(type: Slot.Type? = null): List<InventorySlot> {
@@ -319,6 +328,32 @@ class RPGInventory(
      */
     fun onClose() {
         this.view = null
+    }
+
+    /**
+     * Assigns given [slot] to the given [position], with replace of existing slot.
+     */
+    fun assignSlot(position: Int, slot: Slot) {
+        val inventorySlot = InventorySlot(slot, this, position)
+        val existingSlotId = internalSlotsMap[position]?.id
+
+        internalSlotsMap[position] = inventorySlot
+        existingSlotId?.let { slots.remove(it) }
+        slots[inventorySlot.id] = inventorySlot
+    }
+
+    /**
+     * Removes slot with the specified [slotId] from the inventory.
+     *
+     * @return removed slot, or `null` if there no slot with the given id.
+     */
+    fun removeSlot(slotId: String): InventorySlot? {
+        val removedSlot = slots.remove(slotId)
+        if (removedSlot != null) {
+            internalSlotsMap.remove(removedSlot.position)
+        }
+
+        return removedSlot
     }
 
     private fun setSlots(slots: List<InventorySlot>, items: Array<out ItemStack>) {
