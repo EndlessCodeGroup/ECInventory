@@ -13,6 +13,7 @@ import ru.endlesscode.rpginventory.extensions.roundToPowerOf
 import ru.endlesscode.rpginventory.util.IndexedMap
 import ru.endlesscode.rpginventory.util.toIndexedMap
 import java.util.*
+import kotlin.math.min
 
 
 /**
@@ -59,214 +60,6 @@ class RPGInventory(
         this.slots = slots
     }
 
-    override fun getSize(): Int {
-        return slots.size
-    }
-
-    @Deprecated("Use slot's maxStackSize instead")
-    override fun getMaxStackSize(): Int {
-        return maxStack
-    }
-
-    override fun setMaxStackSize(size: Int) {
-        maxStack = size
-    }
-
-    override fun getName(): String {
-        return layout.name
-    }
-
-    override fun getItem(index: Int): ItemStack {
-        return getSlot(index).content
-    }
-
-    override fun setItem(index: Int, item: ItemStack?) {
-        val slot = getSlot(index)
-        slot.content = item.orAir()
-        syncSlotWithView(slot)
-    }
-
-    override fun addItem(vararg items: ItemStack): HashMap<Int, ItemStack> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun removeItem(vararg items: ItemStack): HashMap<Int, ItemStack> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getContents(): Array<ItemStack> {
-        return slots.values
-                .map { it.content }
-                .toTypedArray()
-    }
-
-    override fun setContents(items: Array<out ItemStack>) {
-        setSlots(getSlots(), items)
-    }
-
-    override fun getStorageContents(): Array<ItemStack> {
-        return getStorageSlots()
-                .map { it.content }
-                .toTypedArray()
-    }
-
-    override fun setStorageContents(items: Array<out ItemStack>) {
-        setSlots(getStorageSlots(), items)
-    }
-
-    override fun contains(material: Material): Boolean {
-        for (slot in getStorageSlots()) {
-            if (slot.content.type == material) return true
-        }
-
-        return false
-    }
-
-    override fun contains(item: ItemStack?): Boolean {
-        if (item == null) return false
-
-        for (slot in getStorageSlots()) {
-            if (slot.content == item) return true
-        }
-
-        return false
-    }
-
-    override fun contains(material: Material, amount: Int): Boolean {
-        if (amount <= 0) return true
-
-        var remainingAmount = amount
-        for (slot in getStorageSlots()) {
-            val item = slot.content
-            if (item.type == material) {
-                remainingAmount -= item.amount
-                if (remainingAmount <= 0) return true
-            }
-        }
-
-        return false
-    }
-
-    override fun contains(item: ItemStack?, amount: Int): Boolean {
-        if (item == null) return false
-        if (amount <= 0) return true
-
-        var remainingAmount = amount
-        for (slot in getStorageSlots()) {
-            if (slot.content == item && --remainingAmount <= 0) return true
-        }
-
-        return false
-    }
-
-    override fun containsAtLeast(item: ItemStack?, amount: Int): Boolean {
-        if (item == null) return false
-        if (amount <= 0) return true
-
-        var remainingAmount = amount
-        for (slot in getStorageSlots()) {
-            val currentItem = slot.content
-            if (currentItem.isSimilar(item)) {
-                remainingAmount -= currentItem.amount
-                if (remainingAmount <= 0) return true
-            }
-        }
-
-        return false
-    }
-
-    override fun all(material: Material): HashMap<Int, out ItemStack> {
-        val slots = hashMapOf<Int, ItemStack>()
-
-        for (slot in getStorageSlots()) {
-            if (slot.content.type == material) {
-                slots[getIndexOfSlot(slot)] = slot.content
-            }
-        }
-
-        return slots
-    }
-
-    override fun all(item: ItemStack?): HashMap<Int, out ItemStack> {
-        if (item == null) return hashMapOf()
-
-        val slots = hashMapOf<Int, ItemStack>()
-        for (slot in getStorageSlots()) {
-            if (slot.content == item) {
-                slots[getIndexOfSlot(slot)] = slot.content
-            }
-        }
-
-        return slots
-    }
-
-    override fun first(material: Material): Int {
-        val slot = getStorageSlots().first { it.content.type == material }
-        return getIndexOfSlot(slot)
-    }
-
-    override fun first(item: ItemStack?): Int {
-        return first(item, true)
-    }
-
-    override fun firstEmpty(): Int {
-        return getStorageSlots().indexOfFirst { it.isEmpty() }
-    }
-
-    override fun remove(material: Material) {
-        for (slot in getStorageSlots()) {
-            if (slot.content.type == material) {
-                clear(slot.id)
-            }
-        }
-    }
-
-    override fun remove(item: ItemStack) {
-        for (slot in getStorageSlots()) {
-            if (slot.content == item) {
-                clear(slot.id)
-            }
-        }
-    }
-
-    override fun clear(index: Int) {
-        setItem(index, null)
-    }
-
-    override fun clear() {
-        slots.keys.forEach(::clear)
-    }
-
-    override fun getViewers(): List<HumanEntity> {
-        return view?.viewers ?: emptyList()
-    }
-
-    override fun getTitle(): String {
-        return name
-    }
-
-    override fun getType(): InventoryType {
-        return InventoryType.CHEST
-    }
-
-    override fun getHolder(): InventoryHolder {
-        return owner
-    }
-
-    override fun iterator(): MutableListIterator<ItemStack> {
-        return InventoryIterator(this)
-    }
-
-    override fun iterator(index: Int): MutableListIterator<ItemStack> {
-        // ie, with -1, previous() will return the last element
-        val validIndex = if (index < 0) index + size + 1 else index
-        return InventoryIterator(this, validIndex)
-    }
-
-    override fun getLocation(): Location {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     /**
      * Returns the ItemStack found in the slot with the given [id][slotId], or `null` if there no such slot.
      */
@@ -281,10 +74,7 @@ class RPGInventory(
      * @param item The ItemStack to set.
      */
     fun setItem(slotId: String, item: ItemStack?) {
-        slots[slotId]?.let { slot ->
-            slot.content = item.orAir()
-            syncSlotWithView(slot)
-        }
+        slots[slotId]?.let { it.content = item.orAir() }
     }
 
     /**
@@ -414,6 +204,349 @@ class RPGInventory(
         return removedSlot
     }
 
+    /**
+     * Returns the first empty Slot or `null` if there no empty slots.
+     */
+    fun firstEmptySlot(): InventorySlot? {
+        return getStorageSlots().firstOrNull { it.isEmpty() }
+    }
+
+    override fun getSize(): Int {
+        return slots.size
+    }
+
+    @Deprecated("Use slot's maxStackSize instead")
+    override fun getMaxStackSize(): Int {
+        return maxStack
+    }
+
+    override fun setMaxStackSize(size: Int) {
+        maxStack = size
+    }
+
+    override fun getName(): String {
+        return layout.name
+    }
+
+    override fun getItem(index: Int): ItemStack {
+        return getSlot(index).content
+    }
+
+    override fun setItem(index: Int, item: ItemStack?) {
+        getSlot(index).content = item.orAir()
+    }
+
+    /**
+     * It was copied from CraftBukkit implementation.
+     *
+     * Also was made some optimizations:
+     *  - Record the `firstPartial` per [Material]
+     *  - Cache `firstEmptySlot` result
+     */
+    override fun addItem(vararg items: ItemStack): HashMap<Int, ItemStack> {
+        val leftover = hashMapOf<Int, ItemStack>()
+        val nonFullSlots = mutableMapOf<Material, InventorySlot>()
+
+        /*
+         * TODO: some optimization
+         *  - Create a 'firstPartial' with a 'fromIndex'
+         */
+
+        var freeSlot = firstEmptySlot()
+        for (i in items.indices) {
+            val item = items[i]
+
+            while (true) {
+                // Do we already have a stack of it?
+                val nonFullSlot = nonFullSlots.getOrElse(item.type) { firstPartial(item) }
+
+                // Drat! no partial stack
+                if (nonFullSlot == null) {
+                    // Find a free spot!
+
+                    if (freeSlot == null) {
+                        // No space at all!
+                        leftover[i] = item
+                        break
+                    }
+
+                    // More than a single stack!
+                    if (item.amount > freeSlot.maxStackSize) {
+                        val stack = item.clone()
+                        stack.amount = freeSlot.maxStackSize
+                        freeSlot.content = stack
+                        item.amount -= freeSlot.maxStackSize
+
+                        // Look for new free slot
+                        freeSlot = firstEmptySlot()
+                    } else {
+                        // Just store it and look for new free slot
+                        freeSlot.content = item
+                        // Remember that there are the non-full slot
+                        nonFullSlots[item.type] = freeSlot
+                        freeSlot = firstEmptySlot()
+                        break
+                    }
+                } else {
+                    // So, apparently it might only partially fit, well lets do just that
+                    val partialItem = nonFullSlot.content
+
+                    val amount = item.amount
+                    val partialAmount = partialItem.amount
+                    val maxAmount = min(partialItem.maxStackSize, nonFullSlot.maxStackSize)
+
+                    // Check if it fully fits
+                    if (amount + partialAmount <= maxAmount) {
+                        partialItem.amount = amount + partialAmount
+                        nonFullSlot.content = partialItem
+                        // Remember that there are the non-full slot
+                        nonFullSlots[item.type] = nonFullSlot
+                        break
+                    }
+
+                    // It fits partially
+                    partialItem.amount = maxAmount
+                    // To make sure the packet is sent to the client
+                    nonFullSlot.content = partialItem
+                    nonFullSlots.remove(item.type)
+                    item.amount = amount + partialAmount - maxAmount
+                }
+            }
+        }
+
+        return leftover
+    }
+
+    /**
+     * It was copied from CraftBukkit implementation.
+     *
+     * Also was made some optimizations:
+     *  - Cache `first` result per [Material]
+     */
+    override fun removeItem(vararg items: ItemStack): HashMap<Int, ItemStack> {
+        val leftover = hashMapOf<Int, ItemStack>()
+        val itemsSlots = mutableMapOf<Material, InventorySlot>()
+
+        // TODO: optimization
+
+        for (i in items.indices) {
+            val item = items[i]
+            var toDelete = item.amount
+
+            while (true) {
+                val itemSlot = itemsSlots.getOrElse(item.type) { first(item, false) }
+
+                // Drat! we don't have this type in the inventory
+                if (itemSlot == null) {
+                    item.amount = toDelete
+                    leftover[i] = item
+                    break
+                } else {
+                    val itemStack = itemSlot.content
+                    val amount = itemStack.amount
+
+                    if (amount <= toDelete) {
+                        toDelete -= amount
+                        // Clear the slot, all used up
+                        clear(itemSlot.id)
+                        itemsSlots.remove(item.type)
+                    } else {
+                        // Split the stack and store
+                        itemStack.amount = amount - toDelete
+                        itemSlot.content = itemStack
+                        toDelete = 0
+                        // Remember that there are non-fully empty slot
+                        itemsSlots[item.type] = itemSlot
+                    }
+                }
+
+                // Bail when done
+                if (toDelete <= 0) break
+            }
+        }
+
+        return leftover
+    }
+
+    override fun getContents(): Array<ItemStack> {
+        return slots.values
+                .map { it.content }
+                .toTypedArray()
+    }
+
+    override fun setContents(items: Array<out ItemStack>) {
+        setSlots(getSlots(), items)
+    }
+
+    override fun getStorageContents(): Array<ItemStack> {
+        return getStorageSlots()
+                .map { it.content }
+                .toTypedArray()
+    }
+
+    override fun setStorageContents(items: Array<out ItemStack>) {
+        setSlots(getStorageSlots(), items)
+    }
+
+    override fun contains(material: Material): Boolean {
+        for (slot in getStorageSlots()) {
+            if (slot.content.type == material) return true
+        }
+
+        return false
+    }
+
+    override fun contains(item: ItemStack?): Boolean {
+        if (item == null) return false
+
+        for (slot in getStorageSlots()) {
+            if (slot.content == item) return true
+        }
+
+        return false
+    }
+
+    override fun contains(material: Material, amount: Int): Boolean {
+        if (amount <= 0) return true
+
+        var remainingAmount = amount
+        for (slot in getStorageSlots()) {
+            val item = slot.content
+            if (item.type == material) {
+                remainingAmount -= item.amount
+                if (remainingAmount <= 0) return true
+            }
+        }
+
+        return false
+    }
+
+    override fun contains(item: ItemStack?, amount: Int): Boolean {
+        if (item == null) return false
+        if (amount <= 0) return true
+
+        var remainingAmount = amount
+        for (slot in getStorageSlots()) {
+            if (slot.content == item && --remainingAmount <= 0) return true
+        }
+
+        return false
+    }
+
+    override fun containsAtLeast(item: ItemStack?, amount: Int): Boolean {
+        if (item == null) return false
+        if (amount <= 0) return true
+
+        var remainingAmount = amount
+        for (slot in getStorageSlots()) {
+            val currentItem = slot.content
+            if (currentItem.isSimilar(item)) {
+                remainingAmount -= currentItem.amount
+                if (remainingAmount <= 0) return true
+            }
+        }
+
+        return false
+    }
+
+    override fun all(material: Material): HashMap<Int, out ItemStack> {
+        val slots = hashMapOf<Int, ItemStack>()
+
+        for (slot in getStorageSlots()) {
+            if (slot.content.type == material) {
+                slots[getIndexOfSlot(slot)] = slot.content
+            }
+        }
+
+        return slots
+    }
+
+    override fun all(item: ItemStack?): HashMap<Int, out ItemStack> {
+        if (item == null) return hashMapOf()
+
+        val slots = hashMapOf<Int, ItemStack>()
+        for (slot in getStorageSlots()) {
+            if (slot.content == item) {
+                slots[getIndexOfSlot(slot)] = slot.content
+            }
+        }
+
+        return slots
+    }
+
+    override fun first(material: Material): Int {
+        val slot = getStorageSlots().firstOrNull { it.content.type == material } ?: return -1
+        return getIndexOfSlot(slot)
+    }
+
+    override fun first(item: ItemStack?): Int {
+        val slot = first(item, true) ?: return -1
+        return getIndexOfSlot(slot)
+    }
+
+    override fun firstEmpty(): Int {
+        val slot = firstEmptySlot() ?: return -1
+        return getIndexOfSlot(slot)
+    }
+
+    override fun remove(material: Material) {
+        for (slot in getStorageSlots()) {
+            if (slot.content.type == material) {
+                clear(slot.id)
+            }
+        }
+    }
+
+    override fun remove(item: ItemStack) {
+        for (slot in getStorageSlots()) {
+            if (slot.content == item) {
+                clear(slot.id)
+            }
+        }
+    }
+
+    override fun clear(index: Int) {
+        setItem(index, null)
+    }
+
+    override fun clear() {
+        slots.keys.forEach(::clear)
+    }
+
+    override fun getViewers(): List<HumanEntity> {
+        return view?.viewers ?: emptyList()
+    }
+
+    override fun getTitle(): String {
+        return name
+    }
+
+    override fun getType(): InventoryType {
+        return InventoryType.CHEST
+    }
+
+    override fun getHolder(): InventoryHolder {
+        return owner
+    }
+
+    override fun iterator(): MutableListIterator<ItemStack> {
+        return InventoryIterator(this)
+    }
+
+    override fun iterator(index: Int): MutableListIterator<ItemStack> {
+        // ie, with -1, previous() will return the last element
+        val validIndex = if (index < 0) index + size + 1 else index
+        return InventoryIterator(this, validIndex)
+    }
+
+    override fun getLocation(): Location {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    internal fun syncSlotWithView(slot: InventorySlot) {
+        view?.setItem(slot.position, slot.getContentOrHolder())
+    }
+
     private fun setSlots(slots: List<InventorySlot>, items: Array<out ItemStack>) {
         if (slots.size < items.size) error("items.length should be ${slots.size} or less")
 
@@ -430,17 +563,21 @@ class RPGInventory(
         return contents
     }
 
-    private fun first(item: ItemStack?, withAmount: Boolean): Int {
-        if (item == null) return -1
+    private fun first(item: ItemStack?, withAmount: Boolean): InventorySlot? {
+        if (item == null) return null
 
-        val slot = getStorageSlots().first { slot ->
+        return getStorageSlots().firstOrNull { slot ->
             if (withAmount) item == slot.content
             else item.isSimilar(slot.content)
         }
-        return getIndexOfSlot(slot)
     }
 
-    private fun syncSlotWithView(slot: InventorySlot) {
-        view?.setItem(slot.position, slot.getContentOrHolder())
+    private fun firstPartial(item: ItemStack?): InventorySlot? {
+        if (item == null) return null
+
+        return getStorageSlots().firstOrNull { slot ->
+            val slotItem = slot.content
+            slotItem.amount < slotItem.maxStackSize  && slotItem.amount < slot.maxStackSize && slotItem.isSimilar(item)
+        }
     }
 }

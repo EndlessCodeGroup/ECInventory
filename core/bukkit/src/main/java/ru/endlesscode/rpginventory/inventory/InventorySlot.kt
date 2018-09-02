@@ -26,6 +26,9 @@ class InventorySlot(
             if (value.isNotEmpty() && this.maxStackSize > 0 && value.amount > this.maxStackSize) {
                 value.amount = this.maxStackSize
             }
+
+            // We need to sync this change with the inventory's view it it is open
+            holder.syncSlotWithView(this)
         }
 
     override var maxStackSize: Int = 1
