@@ -176,11 +176,28 @@ class RPGInventory(
     }
 
     override fun all(material: Material): HashMap<Int, out ItemStack> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val slots = hashMapOf<Int, ItemStack>()
+
+        for (slot in getStorageSlots()) {
+            if (slot.content.type == material) {
+                slots[getIndexOfSlot(slot)] = slot.content
+            }
+        }
+
+        return slots
     }
 
     override fun all(item: ItemStack?): HashMap<Int, out ItemStack> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (item == null) return hashMapOf()
+
+        val slots = hashMapOf<Int, ItemStack>()
+        for (slot in getStorageSlots()) {
+            if (slot.content == item) {
+                slots[getIndexOfSlot(slot)] = slot.content
+            }
+        }
+
+        return slots
     }
 
     override fun first(material: Material): Int {
