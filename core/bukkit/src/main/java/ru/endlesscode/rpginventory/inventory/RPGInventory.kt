@@ -114,24 +114,65 @@ class RPGInventory(
         setSlots(getStorageSlots(), items)
     }
 
-    override fun contains(material: Material?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun contains(material: Material): Boolean {
+        for (slot in getStorageSlots()) {
+            if (slot.content.type == material) return true
+        }
+
+        return false
     }
 
     override fun contains(item: ItemStack?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (item == null) return false
+
+        for (slot in getStorageSlots()) {
+            if (slot.content == item) return true
+        }
+
+        return false
     }
 
-    override fun contains(material: Material?, amount: Int): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun contains(material: Material, amount: Int): Boolean {
+        if (amount <= 0) return true
+
+        var remainingAmount = amount
+        for (slot in getStorageSlots()) {
+            val item = slot.content
+            if (item.type == material) {
+                remainingAmount -= item.amount
+                if (remainingAmount <= 0) return true
+            }
+        }
+
+        return false
     }
 
     override fun contains(item: ItemStack?, amount: Int): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (item == null) return false
+        if (amount <= 0) return true
+
+        var remainingAmount = amount
+        for (slot in getStorageSlots()) {
+            if (slot.content == item && --remainingAmount <= 0) return true
+        }
+
+        return false
     }
 
     override fun containsAtLeast(item: ItemStack?, amount: Int): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (item == null) return false
+        if (amount <= 0) return true
+
+        var remainingAmount = amount
+        for (slot in getStorageSlots()) {
+            val currentItem = slot.content
+            if (currentItem.isSimilar(item)) {
+                remainingAmount -= currentItem.amount
+                if (remainingAmount <= 0) return true
+            }
+        }
+
+        return false
     }
 
     override fun all(material: Material): HashMap<Int, out ItemStack> {
