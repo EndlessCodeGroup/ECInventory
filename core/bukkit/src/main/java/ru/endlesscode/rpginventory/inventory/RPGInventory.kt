@@ -9,8 +9,8 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.rpginventory.extensions.orAir
+import ru.endlesscode.rpginventory.extensions.roundToPowerOf
 import ru.endlesscode.rpginventory.util.IndexedMap
-import ru.endlesscode.rpginventory.util.roundToPowerOf
 import ru.endlesscode.rpginventory.util.toIndexedMap
 import java.util.*
 
@@ -210,7 +210,7 @@ class RPGInventory(
     }
 
     /**
-     * Returns the ItemStack found in the slot with the given [slotId], or `null` if there no such slot.
+     * Returns the ItemStack found in the slot with the given [id][slotId], or `null` if there no such slot.
      */
     fun getItem(slotId: String): ItemStack? {
         return slots[slotId]?.content
@@ -230,7 +230,7 @@ class RPGInventory(
     }
 
     /**
-     * Returns the slot with the given [slotId], or `null` if there no such slot.
+     * Returns the slot with the given [id][slotId], or `null` if there no such slot.
      */
     fun getSlot(slotId: String): InventorySlot? {
         return slots[slotId]
@@ -256,7 +256,7 @@ class RPGInventory(
     }
 
     /**
-     * Returns index of slot with given [slotId] or -1 if there no such slot.
+     * Returns index of slot with given [id][slotId] or -1 if there no such slot.
      */
     fun getIndexOfSlot(slotId: String): Int {
         return slots[slotId]?.let {
@@ -285,7 +285,7 @@ class RPGInventory(
     }
 
     /**
-     * Clears out a particular slot with given [slotId].
+     * Clears out a particular slot with given [id][slotId].
      */
     fun clear(slotId: String) {
         setItem(slotId, null)
@@ -343,7 +343,7 @@ class RPGInventory(
     }
 
     /**
-     * Removes slot with the specified [slotId] from the inventory.
+     * Removes slot with the specified [id][slotId] from the inventory.
      *
      * @return removed slot, or `null` if there no slot with the given id.
      */
