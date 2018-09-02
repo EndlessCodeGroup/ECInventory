@@ -8,9 +8,10 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.IndexedMap
 import ru.endlesscode.rpginventory.extensions.orAir
-import ru.endlesscode.rpginventory.toIndexedMap
+import ru.endlesscode.rpginventory.util.IndexedMap
+import ru.endlesscode.rpginventory.util.roundToPowerOf
+import ru.endlesscode.rpginventory.util.toIndexedMap
 import java.util.*
 
 
@@ -39,21 +40,23 @@ class RPGInventory(
      */
     var view: Inventory? = null
 
-    private val slots: IndexedMap<String, InventorySlot>
+    private val slotsMap: IndexedMap<Int, Slot> = layout.slotsMap.toIndexedMap()
+    private val slots: MutableMap<String, InventorySlot>
+
+    /**
+     * View size is maximal slot position rounded to nine
+     */
     private val viewSize: Int
+        get() = slotsMap.lastKey().roundToPowerOf(9)
 
     private var maxStack = DEFAULT_MAX_STACK
 
     init {
-        val sortedSlots = linkedMapOf<String, InventorySlot>()
-        for ((position, slot) in layout.slotsMap) {
-            sortedSlots[slot.id] = InventorySlot(slot, this, position)
+        val slots = mutableMapOf<String, InventorySlot>()
+        for ((position, slot) in slotsMap) {
+            slots[slot.id] = InventorySlot(slot, this, position)
         }
-        slots = sortedSlots.toIndexedMap()
-
-        val maxSlotPosition = layout.slotsMap.lastKey()
-        // Round view size to nine
-        this.viewSize = maxSlotPosition / 9 * 9
+        this.slots = slots
     }
 
     override fun getSize(): Int {
@@ -74,11 +77,11 @@ class RPGInventory(
     }
 
     override fun getItem(index: Int): ItemStack {
-        return slots.getByIndex(index).content
+        return getSlot(index).content
     }
 
     override fun setItem(index: Int, item: ItemStack?) {
-        val slot = slots.getByIndex(index)
+        val slot = getSlot(index)
         slot.content = item.orAir()
         syncSlotWithView(slot)
     }
@@ -141,7 +144,7 @@ class RPGInventory(
 
     override fun first(material: Material): Int {
         val slot = getStorageSlots().first { it.content.type == material }
-        return slots.getIndexOf(slot.id)
+        return getIndexOfSlot(slot)
     }
 
     override fun first(item: ItemStack?): Int {
@@ -234,6 +237,33 @@ class RPGInventory(
     }
 
     /**
+     * Returns slot by [index], or throws an exception if there no such slot.
+     *
+     * @throws IndexOutOfBoundsException when the inventory doesn't contain a slot for the specified index.
+     */
+    fun getSlot(index: Int): InventorySlot {
+        val slotId = slotsMap.getByIndex(index).id
+        return slots.getValue(slotId)
+    }
+
+    /**
+     * Returns index of slot with given [slotId] or -1 if there no such slot.
+     */
+    fun getIndexOfSlot(slotId: String): Int {
+        return slots[slotId]?.let {
+            slotsMap.getIndexOf(it.position)
+        } ?: -1
+    }
+
+    /**
+     * Returns index of slot with given [slot] or -1 if given slot isn't in the inventory.
+     */
+    fun getIndexOfSlot(slot: InventorySlot): Int {
+        return if (slot.holder != this) -1
+        else slotsMap.getIndexOf(slot.position)
+    }
+
+    /**
      * Returns the inventory's slots with the given [type] or all slots if type is null.
      */
     @JvmOverloads
@@ -314,7 +344,7 @@ class RPGInventory(
             if (withAmount) item == slot.content
             else item.isSimilar(slot.content)
         }
-        return slots.getIndexOf(slot.id)
+        return getIndexOfSlot(slot)
     }
 
     private fun syncSlotWithView(slot: InventorySlot) {
