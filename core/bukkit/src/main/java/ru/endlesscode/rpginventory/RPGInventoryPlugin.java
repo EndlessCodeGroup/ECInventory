@@ -20,8 +20,9 @@ package ru.endlesscode.rpginventory;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import ru.endlesscode.rpginventory.configuration.MainConfiguration;
 import ru.endlesscode.rpginventory.configuration.ConfigurationProvider;
+import ru.endlesscode.rpginventory.configuration.MainConfiguration;
+import ru.endlesscode.rpginventory.misc.I18N;
 import ru.endlesscode.rpginventory.misc.I18NBukkit;
 
 import java.util.function.Consumer;
@@ -30,10 +31,10 @@ import java.util.logging.Level;
 /**
  * This class is entry point to plugin.
  */
-public class RPGInventory extends JavaPlugin {
+public class RPGInventoryPlugin extends JavaPlugin {
 
     private ConfigurationProvider<MainConfiguration> configProvider;
-    private I18NBukkit locale;
+    private I18N locale;
 
     @Override
     public void onEnable() {
@@ -72,19 +73,18 @@ public class RPGInventory extends JavaPlugin {
         return configProvider.getConfig();
     }
 
-    public I18NBukkit getLocale() {
+    public I18N getLocale() {
         return locale;
     }
 
     @Override
     @Deprecated
     public FileConfiguration getConfig() {
-        throw new UnsupportedOperationException("Use RPGInventory#getConfiguration instead of RPGInventory#getConfig()");
+        throw new UnsupportedOperationException("Use RPGInventoryPlugin#getConfiguration instead of RPGInventoryPlugin#getConfig()");
     }
 
     @Override
     public void onDisable() {
 
     }
-
 }
