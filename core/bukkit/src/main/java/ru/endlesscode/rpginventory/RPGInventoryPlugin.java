@@ -31,7 +31,7 @@ import java.util.logging.Level;
 /**
  * This class is entry point to plugin.
  */
-public class RPGInventory extends JavaPlugin {
+public class RPGInventoryPlugin extends JavaPlugin {
 
     private ConfigurationProvider<MainConfiguration> configProvider;
     private I18N locale;
@@ -80,7 +80,7 @@ public class RPGInventory extends JavaPlugin {
     @Override
     @Deprecated
     public FileConfiguration getConfig() {
-        throw new UnsupportedOperationException("Use RPGInventory#getConfiguration instead of RPGInventory#getConfig()");
+        throw new UnsupportedOperationException("Use RPGInventoryPlugin#getConfiguration instead of RPGInventoryPlugin#getConfig()");
     }
 
     @Override

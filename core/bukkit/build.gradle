@@ -8,6 +8,7 @@ bukkit {
 
     meta {
         name = base.name
+        main = "ru.endlesscode.rpginventory.RPGInventoryPlugin"
         authors = ["osipxd", "Dereku", "EndlessCode Group"]
     }
 
