@@ -1,24 +1,23 @@
 package ru.endlesscode.rpginventory.inventory
 
-import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
 /**
  * Class copied from CraftBukkit
  */
 class InventoryIterator internal constructor(
-        private val inventory: Inventory,
+        private val inventory: RPGInventory,
         private var nextIndex: Int = 0
 ) : MutableListIterator<ItemStack> {
 
-    private var lastDirection: Boolean? = null // true = forward, false = backward, null = haven't moved yet
+    private var lastDirection = Direction.NOT_MOVED
 
     override fun hasNext(): Boolean {
         return nextIndex < inventory.size
     }
 
     override fun next(): ItemStack {
-        lastDirection = true
+        lastDirection = Direction.FORWARD
         return inventory.getItem(nextIndex++)
     }
 
@@ -31,7 +30,7 @@ class InventoryIterator internal constructor(
     }
 
     override fun previous(): ItemStack {
-        lastDirection = false
+        lastDirection = Direction.BACKWARD
         return inventory.getItem(--nextIndex)
     }
 
@@ -40,12 +39,10 @@ class InventoryIterator internal constructor(
     }
 
     override fun set(element: ItemStack) {
-        lastDirection?.let {
-            val i = if (it) nextIndex - 1 else nextIndex
-            inventory.setItem(i, element)
-        } ?: run {
-            error("No current item!")
-        }
+        if (lastDirection == Direction.NOT_MOVED) error("No current item!")
+
+        val i = if (lastDirection == Direction.FORWARD) nextIndex - 1 else nextIndex
+        inventory.setItem(i, element)
     }
 
     override fun add(element: ItemStack) {
@@ -59,5 +56,11 @@ class InventoryIterator internal constructor(
     @Suppress("NOTHING_TO_INLINE")
     private inline fun sizeChangeUnsupported(): Nothing {
         throw UnsupportedOperationException("Can't change the size of an inventory!")
+    }
+
+    private enum class Direction {
+        FORWARD,
+        BACKWARD,
+        NOT_MOVED
     }
 }
