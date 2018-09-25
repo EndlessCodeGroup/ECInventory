@@ -1,4 +1,6 @@
 dependencies {
     compileOnly("ninja.leaping.configurate:configurate-hocon:3.3")
+    compileOnly("org.apache.commons:commons-lang3:3.5")
     testCompile("ninja.leaping.configurate:configurate-hocon:3.3")
+    testCompile("org.apache.commons:commons-lang3:3.5")
 }
