@@ -30,34 +30,42 @@ public class ConfigurableBukkitItemStack extends ConfigurableItemStack {
         if (material == null) {
             throw new IllegalArgumentException("Unknown material name \"" + this.getMaterial() + "\"");
         }
-        final ItemStack itemStack = new ItemStack(material, 1, (short) this.getDamage());
+        final ItemStack itemStack = new ItemStack(material, 1, this.getDamage());
         final ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.setUnbreakable(this.isUnbreakable());
-        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', this.getDisplayName()));
+        if (this.getDisplayName() != null && !this.getDisplayName().isEmpty()) {
+            itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', this.getDisplayName()));
+        }
 
         //Lore colorizing
-        itemMeta.setLore(this.getLore().stream().map(
-                line -> ChatColor.translateAlternateColorCodes('&', line)
-        ).collect(Collectors.toList()));
+        if (this.getLore() != null && !this.getLore().isEmpty()) {
+            itemMeta.setLore(this.getLore().stream().map(
+                    line -> ChatColor.translateAlternateColorCodes('&', line)
+            ).collect(Collectors.toList()));
+        }
 
         //Enchantments processing
-        this.getEnchantments().forEach((name, level) -> {
-            final Enchantment e = Enchantment.getByKey(NamespacedKey.minecraft(name.toLowerCase()));
-            if (e != null) {
-                itemMeta.addEnchant(e, level, true);
-            }
-        });
+        if (this.getEnchantments() != null && !this.getEnchantments().isEmpty()) {
+            this.getEnchantments().forEach((name, level) -> {
+                final Enchantment e = Enchantment.getByKey(NamespacedKey.minecraft(name.toLowerCase()));
+                if (e != null) {
+                    itemMeta.addEnchant(e, level, true);
+                }
+            });
+        }
 
         //ItemFlags processing
-        final ArrayList<ItemFlag> itemFlags = new ArrayList<>();
-        for (String flag : this.getItemFlags()) {
-            try {
-                itemFlags.add(ItemFlag.valueOf(flag));
-            } catch (IllegalArgumentException e) {
-                //TODO: Print exception to the logger
+        if (this.getItemFlags() != null && !this.getItemFlags().isEmpty()) {
+            final ArrayList<ItemFlag> itemFlags = new ArrayList<>();
+            for (String flag : this.getItemFlags()) {
+                try {
+                    itemFlags.add(ItemFlag.valueOf(flag));
+                } catch (IllegalArgumentException e) {
+                    //TODO: Print exception to the logger
+                }
             }
+            itemMeta.addItemFlags(itemFlags.toArray(new ItemFlag[0]));
         }
-        itemMeta.addItemFlags(itemFlags.toArray(new ItemFlag[0]));
 
         itemStack.setItemMeta(itemMeta);
 

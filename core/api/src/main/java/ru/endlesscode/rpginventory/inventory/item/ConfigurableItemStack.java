@@ -40,7 +40,6 @@ public class ConfigurableItemStack {
         //TODO: assign inheritance of the inherited ConfigurableItemStack?
         this.displayName = ObjectUtils.defaultIfNull(displayName, inheritance.displayName);
         this.isUnbreakable = ObjectUtils.defaultIfNull(isUnbreakable, inheritance.isUnbreakable);
-        //TODO: Merge or overwrite lists and maps? My choice is overwrite
         this.lore = ObjectUtils.defaultIfNull(lore, inheritance.lore);
         this.enchantments = ObjectUtils.defaultIfNull(enchantments, inheritance.enchantments);
         this.itemFlags = ObjectUtils.defaultIfNull(itemFlags, inheritance.itemFlags);
@@ -77,5 +76,68 @@ public class ConfigurableItemStack {
 
     public List<String> getItemFlags() {
         return ObjectUtils.defaultIfNull(itemFlags, Collections.emptyList());
+    }
+
+    public static class Builder {
+        private final ConfigurableItemStack cis;
+
+        private Builder(String material) {
+            this.cis = new ConfigurableItemStack();
+            this.cis.material = material;
+        }
+
+        public static Builder fromMaterial(String material) {
+            return new Builder(material);
+        }
+
+        public Builder withDamage(short damage) {
+            this.cis.damage = damage;
+            return this;
+        }
+
+        public Builder withInheritance(String of) {
+            this.cis.inherit = of;
+            return this;
+        }
+
+        public Builder withDisplayName(String displayName) {
+            this.cis.displayName = displayName;
+            return this;
+        }
+
+        public Builder withLore(List<String> lore) {
+            this.cis.lore = new LinkedList<>();
+            this.cis.lore.addAll(lore);
+            return this;
+        }
+
+        public Builder withItemFlags(String... flags) {
+            this.cis.itemFlags = new ArrayList<>();
+            Collections.addAll(this.cis.itemFlags, flags);
+            return this;
+        }
+
+        public Builder withEnchantments(Map<String, Integer> enchantments) {
+            this.cis.enchantments = new HashMap<>();
+            this.cis.enchantments.putAll(enchantments);
+            return this;
+        }
+
+        public Builder unbreakable(boolean unbreakable) {
+            this.cis.isUnbreakable = unbreakable;
+            return this;
+        }
+
+        public ConfigurableItemStack build() {
+            if (this.cis.damage == null) {
+                this.cis.damage = 0;
+            }
+
+            if (this.cis.isUnbreakable == null) {
+                this.cis.isUnbreakable = false;
+            }
+
+            return this.cis;
+        }
     }
 }
