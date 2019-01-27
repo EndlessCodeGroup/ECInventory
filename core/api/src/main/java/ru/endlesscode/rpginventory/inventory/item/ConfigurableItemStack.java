@@ -78,6 +78,26 @@ public class ConfigurableItemStack {
         return ObjectUtils.defaultIfNull(itemFlags, Collections.emptyList());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ConfigurableItemStack that = (ConfigurableItemStack) o;
+        return Objects.equals(material, that.material) &&
+                Objects.equals(damage, that.damage) &&
+                Objects.equals(inherit, that.inherit) &&
+                Objects.equals(displayName, that.displayName) &&
+                Objects.equals(isUnbreakable, that.isUnbreakable) &&
+                Objects.equals(lore, that.lore) &&
+                Objects.equals(enchantments, that.enchantments) &&
+                Objects.equals(itemFlags, that.itemFlags);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(material, damage, inherit, displayName, isUnbreakable, lore, enchantments, itemFlags);
+    }
+
     public static class Builder {
         private final ConfigurableItemStack cis;
 

@@ -39,7 +39,7 @@ public class I18NTest extends FileTestBase {
     }
 
     @Test
-    public void constructor_creatingDirectoryWitExistingFileMustThrowException() {
+    public void constructor_creatingDirectoryWithExistingFileMustThrowException() {
         try {
             new SimpleI18N(testDir.toFile());
         } catch (I18NException e) {
