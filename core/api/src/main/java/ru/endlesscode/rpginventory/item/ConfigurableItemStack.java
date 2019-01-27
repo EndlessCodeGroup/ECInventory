@@ -1,4 +1,4 @@
-package ru.endlesscode.rpginventory.inventory.item;
+package ru.endlesscode.rpginventory.item;
 
 import org.apache.commons.lang3.ObjectUtils;
 

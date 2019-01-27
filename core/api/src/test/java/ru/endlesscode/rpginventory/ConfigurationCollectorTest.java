@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import ru.endlesscode.rpginventory.configuration.ConfigurationCollector;
-import ru.endlesscode.rpginventory.inventory.item.ConfigurableItemStack;
+import ru.endlesscode.rpginventory.item.ConfigurableItemStack;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +48,7 @@ public class ConfigurationCollectorTest {
                 ).build()
         );
     }};
+
     private Path tmpDir;
 
     @Before

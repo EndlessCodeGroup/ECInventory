@@ -1,4 +1,4 @@
-package ru.endlesscode.rpginventory.inventory.item;
+package ru.endlesscode.rpginventory.item;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
