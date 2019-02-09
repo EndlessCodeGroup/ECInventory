@@ -1,4 +1,4 @@
-package ru.endlesscode.rpginventory;
+package ru.endlesscode.rpginventory.configuration;
 
 import org.junit.After;
 import org.junit.Assert;

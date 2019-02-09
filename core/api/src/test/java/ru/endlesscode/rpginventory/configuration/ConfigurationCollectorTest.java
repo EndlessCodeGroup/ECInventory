@@ -1,10 +1,9 @@
-package ru.endlesscode.rpginventory;
+package ru.endlesscode.rpginventory.configuration;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import ru.endlesscode.rpginventory.configuration.ConfigurationCollector;
 import ru.endlesscode.rpginventory.item.ConfigurableItemStack;
 
 import java.io.IOException;
@@ -62,12 +61,8 @@ public class ConfigurationCollectorTest {
         this.saveResource(this.tmpDir, "stringValues.conf");
         final ConfigurationCollector collector = new ConfigurationCollector(this.tmpDir.toFile());
         final Map<String, String> collect = collector.collect(String.class, String.class);
-        if (!collect.keySet().containsAll(this.stringValues.keySet())) {
-            Assert.fail();
-        }
-        if (!collect.values().containsAll(this.stringValues.values())) {
-            Assert.fail();
-        }
+
+        Assert.assertEquals(this.stringValues, collect);
     }
 
     @Test
@@ -75,13 +70,8 @@ public class ConfigurationCollectorTest {
         this.saveResource(this.tmpDir, "cisValues.conf");
         final ConfigurationCollector collector = new ConfigurationCollector(this.tmpDir.toFile());
         final Map<String, ConfigurableItemStack> collect = collector.collect(String.class, ConfigurableItemStack.class);
-        System.out.println(collect);
-        if (!collect.keySet().containsAll(this.stringValues.keySet())) {
-            Assert.fail();
-        }
-        if (!collect.values().containsAll(this.stringValues.values())) {
-            Assert.fail();
-        }
+
+        Assert.assertEquals(this.cisValues, collect);
     }
 
     @After
