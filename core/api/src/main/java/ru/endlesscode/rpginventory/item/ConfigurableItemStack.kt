@@ -135,16 +135,6 @@ open class ConfigurableItemStack {
             return this
         }
 
-        fun build(): ConfigurableItemStack {
-            if (this.cis._damage == null) {
-                this.cis._damage = 0
-            }
-
-            if (this.cis._unbreakable == null) {
-                this.cis._unbreakable = false
-            }
-
-            return this.cis
-        }
+        fun build(): ConfigurableItemStack = this.cis
     }
 }
