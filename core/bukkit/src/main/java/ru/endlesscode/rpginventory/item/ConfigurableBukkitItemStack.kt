@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
 
-class ConfigurableBukkitItemStack : ConfigurableItemStack {
+class ConfigurableBukkitItemStack private constructor(cis: ConfigurableItemStack) : ConfigurableItemStack(cis) {
 
     companion object {
         fun from(cis: ConfigurableItemStack): ConfigurableBukkitItemStack {
@@ -16,39 +16,33 @@ class ConfigurableBukkitItemStack : ConfigurableItemStack {
         }
     }
 
-    private constructor() : super()
-
-    private constructor(cis: ConfigurableItemStack) : super(cis)
-
     fun toItemStack(): ItemStack {
-        val material = requireNotNull(Material.getMaterial(this.getMaterial())) {
-            "Unknown material name \"${this.getMaterial()}\""
-        }
+        val material = requireNotNull(Material.getMaterial(material)) { "Unknown material name \"$material\"" }
         val itemStack = ItemStack(material)
         val itemMeta = itemStack.itemMeta
-        (itemMeta as Damageable).damage = this.getDamage()
-        itemMeta.isUnbreakable = this.isUnbreakable()
+        (itemMeta as Damageable).damage = this.damage
+        itemMeta.isUnbreakable = this.isUnbreakable
 
-        val displayName = this.getDisplayName()
+        val displayName = this.displayName
         if (displayName != null && displayName.isNotEmpty()) {
             itemMeta.displayName = ChatColor.translateAlternateColorCodes('&', displayName)
         }
 
         //Lore colorizing
-        if (this.getLore().isNotEmpty()) {
-            itemMeta.lore = this.getLore().map { line -> ChatColor.translateAlternateColorCodes('&', line) }
+        if (this.lore.isNotEmpty()) {
+            itemMeta.lore = this.lore.map { line -> ChatColor.translateAlternateColorCodes('&', line) }
         }
 
         //Enchantments processing
-        if (this.getEnchantments().isNotEmpty()) {
-            this.getEnchantments().asSequence()
+        if (this.enchantments.isNotEmpty()) {
+            this.enchantments.asSequence()
                 .mapNotNull { (name, level) -> Enchantment.getByKey(NamespacedKey.minecraft(name.toLowerCase())) to level }
                 .forEach { (enchantment, level) -> itemMeta.addEnchant(enchantment, level, true) }
         }
 
         //ItemFlags processing
-        if (this.getItemFlags().isNotEmpty()) {
-            val itemFlags = this.getItemFlags().mapNotNull { flag ->
+        if (this.itemFlags.isNotEmpty()) {
+            val itemFlags = this.itemFlags.mapNotNull { flag ->
                 try {
                     ItemFlag.valueOf(flag)
                 } catch (e: IllegalArgumentException) {

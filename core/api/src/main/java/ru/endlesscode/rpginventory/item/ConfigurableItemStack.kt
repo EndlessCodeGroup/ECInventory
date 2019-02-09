@@ -5,63 +5,52 @@ import java.util.Objects
 
 open class ConfigurableItemStack {
 
-    private var material: String? = null
-    private var damage: Int? = null
+    private var _material: String? = null
+    private var _damage: Int? = null
 
-    private var inherit: String? = null
+    private var _inherit: String? = null
 
     //Meta
-    private var displayName: String? = null
-    private var unbreakable: Boolean? = null
-    private var lore: LinkedList<String>? = null
+    private var _displayName: String? = null
+    private var _unbreakable: Boolean? = null
+    private var _lore: List<String>? = null
 
-    private var enchantments: HashMap<String, Int>? = null // Enchantment:level
-    private var itemFlags: ArrayList<String>? = null
+    private var _enchantments: Map<String, Int>? = null // Enchantment:level
+    private var _itemFlags: List<String>? = null
 
+    val material: String get() = _material ?: "AIR"
+    val damage: Int get() = _damage ?: 0
+    val inheritance: String? get() = _inherit
+    val displayName: String? get() = _displayName
+    val isUnbreakable: Boolean get() = _unbreakable ?: false
+    val lore: List<String> get() = _lore.orEmpty()
+    val enchantments: Map<String, Int> get() = _enchantments.orEmpty()
+    val itemFlags: List<String> get() = _itemFlags.orEmpty()
 
-    /**
-     * Public default constructor for (de)serialization
-     */
-    constructor()
+    private constructor()
 
     protected constructor(cis: ConfigurableItemStack) {
-        this.material = cis.material
-        this.damage = cis.damage
-        this.inherit = cis.inherit
-        this.displayName = cis.displayName
-        this.unbreakable = cis.unbreakable
-        this.lore = cis.lore
-        this.enchantments = cis.enchantments
-        this.itemFlags = cis.itemFlags
+        this._material = cis._material
+        this._damage = cis._damage
+        this._inherit = cis._inherit
+        this._displayName = cis._displayName
+        this._unbreakable = cis._unbreakable
+        this._lore = cis._lore
+        this._enchantments = cis._enchantments
+        this._itemFlags = cis._itemFlags
     }
 
     fun resolveInheritance(inheritance: ConfigurableItemStack): ConfigurableItemStack {
-        this.material = material ?: inheritance.material
-        this.damage = damage ?: inheritance.damage
+        this._material = _material ?: inheritance._material
+        this._damage = _damage ?: inheritance._damage
         //TODO: assign inheritance of the inherited ConfigurableItemStack?
-        this.displayName = displayName ?: inheritance.displayName
-        this.unbreakable = unbreakable ?: inheritance.unbreakable
-        this.lore = lore ?: inheritance.lore
-        this.enchantments = enchantments ?: inheritance.enchantments
-        this.itemFlags = itemFlags ?: inheritance.itemFlags
+        this._displayName = _displayName ?: inheritance._displayName
+        this._unbreakable = _unbreakable ?: inheritance._unbreakable
+        this._lore = _lore ?: inheritance._lore
+        this._enchantments = _enchantments ?: inheritance._enchantments
+        this._itemFlags = _itemFlags ?: inheritance._itemFlags
         return this
     }
-
-    fun getMaterial(): String = material ?: "AIR"
-
-    fun getDamage(): Int = damage ?: 0
-
-    fun getInherit(): String? = inherit
-
-    fun getDisplayName(): String? = displayName
-
-    fun isUnbreakable(): Boolean = unbreakable ?: false
-
-    fun getLore(): List<String> = lore.orEmpty()
-
-    fun getEnchantments(): Map<String, Int> = enchantments.orEmpty()
-
-    fun getItemFlags(): List<String> = itemFlags.orEmpty()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -69,16 +58,16 @@ open class ConfigurableItemStack {
 
         return material == other.material &&
             damage == other.damage &&
-            inherit == other.inherit &&
+            inheritance == other.inheritance &&
             displayName == other.displayName &&
-            unbreakable == other.unbreakable &&
+            isUnbreakable == other.isUnbreakable &&
             lore == other.lore &&
             enchantments == other.enchantments &&
             itemFlags == other.itemFlags
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(material, damage, inherit, displayName, unbreakable, lore, enchantments, itemFlags)
+        return Objects.hash(material, damage, inheritance, displayName, isUnbreakable, lore, enchantments, itemFlags)
     }
 
 
@@ -94,51 +83,51 @@ open class ConfigurableItemStack {
         private val cis: ConfigurableItemStack = ConfigurableItemStack()
 
         init {
-            this.cis.material = material
+            this.cis._material = material
         }
 
         fun withDamage(damage: Int): Builder {
-            this.cis.damage = damage
+            this.cis._damage = damage
             return this
         }
 
         fun withInheritance(of: String): Builder {
-            this.cis.inherit = of
+            this.cis._inherit = of
             return this
         }
 
         fun withDisplayName(displayName: String): Builder {
-            this.cis.displayName = displayName
+            this.cis._displayName = displayName
             return this
         }
 
         fun withLore(lore: List<String>): Builder {
-            this.cis.lore = LinkedList(lore)
+            this.cis._lore = ArrayList(lore)
             return this
         }
 
         fun withItemFlags(vararg flags: String): Builder {
-            this.cis.itemFlags = arrayListOf(*flags)
+            this.cis._itemFlags = flags.toList()
             return this
         }
 
         fun withEnchantments(enchantments: Map<String, Int>): Builder {
-            this.cis.enchantments = HashMap(enchantments)
+            this.cis._enchantments = HashMap(enchantments)
             return this
         }
 
         fun unbreakable(unbreakable: Boolean): Builder {
-            this.cis.unbreakable = unbreakable
+            this.cis._unbreakable = unbreakable
             return this
         }
 
         fun build(): ConfigurableItemStack {
-            if (this.cis.damage == null) {
-                this.cis.damage = 0
+            if (this.cis._damage == null) {
+                this.cis._damage = 0
             }
 
-            if (this.cis.unbreakable == null) {
-                this.cis.unbreakable = false
+            if (this.cis._unbreakable == null) {
+                this.cis._unbreakable = false
             }
 
             return this.cis
