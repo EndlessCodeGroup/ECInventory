@@ -1,21 +1,31 @@
 package ru.endlesscode.rpginventory.item
 
-import java.util.LinkedList
+import ninja.leaping.configurate.objectmapping.Setting
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 import java.util.Objects
 
+@ConfigSerializable
 open class ConfigurableItemStack {
 
+    @Setting("material")
     private var _material: String? = null
+    @Setting("damage")
     private var _damage: Int? = null
 
+    @Setting("inherit")
     private var _inherit: String? = null
 
     //Meta
+    @Setting("displayName")
     private var _displayName: String? = null
+    @Setting("unbreakable")
     private var _unbreakable: Boolean? = null
+    @Setting("lore")
     private var _lore: List<String>? = null
 
+    @Setting("enchantments")
     private var _enchantments: Map<String, Int>? = null // Enchantment:level
+    @Setting("itemFlags")
     private var _itemFlags: List<String>? = null
 
     val material: String get() = _material ?: "AIR"
@@ -68,6 +78,10 @@ open class ConfigurableItemStack {
 
     override fun hashCode(): Int {
         return Objects.hash(material, damage, inheritance, displayName, isUnbreakable, lore, enchantments, itemFlags)
+    }
+
+    override fun toString(): String {
+        return "ConfigurableItemStack(material=$material, damage=$damage, displayName=$displayName)"
     }
 
 

@@ -55,7 +55,6 @@ public class ConfigurationCollector {
         for (File file : files) {
             //TODO: Make it works
             loader = HoconConfigurationLoader.builder().setFile(file).build();
-            Map<K, V> populate = new HashMap<>();
             try {
                 loaded = loader.load();
                 final Object loadedValue = loaded.getValue(result);
@@ -68,7 +67,6 @@ public class ConfigurationCollector {
                 result.putAll(values);
             } catch (ObjectMappingException | IOException e) {
                 System.err.println(e);
-                continue;
             }
         }
 
