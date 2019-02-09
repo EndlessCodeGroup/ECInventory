@@ -6,7 +6,7 @@ import java.util.Objects
 open class ConfigurableItemStack {
 
     private var material: String? = null
-    private var damage: Short? = null
+    private var damage: Int? = null
 
     private var inherit: String? = null
 
@@ -49,7 +49,7 @@ open class ConfigurableItemStack {
 
     fun getMaterial(): String = material ?: "AIR"
 
-    fun getDamage(): Short = damage ?: 0
+    fun getDamage(): Int = damage ?: 0
 
     fun getInherit(): String? = inherit
 
@@ -97,7 +97,7 @@ open class ConfigurableItemStack {
             this.cis.material = material
         }
 
-        fun withDamage(damage: Short): Builder {
+        fun withDamage(damage: Int): Builder {
             this.cis.damage = damage
             return this
         }

@@ -6,6 +6,7 @@ import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.Damageable
 
 class ConfigurableBukkitItemStack : ConfigurableItemStack {
 
@@ -23,8 +24,9 @@ class ConfigurableBukkitItemStack : ConfigurableItemStack {
         val material = requireNotNull(Material.getMaterial(this.getMaterial())) {
             "Unknown material name \"${this.getMaterial()}\""
         }
-        val itemStack = ItemStack(material, 1, this.getDamage())
+        val itemStack = ItemStack(material)
         val itemMeta = itemStack.itemMeta
+        (itemMeta as Damageable).damage = this.getDamage()
         itemMeta.isUnbreakable = this.isUnbreakable()
 
         val displayName = this.getDisplayName()
