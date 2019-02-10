@@ -7,42 +7,34 @@ import java.util.Objects
 @ConfigSerializable
 open class ConfigurableItemStack {
 
-    @Setting("material")
-    private var _material: String? = null
-    @Setting("damage")
-    private var _damage: Int? = null
+    @Setting var material: String = "AIR"
+        private set
+    @Setting var damage: Int = 0
+        private set
 
     //Meta
-    @Setting("displayName")
-    private var _displayName: String? = null
-    @Setting("unbreakable")
-    private var _unbreakable: Boolean? = null
-    @Setting("lore")
-    private var _lore: List<String>? = null
+    @Setting var displayName: String? = null
+        private set
+    @Setting var unbreakable: Boolean = false
+        private set
+    @Setting var lore: List<String> = emptyList()
+        private set
 
-    @Setting("enchantments")
-    private var _enchantments: Map<String, Int>? = null // Enchantment:level
-    @Setting("itemFlags")
-    private var _itemFlags: List<String>? = null
-
-    val material: String get() = _material ?: "AIR"
-    val damage: Int get() = _damage ?: 0
-    val displayName: String? get() = _displayName
-    val isUnbreakable: Boolean get() = _unbreakable ?: false
-    val lore: List<String> get() = _lore.orEmpty()
-    val enchantments: Map<String, Int> get() = _enchantments.orEmpty()
-    val itemFlags: List<String> get() = _itemFlags.orEmpty()
+    @Setting var enchantments: Map<String, Int> = emptyMap() // Enchantment:level
+        private set
+    @Setting var itemFlags: List<String> = emptyList()
+        private set
 
     private constructor()
 
     protected constructor(cis: ConfigurableItemStack) {
-        this._material = cis._material
-        this._damage = cis._damage
-        this._displayName = cis._displayName
-        this._unbreakable = cis._unbreakable
-        this._lore = cis._lore
-        this._enchantments = cis._enchantments
-        this._itemFlags = cis._itemFlags
+        this.material = cis.material
+        this.damage = cis.damage
+        this.displayName = cis.displayName
+        this.unbreakable = cis.unbreakable
+        this.lore = cis.lore
+        this.enchantments = cis.enchantments
+        this.itemFlags = cis.itemFlags
     }
 
     override fun equals(other: Any?): Boolean {
@@ -52,14 +44,14 @@ open class ConfigurableItemStack {
         return material == other.material &&
             damage == other.damage &&
             displayName == other.displayName &&
-            isUnbreakable == other.isUnbreakable &&
+            unbreakable == other.unbreakable &&
             lore == other.lore &&
             enchantments == other.enchantments &&
             itemFlags == other.itemFlags
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(material, damage, displayName, isUnbreakable, lore, enchantments, itemFlags)
+        return Objects.hash(material, damage, displayName, unbreakable, lore, enchantments, itemFlags)
     }
 
     override fun toString(): String {
@@ -79,36 +71,36 @@ open class ConfigurableItemStack {
         private val cis: ConfigurableItemStack = ConfigurableItemStack()
 
         init {
-            this.cis._material = material
+            this.cis.material = material
         }
 
         fun withDamage(damage: Int): Builder {
-            this.cis._damage = damage
+            this.cis.damage = damage
             return this
         }
 
         fun withDisplayName(displayName: String): Builder {
-            this.cis._displayName = displayName
+            this.cis.displayName = displayName
             return this
         }
 
         fun withLore(lore: List<String>): Builder {
-            this.cis._lore = ArrayList(lore)
+            this.cis.lore = ArrayList(lore)
             return this
         }
 
         fun withItemFlags(vararg flags: String): Builder {
-            this.cis._itemFlags = flags.toList()
+            this.cis.itemFlags = flags.toList()
             return this
         }
 
         fun withEnchantments(enchantments: Map<String, Int>): Builder {
-            this.cis._enchantments = HashMap(enchantments)
+            this.cis.enchantments = HashMap(enchantments)
             return this
         }
 
         fun unbreakable(unbreakable: Boolean): Builder {
-            this.cis._unbreakable = unbreakable
+            this.cis.unbreakable = unbreakable
             return this
         }
 

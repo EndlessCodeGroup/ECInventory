@@ -21,7 +21,7 @@ class ConfigurableBukkitItemStack private constructor(cis: ConfigurableItemStack
         val itemStack = ItemStack(material)
         val itemMeta = itemStack.itemMeta
         (itemMeta as Damageable).damage = this.damage
-        itemMeta.isUnbreakable = this.isUnbreakable
+        itemMeta.isUnbreakable = this.unbreakable
 
         val displayName = this.displayName
         if (displayName != null && displayName.isNotEmpty()) {
