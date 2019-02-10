@@ -12,9 +12,6 @@ open class ConfigurableItemStack {
     @Setting("damage")
     private var _damage: Int? = null
 
-    @Setting("inherit")
-    private var _inherit: String? = null
-
     //Meta
     @Setting("displayName")
     private var _displayName: String? = null
@@ -30,7 +27,6 @@ open class ConfigurableItemStack {
 
     val material: String get() = _material ?: "AIR"
     val damage: Int get() = _damage ?: 0
-    val inheritance: String? get() = _inherit
     val displayName: String? get() = _displayName
     val isUnbreakable: Boolean get() = _unbreakable ?: false
     val lore: List<String> get() = _lore.orEmpty()
@@ -42,24 +38,11 @@ open class ConfigurableItemStack {
     protected constructor(cis: ConfigurableItemStack) {
         this._material = cis._material
         this._damage = cis._damage
-        this._inherit = cis._inherit
         this._displayName = cis._displayName
         this._unbreakable = cis._unbreakable
         this._lore = cis._lore
         this._enchantments = cis._enchantments
         this._itemFlags = cis._itemFlags
-    }
-
-    fun resolveInheritance(inheritance: ConfigurableItemStack): ConfigurableItemStack {
-        this._material = _material ?: inheritance._material
-        this._damage = _damage ?: inheritance._damage
-        //TODO: assign inheritance of the inherited ConfigurableItemStack?
-        this._displayName = _displayName ?: inheritance._displayName
-        this._unbreakable = _unbreakable ?: inheritance._unbreakable
-        this._lore = _lore ?: inheritance._lore
-        this._enchantments = _enchantments ?: inheritance._enchantments
-        this._itemFlags = _itemFlags ?: inheritance._itemFlags
-        return this
     }
 
     override fun equals(other: Any?): Boolean {
@@ -68,7 +51,6 @@ open class ConfigurableItemStack {
 
         return material == other.material &&
             damage == other.damage &&
-            inheritance == other.inheritance &&
             displayName == other.displayName &&
             isUnbreakable == other.isUnbreakable &&
             lore == other.lore &&
@@ -77,7 +59,7 @@ open class ConfigurableItemStack {
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(material, damage, inheritance, displayName, isUnbreakable, lore, enchantments, itemFlags)
+        return Objects.hash(material, damage, displayName, isUnbreakable, lore, enchantments, itemFlags)
     }
 
     override fun toString(): String {
@@ -102,11 +84,6 @@ open class ConfigurableItemStack {
 
         fun withDamage(damage: Int): Builder {
             this.cis._damage = damage
-            return this
-        }
-
-        fun withInheritance(of: String): Builder {
-            this.cis._inherit = of
             return this
         }
 

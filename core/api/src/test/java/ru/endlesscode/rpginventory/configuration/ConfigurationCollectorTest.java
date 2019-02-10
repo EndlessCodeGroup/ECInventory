@@ -24,6 +24,7 @@ public class ConfigurationCollectorTest {
     }};
 
     private final Map<String, ConfigurableItemStack> cisValues = new HashMap<String, ConfigurableItemStack>() {{
+        this.put("stick", ConfigurableItemStack.Builder.fromMaterial("STICK").build());
         this.put("magicStick", ConfigurableItemStack.Builder.fromMaterial("STICK")
                 .withDisplayName("&6Magic stick").withLore(
                         Arrays.asList(
