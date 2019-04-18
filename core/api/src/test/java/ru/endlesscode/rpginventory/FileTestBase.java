@@ -18,13 +18,16 @@
 
 package ru.endlesscode.rpginventory;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Before;
 import ru.endlesscode.rpginventory.configuration.internal.function.CheckedConsumer;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
 
 public class FileTestBase {
@@ -42,5 +45,11 @@ public class FileTestBase {
         Files.walk(tmpDir)
                 .sorted(Comparator.reverseOrder())
                 .forEach(CheckedConsumer.wrap(Files::delete));
+    }
+
+    protected void createFile(@NotNull String path, @NotNull String content) throws IOException {
+        Path target = tmpDir.resolve(path);
+        Files.createDirectories(target.getParent());
+        Files.write(target, content.getBytes(), StandardOpenOption.CREATE);
     }
 }

@@ -27,9 +27,12 @@ import ru.endlesscode.rpginventory.FileTestBase;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class FilesUtilTest extends FileTestBase {
 
@@ -99,6 +102,65 @@ public class FilesUtilTest extends FileTestBase {
             );
             Assert.assertEquals(expectedMessage, e.getMessage());
             Assert.assertThat(e.getCause(), CoreMatchers.instanceOf(NoSuchFileException.class));
+            return;
+        }
+
+        Assert.fail();
+    }
+
+    @Test
+    public void mergeFiles_existingDirectoryShouldBeSuccessful() throws Exception {
+        // Given
+        createFile("1oneFile", "Line one");
+        createFile("dir/2anotherFile", "Line two");
+        createFile("dir/3thirdFile", "Line 3");
+
+        // When
+        Path result = FilesUtil.mergeFiles(tmpDir, path -> true);
+
+        // Then
+        Assert.assertEquals(Arrays.asList("Line one", "Line two", "Line 3"), Files.readAllLines(result));
+    }
+
+    @Test
+    public void mergeFiles_withPredicateShouldMergeOnlyMatchFiles() throws Exception {
+        // Given
+        createFile("file.merge", "Line one");
+        createFile("dir/fileTwo", "Skipped line");
+        createFile("dir/fileThree.merge", "Line 3");
+
+        // When
+        Path result = FilesUtil.mergeFiles(tmpDir, path -> path.toString().endsWith(".merge"));
+
+        // Then
+        Assert.assertEquals(Arrays.asList("Line one", "Line 3"), Files.readAllLines(result));
+    }
+
+    @Test
+    public void mergeFiles_emptyDirectoryShouldReturnEmptyFile() throws Exception {
+        // When
+        Path result = FilesUtil.mergeFiles(tmpDir, path -> true);
+
+        // Then
+        Assert.assertEquals(Collections.emptyList(), Files.readAllLines(result));
+    }
+
+    @Test
+    public void mergeFiles_notDirectoryShouldThrowException() {
+        // Given
+        Path file = testDir.resolve("existingFile");
+
+        try {
+            // When
+            FilesUtil.mergeFiles(file, path -> true);
+        } catch (Exception e) {
+            // Then
+            String expectedMessage = String.format(
+                    "Files in given directory \"%s\" can't be merged",
+                    file.toAbsolutePath().toString()
+            );
+            Assert.assertEquals(expectedMessage, e.getMessage());
+            Assert.assertThat(e.getCause(), CoreMatchers.instanceOf(FileSystemException.class));
             return;
         }
 
