@@ -19,7 +19,7 @@
 package ru.endlesscode.rpginventory.misc;
 
 import org.jetbrains.annotations.NotNull;
-import ru.endlesscode.rpginventory.configuration.internal.function.CheckedConsumer;
+import ru.endlesscode.rpginventory.internal.function.CheckedConsumer;
 
 import java.io.IOException;
 import java.io.InputStream;

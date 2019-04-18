@@ -1,4 +1,4 @@
-package ru.endlesscode.rpginventory.configuration.internal.function;
+package ru.endlesscode.rpginventory.internal.function;
 
 import java.util.function.Consumer;
 

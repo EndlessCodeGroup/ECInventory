@@ -21,7 +21,7 @@ package ru.endlesscode.rpginventory;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Before;
-import ru.endlesscode.rpginventory.configuration.internal.function.CheckedConsumer;
+import ru.endlesscode.rpginventory.internal.function.CheckedConsumer;
 
 import java.io.IOException;
 import java.nio.file.Files;

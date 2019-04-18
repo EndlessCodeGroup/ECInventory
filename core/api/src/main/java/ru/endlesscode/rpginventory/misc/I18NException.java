@@ -18,7 +18,7 @@
 
 package ru.endlesscode.rpginventory.misc;
 
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings({"unused"})
 public class I18NException extends RuntimeException {
 
     I18NException() {
