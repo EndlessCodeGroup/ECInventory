@@ -1,32 +1,21 @@
 package ru.endlesscode.rpginventory.configuration;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import ru.endlesscode.rpginventory.configuration.ConfigurationProvider;
+import ru.endlesscode.rpginventory.FileTestBase;
 import ru.endlesscode.rpginventory.misc.TestConfiguration;
 
-import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Comparator;
 
-public class ConfigurationTest {
+public class ConfigurationTest extends FileTestBase {
 
-    private Path tmpDir;
     private ConfigurationProvider<TestConfiguration> testConfiguration;
 
     @Before
+    @Override
     public void setUp() throws Exception {
-        Path testDir = Files.createDirectories(Paths.get("testFiles"));
-        this.tmpDir = Files.createTempDirectory(testDir, "cfg");
-        this.initConfigurationTest(); // Ducking junit. Don't blame me.
-    }
-
-    @Test
-    public void initConfigurationTest() {
+        super.setUp();
         this.testConfiguration = new ConfigurationProvider<>(this.tmpDir, TestConfiguration.class);
     }
 
@@ -64,19 +53,5 @@ public class ConfigurationTest {
         config = this.testConfiguration.getConfig();
         Assert.assertEquals(newString, config.getaString());
         Assert.assertEquals(6, config.getAnInt());
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        Files.walk(this.tmpDir)
-                .sorted(Comparator.reverseOrder())
-                .forEach(this::deleteFile);
-    }
-
-    private void deleteFile(Path path) {
-        try {
-            Files.delete(path);
-        } catch (IOException ignored) {
-        }
     }
 }
