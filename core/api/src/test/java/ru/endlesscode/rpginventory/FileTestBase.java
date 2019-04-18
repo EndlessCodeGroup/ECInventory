@@ -20,8 +20,8 @@ package ru.endlesscode.rpginventory;
 
 import org.junit.After;
 import org.junit.Before;
+import ru.endlesscode.rpginventory.configuration.internal.function.CheckedConsumer;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,12 +41,6 @@ public class FileTestBase {
     public void tearDown() throws Exception {
         Files.walk(tmpDir)
                 .sorted(Comparator.reverseOrder())
-                .forEach(this::deleteFile);
-    }
-
-    private void deleteFile(Path path) {
-        try {
-            Files.delete(path);
-        } catch (IOException ignored) { }
+                .forEach(CheckedConsumer.wrap(Files::delete));
     }
 }
