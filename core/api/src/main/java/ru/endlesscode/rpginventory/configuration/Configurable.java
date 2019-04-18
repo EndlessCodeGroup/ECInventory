@@ -1,23 +1,22 @@
 package ru.endlesscode.rpginventory.configuration;
 
-public abstract class Configurable {
+public interface Configurable {
 
+    String getHeader();
 
-    public abstract String getHeader();
+    String getNodeName();
 
-    public abstract String getNodeName();
-
-    public String fileName() {
+    default String fileName() {
         String string = this.getClass().getSimpleName();
         //Change the first letter to lowercase
-        char c[] = string.toCharArray();
+        char[] c = string.toCharArray();
         c[0] += 32;
         string = new String(c);
         return string;
     }
 
 
-    public boolean hasHeader() {
+    default boolean hasHeader() {
         return this.getHeader() != null && !this.getHeader().isEmpty();
     }
 }

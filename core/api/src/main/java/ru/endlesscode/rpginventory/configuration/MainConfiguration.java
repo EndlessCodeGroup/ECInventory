@@ -23,7 +23,7 @@ import ru.endlesscode.rpginventory.configuration.part.ResourcePackConfiguration;
 import ru.endlesscode.rpginventory.configuration.part.UpdatesConfiguration;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
-public class MainConfiguration extends Configurable {
+public class MainConfiguration implements Configurable {
 
     @Setting(comment = "Make sure that you have correctly configured the \"resourcePack\" section before enabling the plugin.")
     private boolean enabled = false;
