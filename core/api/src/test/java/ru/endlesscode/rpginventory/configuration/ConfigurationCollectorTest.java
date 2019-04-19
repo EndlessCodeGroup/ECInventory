@@ -1,20 +1,23 @@
 package ru.endlesscode.rpginventory.configuration;
 
-import org.junit.After;
+import com.google.common.reflect.TypeParameter;
+import com.google.common.reflect.TypeToken;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import ru.endlesscode.rpginventory.FileTestBase;
 import ru.endlesscode.rpginventory.item.ConfigurableItemStack;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-public class ConfigurationCollectorTest {
+public class ConfigurationCollectorTest extends FileTestBase {
 
     private final Map<String, String> stringValues = new HashMap<String, String>() {{
         this.put("first", "Nulla semper facilisis urna non fermentum.");
@@ -26,7 +29,8 @@ public class ConfigurationCollectorTest {
     private final Map<String, ConfigurableItemStack> cisValues = new HashMap<String, ConfigurableItemStack>() {{
         this.put("stick", ConfigurableItemStack.Builder.fromMaterial("STICK").build());
         this.put("magicStick", ConfigurableItemStack.Builder.fromMaterial("STICK")
-                .withDisplayName("&6Magic stick").withLore(
+                .withDisplayName("&6Magic stick")
+                .withLore(
                         Arrays.asList(
                                 "&7This stick can be obtained in",
                                 "&7the &cElite dungeon&7 after defeating",
@@ -35,7 +39,8 @@ public class ConfigurationCollectorTest {
                 ).build()
         );
         this.put("uselessStick", ConfigurableItemStack.Builder.fromMaterial("STICK")
-                .withDisplayName("&7Useless stick").withLore(
+                .withDisplayName("&7Useless stick")
+                .withLore(
                         Arrays.asList(
                                 "&7This stick can be obtained everywhere,",
                                 "&7where a tree available."
@@ -43,50 +48,45 @@ public class ConfigurationCollectorTest {
                 ).build()
         );
         this.put("justStick", ConfigurableItemStack.Builder.fromMaterial("STICK")
-                .withDisplayName("&aJust stick").withLore(
+                .withDisplayName("&aJust stick")
+                .withLore(
                         Collections.singletonList("&7Where you found it?..")
                 ).build()
         );
     }};
 
-    private Path tmpDir;
-
-    @Before
-    public void setUp() throws Exception {
-        Path testDir = Files.createDirectories(Paths.get("testFiles"));
-        this.tmpDir = Files.createTempDirectory(testDir, "cfg");
+    private static <K, V> TypeToken<Map<K, V>> mapToken(Class<K> kClass, Class<V> vClass) {
+        // @formatter:off
+        return new TypeToken<Map<K, V>>() {}
+                .where(new TypeParameter<K>() {}, kClass)
+                .where(new TypeParameter<V>() {}, vClass);
+        // @formatter:on
     }
 
     @Test
     public void stringValuesRead() {
+        // Given
         this.saveResource(this.tmpDir, "stringValues.conf");
         final ConfigurationCollector collector = new ConfigurationCollector(this.tmpDir.toFile());
-        final Map<String, String> collect = collector.collect(String.class, String.class);
 
+        // When
+        final Map<String, String> collect = collector.collect(mapToken(String.class, String.class));
+
+        // Then
         Assert.assertEquals(this.stringValues, collect);
     }
 
     @Test
     public void cisValuesRead() {
+        // Given
         this.saveResource(this.tmpDir, "cisValues.conf");
         final ConfigurationCollector collector = new ConfigurationCollector(this.tmpDir.toFile());
-        final Map<String, ConfigurableItemStack> collect = collector.collect(String.class, ConfigurableItemStack.class);
 
+        // When
+        final Map<String, ConfigurableItemStack> collect = collector.collect(mapToken(String.class, ConfigurableItemStack.class));
+
+        // Then
         Assert.assertEquals(this.cisValues, collect);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        Files.walk(this.tmpDir)
-                .sorted(Comparator.reverseOrder())
-                .forEach(this::deleteFile);
-    }
-
-    private void deleteFile(Path path) {
-        try {
-            Files.delete(path);
-        } catch (IOException ignored) {
-        }
     }
 
     private void saveResource(Path targetDirectory, String name) {

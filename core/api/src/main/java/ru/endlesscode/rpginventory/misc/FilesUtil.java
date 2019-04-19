@@ -71,8 +71,7 @@ public class FilesUtil {
         try {
             tmp = Files.createTempFile(pathToDir, null, ".merged");
             Files.walk(pathToDir)
-                    .filter(Files::isRegularFile)
-                    .filter(path -> !path.equals(tmp))
+                    .filter(path -> Files.isRegularFile(path) && !path.equals(tmp))
                     .filter(predicate)
                     .map(file -> readFileToString(file) + "\n")
                     .forEach(CheckedConsumer.wrap(content -> Files.write(tmp, content.getBytes(), StandardOpenOption.APPEND)));
@@ -85,5 +84,15 @@ public class FilesUtil {
         return tmp;
     }
 
+    public static void makeSureDirectoryExists(@NotNull Path directory) throws IOException {
+        if (!Files.isDirectory(directory)) {
+            final Path tmp = directory.getParent().resolve(
+                    directory.getFileName().toString() + ".niceJoke." + System.currentTimeMillis() % 10_000
+            );
+            Files.move(directory, tmp);
+        }
+
+        Files.createDirectories(directory);
+    }
 
 }
