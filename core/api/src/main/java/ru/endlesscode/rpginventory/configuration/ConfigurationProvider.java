@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@SuppressWarnings("WeakerAccess")
 public class ConfigurationProvider<T extends Configurable> {
 
     private final HoconConfigurationLoader loader;

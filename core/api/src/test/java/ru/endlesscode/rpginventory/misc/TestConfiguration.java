@@ -2,7 +2,7 @@ package ru.endlesscode.rpginventory.misc;
 
 import ru.endlesscode.rpginventory.configuration.Configurable;
 
-public class TestConfiguration extends Configurable {
+public class TestConfiguration implements Configurable {
 
     private String aString = "Lorem ipsum dolor sit amet.";
     private int anInt = 5;

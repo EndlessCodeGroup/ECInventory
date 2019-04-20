@@ -18,14 +18,20 @@
 
 package ru.endlesscode.rpginventory;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
+import ru.endlesscode.rpginventory.internal.function.CheckedConsumer;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 public class FileTestBase {
     protected Path testDir;
@@ -41,12 +47,21 @@ public class FileTestBase {
     public void tearDown() throws Exception {
         Files.walk(tmpDir)
                 .sorted(Comparator.reverseOrder())
-                .forEach(this::deleteFile);
+                .forEach(CheckedConsumer.wrap(Files::delete));
     }
 
-    private void deleteFile(Path path) {
-        try {
-            Files.delete(path);
-        } catch (IOException ignored) { }
+    protected void createFile(@NotNull String path, @NotNull String content) throws IOException {
+        Path target = tmpDir.resolve(path);
+        Files.createDirectories(target.getParent());
+        Files.write(target, content.getBytes(), StandardOpenOption.CREATE);
+    }
+
+    protected void assertFileContentEquals(@NotNull Path file, @NotNull String... content) throws IOException {
+        assertFileContentEquals(file, Arrays.asList(content));
+    }
+
+    protected void assertFileContentEquals(@NotNull Path file, @NotNull List<String> content) throws IOException {
+        final List<String> strings = Files.readAllLines(file);
+        Assert.assertEquals(content, strings);
     }
 }

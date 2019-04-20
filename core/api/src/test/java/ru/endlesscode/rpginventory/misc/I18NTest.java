@@ -28,6 +28,7 @@ import ru.endlesscode.rpginventory.FileTestBase;
 
 public class I18NTest extends FileTestBase {
 
+    // SUT
     private I18N i18n;
 
     @Override
@@ -39,10 +40,12 @@ public class I18NTest extends FileTestBase {
     }
 
     @Test
-    public void constructor_creatingDirectoryWitExistingFileMustThrowException() {
+    public void constructor_creatingDirectoryWithExistingFileMustThrowException() {
         try {
+            // When
             new SimpleI18N(testDir.toFile());
         } catch (I18NException e) {
+            // Then
             Assert.assertEquals("Failed to create locales folder", e.getMessage());
             return;
         }
@@ -51,39 +54,55 @@ public class I18NTest extends FileTestBase {
     }
 
     @Test
-    public void reload_reloadingExistingLocaleMustBeSuccessful() throws Exception {
+    public void reload_reloadingExistingLocaleMustBeSuccessful() {
+        // When
         i18n.reload("test");
     }
 
     @Test
-    public void reload_reloadingMustBeCaseInsensitive() throws Exception {
+    public void reload_reloadingMustBeCaseInsensitive() {
+        // When
         i18n.reload("TeSt");
     }
 
     @Test
-    public void getMessage_byKey() throws Exception {
-        Assert.assertEquals("Something value", i18n.getMessage("key"));
+    public void getMessage_byKey() {
+        // When
+        final String message = i18n.getMessage("key");
+
+        // Then
+        Assert.assertEquals("Something value", message);
         Mockito.verify(i18n, Mockito.never()).stripColor(ArgumentMatchers.anyString());
     }
 
     @Test
-    public void getMessage_byKeyWithStripColor() throws Exception {
+    public void getMessage_byKeyWithStripColor() {
+        // When
         i18n.getMessage("key", true);
+
+        // Then
         Mockito.verify(i18n).stripColor(ArgumentMatchers.anyString());
     }
 
     @Test
     public void getMessage_notExistingKeyMustReturnKey() {
-        String key = "not.existing.key";
-        Assert.assertEquals(key, i18n.getMessage(key));
+        // Given
+        final String key = "not.existing.key";
+
+        // When
+        final String message = i18n.getMessage(key);
+
+        // Then
+        Assert.assertEquals(key, message);
     }
 
     @Test
-    public void getMessage_byKeyWithArgs() throws Exception {
-        Assert.assertEquals(
-                "Args: Text, 1",
-                i18n.getMessage("with.args", "Text", 1)
-        );
+    public void getMessage_byKeyWithArgs() {
+        // When
+        final String message = i18n.getMessage("with.args", "Text", 1);
+
+        // Then
+        Assert.assertEquals("Args: Text, 1", message);
     }
 
 }
