@@ -19,6 +19,33 @@ import java.util.Map;
 
 public class ConfigurationCollectorTest extends FileTestBase {
 
+    @Test
+    public void stringValuesRead() {
+        // Given
+        this.saveResource(this.tmpDir, "stringValues.conf");
+        final ConfigurationCollector collector = new ConfigurationCollector(this.tmpDir);
+
+        // When
+        final Map<String, String> collect = collector.collect(mapToken(String.class, String.class));
+
+        // Then
+        Assert.assertEquals(this.stringValues, collect);
+    }
+
+    @Test
+    public void cisValuesRead() {
+        // Given
+        this.saveResource(this.tmpDir, "cisValues.conf");
+        final ConfigurationCollector collector = new ConfigurationCollector(this.tmpDir.toFile());
+
+        // When
+        final Map<String, ConfigurableItemStack> collect = collector.collect(mapToken(String.class, ConfigurableItemStack.class));
+
+        // Then
+        Assert.assertEquals(this.cisValues, collect);
+    }
+
+
     private final Map<String, String> stringValues = new HashMap<String, String>() {{
         this.put("first", "Nulla semper facilisis urna non fermentum.");
         this.put("second", "Morbi at lorem vitae odio molestie scelerisque.");
@@ -63,32 +90,6 @@ public class ConfigurationCollectorTest extends FileTestBase {
         // @formatter:on
     }
 
-    @Test
-    public void stringValuesRead() {
-        // Given
-        this.saveResource(this.tmpDir, "stringValues.conf");
-        final ConfigurationCollector collector = new ConfigurationCollector(this.tmpDir.toFile());
-
-        // When
-        final Map<String, String> collect = collector.collect(mapToken(String.class, String.class));
-
-        // Then
-        Assert.assertEquals(this.stringValues, collect);
-    }
-
-    @Test
-    public void cisValuesRead() {
-        // Given
-        this.saveResource(this.tmpDir, "cisValues.conf");
-        final ConfigurationCollector collector = new ConfigurationCollector(this.tmpDir.toFile());
-
-        // When
-        final Map<String, ConfigurableItemStack> collect = collector.collect(mapToken(String.class, ConfigurableItemStack.class));
-
-        // Then
-        Assert.assertEquals(this.cisValues, collect);
-    }
-
     private void saveResource(Path targetDirectory, String name) {
         InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(name);
         if (resourceAsStream == null) {
@@ -100,6 +101,5 @@ public class ConfigurationCollectorTest extends FileTestBase {
         } catch (IOException ignore) {
             System.err.println("Failed to save" + name);
         }
-
     }
 }

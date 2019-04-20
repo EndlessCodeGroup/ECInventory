@@ -25,13 +25,10 @@ import org.junit.Test;
 import ru.endlesscode.rpginventory.FileTestBase;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystemException;
-import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class FilesUtilTest extends FileTestBase {
@@ -48,10 +45,13 @@ public class FilesUtilTest extends FileTestBase {
 
     @Test
     public void copyResourceToFile_existingResourceToExistingFileMustThrowException() throws Exception {
+        // Given
         Path target = testDir.resolve("existingFile");
         try {
+            // When
             this.copyResourceToFile("/resource", target);
         } catch (IllegalArgumentException e) {
+            // Then
             String expectedMessage = String.format(
                     "Failed to copy \"/resource\" to given target: \"%s\"",
                     target.toAbsolutePath().toString()
@@ -66,9 +66,14 @@ public class FilesUtilTest extends FileTestBase {
 
     @Test
     public void copyResourceToFile_notExistingResourceToNewFileMustThrowException() throws Exception {
+        // Given
+        final Path target = tmpDir.resolve("newFile");
+
         try {
-            this.copyResourceToFile("/notExistingResource", tmpDir.resolve("newFile"));
+            // When
+            this.copyResourceToFile("/notExistingResource", target);
         } catch (IllegalArgumentException e) {
+            // Then
             Assert.assertEquals("Resource file \"/notExistingResource\" not exists", e.getMessage());
             Assert.assertNull(e.getCause());
             return;
@@ -78,24 +83,34 @@ public class FilesUtilTest extends FileTestBase {
     }
 
     private void copyResourceToFile(@NotNull String resource, @NotNull Path targetFile) throws IOException {
+        // When
         FilesUtil.copyResourceToFile(resource, targetFile);
-        final String[] strings = Files.readAllLines(targetFile, StandardCharsets.UTF_8).toArray(new String[0]);
-        Assert.assertArrayEquals(new String[]{"This is a test resource file.", "Это тестовый файл ресурсов."}, strings);
+
+        // Then
+        assertFileContentEquals(targetFile, "This is a test resource file.", "Это тестовый файл ресурсов.");
     }
 
     @Test
     public void readFileToString_existingFileMustBeSuccessful() {
+        // Given
         Path target = testDir.resolve("existingFile");
-        String expected = "Multi-line\nexisting\nfile.\nС русским\nтекстом.";
-        Assert.assertEquals(expected, FilesUtil.readFileToString(target));
+
+        // When
+        final String content = FilesUtil.readFileToString(target);
+
+        // Then
+        Assert.assertEquals("Multi-line\nexisting\nfile.\nС русским\nтекстом.", content);
     }
 
     @Test
     public void readFileToString_notExistingFileMustThrowException() {
+        // Given
         Path target = testDir.resolve("notExistingFile");
         try {
+            // When
             FilesUtil.readFileToString(target);
         } catch (IllegalArgumentException e) {
+            // Then
             String expectedMessage = String.format(
                     "Given file \"%s\" can't be read",
                     target.toAbsolutePath().toString()
@@ -119,7 +134,7 @@ public class FilesUtilTest extends FileTestBase {
         Path result = FilesUtil.mergeFiles(tmpDir, path -> true);
 
         // Then
-        Assert.assertEquals(Arrays.asList("Line one", "Line two", "Line 3"), Files.readAllLines(result));
+        assertFileContentEquals(result, "Line one", "Line two", "Line 3");
     }
 
     @Test
@@ -133,7 +148,7 @@ public class FilesUtilTest extends FileTestBase {
         Path result = FilesUtil.mergeFiles(tmpDir, path -> path.toString().endsWith(".merge"));
 
         // Then
-        Assert.assertEquals(Arrays.asList("Line one", "Line 3"), Files.readAllLines(result));
+        assertFileContentEquals(result, "Line one", "Line 3");
     }
 
     @Test
@@ -142,7 +157,7 @@ public class FilesUtilTest extends FileTestBase {
         Path result = FilesUtil.mergeFiles(tmpDir, path -> true);
 
         // Then
-        Assert.assertEquals(Collections.emptyList(), Files.readAllLines(result));
+        assertFileContentEquals(result, Collections.emptyList());
     }
 
     @Test
