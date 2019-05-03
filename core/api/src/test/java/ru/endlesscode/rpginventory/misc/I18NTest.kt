@@ -16,93 +16,93 @@
  * along with RPGInventory.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.misc;
+package ru.endlesscode.rpginventory.misc
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
-import ru.endlesscode.rpginventory.FileTestBase;
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito
+import ru.endlesscode.rpginventory.FileTestBase
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.fail
 
 
-public class I18NTest extends FileTestBase {
+class I18NTest : FileTestBase() {
 
     // SUT
-    private I18N i18n;
+    private lateinit var i18n: I18N
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
+    @BeforeTest
+    override fun setUp() {
+        super.setUp()
 
-        this.i18n = Mockito.spy(new SimpleI18N(tmpDir.toFile()));
+        this.i18n = Mockito.spy(SimpleI18N(tmpDir.toFile()))
     }
 
     @Test
-    public void constructor_creatingDirectoryWithExistingFileMustThrowException() {
+    fun constructor_creatingDirectoryWithExistingFileMustThrowException() {
         try {
             // When
-            new SimpleI18N(testDir.toFile());
-        } catch (I18NException e) {
+            SimpleI18N(testDir.toFile())
+        } catch (e: I18NException) {
             // Then
-            Assert.assertEquals("Failed to create locales folder", e.getMessage());
-            return;
+            assertEquals("Failed to create locales folder", e.message)
+            return
         }
 
-        Assert.fail();
+        fail()
     }
 
     @Test
-    public void reload_reloadingExistingLocaleMustBeSuccessful() {
+    fun reload_reloadingExistingLocaleMustBeSuccessful() {
         // When
-        i18n.reload("test");
+        i18n.reload("test")
     }
 
     @Test
-    public void reload_reloadingMustBeCaseInsensitive() {
+    fun reload_reloadingMustBeCaseInsensitive() {
         // When
-        i18n.reload("TeSt");
+        i18n.reload("TeSt")
     }
 
     @Test
-    public void getMessage_byKey() {
+    fun getMessage_byKey() {
         // When
-        final String message = i18n.getMessage("key");
+        val message = i18n.getMessage("key")
 
         // Then
-        Assert.assertEquals("Something value", message);
-        Mockito.verify(i18n, Mockito.never()).stripColor(ArgumentMatchers.anyString());
+        assertEquals("Something value", message)
+        Mockito.verify<I18N>(i18n, Mockito.never()).stripColor(ArgumentMatchers.anyString())
     }
 
     @Test
-    public void getMessage_byKeyWithStripColor() {
+    fun getMessage_byKeyWithStripColor() {
         // When
-        i18n.getMessage("key", true);
+        i18n.getMessage("key", true)
 
         // Then
-        Mockito.verify(i18n).stripColor(ArgumentMatchers.anyString());
+        Mockito.verify<I18N>(i18n).stripColor(ArgumentMatchers.anyString())
     }
 
     @Test
-    public void getMessage_notExistingKeyMustReturnKey() {
+    fun getMessage_notExistingKeyMustReturnKey() {
         // Given
-        final String key = "not.existing.key";
+        val key = "not.existing.key"
 
         // When
-        final String message = i18n.getMessage(key);
+        val message = i18n.getMessage(key)
 
         // Then
-        Assert.assertEquals(key, message);
+        assertEquals(key, message)
     }
 
     @Test
-    public void getMessage_byKeyWithArgs() {
+    fun getMessage_byKeyWithArgs() {
         // When
-        final String message = i18n.getMessage("with.args", "Text", 1);
+        val message = i18n.getMessage("with.args", "Text", 1)
 
         // Then
-        Assert.assertEquals("Args: Text, 1", message);
+        assertEquals("Args: Text, 1", message)
     }
 
 }

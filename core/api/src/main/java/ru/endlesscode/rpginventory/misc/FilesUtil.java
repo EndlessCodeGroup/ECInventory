@@ -66,6 +66,10 @@ public class FilesUtil {
         }
     }
 
+    public static Path mergeFiles(@NotNull Path pathToDir) {
+        return mergeFiles(pathToDir, path -> true);
+    }
+
     public static Path mergeFiles(@NotNull Path pathToDir, @NotNull Predicate<Path> predicate) {
         final Path tmp;
         try {

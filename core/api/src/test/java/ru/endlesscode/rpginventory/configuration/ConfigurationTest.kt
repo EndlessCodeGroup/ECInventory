@@ -1,73 +1,73 @@
-package ru.endlesscode.rpginventory.configuration;
+package ru.endlesscode.rpginventory.configuration
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import ru.endlesscode.rpginventory.FileTestBase;
-import ru.endlesscode.rpginventory.misc.TestConfiguration;
+import ru.endlesscode.rpginventory.FileTestBase
+import ru.endlesscode.rpginventory.misc.TestConfiguration
+import java.nio.file.Files
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-public class ConfigurationTest extends FileTestBase {
+class ConfigurationTest : FileTestBase() {
 
     // SUT
-    private ConfigurationProvider<TestConfiguration> testConfiguration;
+    private lateinit var testConfiguration: ConfigurationProvider<TestConfiguration>
 
-    @Before
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        this.testConfiguration = new ConfigurationProvider<>(this.tmpDir, TestConfiguration.class);
-    }
+    @BeforeTest
+    override fun setUp() {
+        super.setUp()
 
-    @Test()
-    public void hasConfigurationSaved() {
-        // Given
-        final Path configurationFile = this.tmpDir.resolve("testConfiguration.conf");
-
-        // Then
-        Assert.assertTrue(Files.exists(configurationFile));
+        this.testConfiguration = ConfigurationProvider(this.tmpDir, TestConfiguration::class.java)
     }
 
     @Test
-    public void isConfigObjectLoadedProperly() {
-        // When
-        final TestConfiguration config = this.testConfiguration.getConfig();
+    fun hasConfigurationSaved() {
+        // Given
+        val configurationFile = this.tmpDir.resolve("testConfiguration.conf")
 
         // Then
-        Assert.assertNotNull(config);
+        assertTrue(Files.exists(configurationFile))
     }
 
     @Test
-    public void isConfigVariablesLoadedProperly() {
-        // Given
-        final TestConfiguration local = new TestConfiguration();
-
+    fun isConfigObjectLoadedProperly() {
         // When
-        final TestConfiguration config = this.testConfiguration.getConfig();
+        val config = this.testConfiguration.config
 
         // Then
-        Assert.assertEquals(local.getaString(), config.getaString());
-        Assert.assertEquals(local.getAnInt(), config.getAnInt());
+        assertNotNull(config)
     }
 
     @Test
-    public void variablesEditTest() {
+    fun isConfigVariablesLoadedProperly() {
         // Given
-        final int newInt = 6;
-        final String newString = "Lorem ipsum dolor sit amet, consectetur.";
-        TestConfiguration config = this.testConfiguration.getConfig();
+        val local = TestConfiguration()
 
         // When
-        config.setAnInt(newInt);
-        config.setaString(newString);
-        this.testConfiguration.save();
-        this.testConfiguration.reload();
-        config = this.testConfiguration.getConfig();
+        val config = this.testConfiguration.config
 
         // Then
-        Assert.assertEquals(newString, config.getaString());
-        Assert.assertEquals(newInt, config.getAnInt());
+        assertEquals(local.aString, config.aString)
+        assertEquals(local.anInt.toLong(), config.anInt.toLong())
+    }
+
+    @Test
+    fun variablesEditTest() {
+        // Given
+        val newInt = 6
+        val newString = "Lorem ipsum dolor sit amet, consectetur."
+        var config = this.testConfiguration.config
+
+        // When
+        config.anInt = newInt
+        config.aString = newString
+        this.testConfiguration.save()
+        this.testConfiguration.reload()
+        config = this.testConfiguration.config
+
+        // Then
+        assertEquals(newString, config.aString)
+        assertEquals(newInt.toLong(), config.anInt.toLong())
     }
 }

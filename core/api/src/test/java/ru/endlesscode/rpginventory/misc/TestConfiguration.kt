@@ -1,35 +1,13 @@
-package ru.endlesscode.rpginventory.misc;
+package ru.endlesscode.rpginventory.misc
 
-import ru.endlesscode.rpginventory.configuration.Configurable;
+import ru.endlesscode.rpginventory.configuration.Configurable
 
-public class TestConfiguration implements Configurable {
+class TestConfiguration : Configurable {
 
-    private String aString = "Lorem ipsum dolor sit amet.";
-    private int anInt = 5;
+    var aString = "Lorem ipsum dolor sit amet."
+    var anInt = 5
 
-    @Override
-    public String getHeader() {
-        return null;
-    }
+    override fun getHeader(): String? = null
 
-    @Override
-    public String getNodeName() {
-        return "TestNode";
-    }
-
-    public String getaString() {
-        return aString;
-    }
-
-    public void setaString(String aString) {
-        this.aString = aString;
-    }
-
-    public int getAnInt() {
-        return anInt;
-    }
-
-    public void setAnInt(int anInt) {
-        this.anInt = anInt;
-    }
+    override fun getNodeName(): String = "TestNode"
 }

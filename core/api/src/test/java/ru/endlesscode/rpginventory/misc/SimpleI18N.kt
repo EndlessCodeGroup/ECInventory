@@ -16,27 +16,14 @@
  * along with RPGInventory.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.misc;
+package ru.endlesscode.rpginventory.misc
 
-import org.jetbrains.annotations.NotNull;
+import java.io.File
 
-import java.io.File;
+class SimpleI18N internal constructor(workDir: File) : I18N(workDir, "test") {
 
-public class SimpleI18N extends I18N {
+    override fun stripColor(message: String): String = message
 
-    SimpleI18N(@NotNull File workDir) {
-        super(workDir, "test");
-    }
+    override fun translateCodes(message: String): String = message
 
-    @NotNull
-    @Override
-    protected String stripColor(String message) {
-        return message;
-    }
-
-    @NotNull
-    @Override
-    protected String translateCodes(String message) {
-        return message;
-    }
 }
