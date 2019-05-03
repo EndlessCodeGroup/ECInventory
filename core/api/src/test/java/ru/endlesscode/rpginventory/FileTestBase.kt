@@ -39,7 +39,6 @@ open class FileTestBase {
 
     @AfterTest
     open fun tearDown() {
-        tmpDir.asSequence()
         Files.walk(tmpDir)
             .sorted(Comparator.reverseOrder())
             .forEach(Files::delete)
@@ -51,12 +50,11 @@ open class FileTestBase {
         Files.write(target, content.toByteArray(), StandardOpenOption.CREATE)
     }
 
-    protected fun assertFileContentEquals(file: Path, vararg content: String) {
-        assertFileContentEquals(file, content.asList())
+    protected fun assertFileContentEquals(file: Path, vararg expectedContent: String) {
+        assertFileContentEquals(file, expectedContent.asList())
     }
 
-    protected fun assertFileContentEquals(file: Path, content: List<String>) {
-        val strings = Files.readAllLines(file)
-        assertEquals(content, strings)
+    protected fun assertFileContentEquals(file: Path, expectedContent: List<String>) {
+        assertEquals(expectedContent, Files.readAllLines(file))
     }
 }

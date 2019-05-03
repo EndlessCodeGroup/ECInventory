@@ -31,7 +31,7 @@ import kotlin.test.fail
 class FilesUtilTest : FileTestBase() {
 
     @Test
-    fun copyResourceToFile_existingResourceToNewFileMustBeSuccessful() {
+    fun `copyResourceToFile - and given existing resource and - should be successful`() {
         // Given
         val target = tmpDir.resolve("resource")
 
@@ -43,7 +43,7 @@ class FilesUtilTest : FileTestBase() {
     }
 
     @Test
-    fun copyResourceToFile_resourceWithoutStartingSlashMustBeSuccessful() {
+    fun `copyResourceToFile - and given existing resource without leading slash - should be successful`() {
         // Given
         val target = tmpDir.resolve("resource")
 
@@ -55,7 +55,7 @@ class FilesUtilTest : FileTestBase() {
     }
 
     @Test
-    fun copyResourceToFile_existingResourceToExistingFileMustThrowException() {
+    fun `copyResourceToFile - and given existing resource and existing target file - should throw exception`() {
         // Given
         val target = testDir.resolve("existingFile")
 
@@ -64,10 +64,7 @@ class FilesUtilTest : FileTestBase() {
             FilesUtil.copyResourceToFile("/resource", target)
         } catch (e: IllegalArgumentException) {
             // Then
-            val expectedMessage = String.format(
-                "Failed to copy \"/resource\" to given target: \"%s\"",
-                target.toAbsolutePath().toString()
-            )
+            val expectedMessage = "Failed to copy \"/resource\" to given target: \"${target.toAbsolutePath()}\""
             assertEquals(expectedMessage, e.message)
             assertInstanceOf<FileAlreadyExistsException>(e.cause)
             return
@@ -77,7 +74,7 @@ class FilesUtilTest : FileTestBase() {
     }
 
     @Test
-    fun copyResourceToFile_notExistingResourceToNewFileMustThrowException() {
+    fun `copyResourceToFile - and given not existing resource - should throw exception`() {
         // Given
         val target = tmpDir.resolve("newFile")
 
@@ -95,7 +92,7 @@ class FilesUtilTest : FileTestBase() {
     }
 
     @Test
-    fun readFileToString_existingFileMustBeSuccessful() {
+    fun `readFileToString - and given existing file - should be successful`() {
         // Given
         val target = testDir.resolve("existingFile")
 
@@ -107,7 +104,7 @@ class FilesUtilTest : FileTestBase() {
     }
 
     @Test
-    fun readFileToString_notExistingFileMustThrowException() {
+    fun `readFileToString - and given not existing file - should throw exception`() {
         // Given
         val target = testDir.resolve("notExistingFile")
 
@@ -116,10 +113,7 @@ class FilesUtilTest : FileTestBase() {
             FilesUtil.readFileToString(target)
         } catch (e: IllegalArgumentException) {
             // Then
-            val expectedMessage = String.format(
-                "Given file \"%s\" can't be read",
-                target.toAbsolutePath().toString()
-            )
+            val expectedMessage = "Given file \"${target.toAbsolutePath()}\" can't be read"
             assertEquals(expectedMessage, e.message)
             assertInstanceOf<NoSuchFileException>(e.cause)
             return
@@ -129,7 +123,7 @@ class FilesUtilTest : FileTestBase() {
     }
 
     @Test
-    fun mergeFiles_existingDirectoryShouldBeSuccessful() {
+    fun `mergeFiles - and given existing directory - should merge all files`() {
         // Given
         createFile("1oneFile", "Line one")
         createFile("dir/2anotherFile", "Line two")
@@ -143,7 +137,7 @@ class FilesUtilTest : FileTestBase() {
     }
 
     @Test
-    fun mergeFiles_withPredicateShouldMergeOnlyMatchFiles() {
+    fun `mergeFiles - and given existing directory and predicate - should merge only match files`() {
         // Given
         createFile("file.merge", "Line one")
         createFile("dir/fileTwo", "Skipped line")
@@ -157,7 +151,7 @@ class FilesUtilTest : FileTestBase() {
     }
 
     @Test
-    fun mergeFiles_emptyDirectoryShouldReturnEmptyFile() {
+    fun `mergeFiles - and given empty directory - should return empty file`() {
         // When
         val result = FilesUtil.mergeFiles(tmpDir)
 
@@ -166,7 +160,7 @@ class FilesUtilTest : FileTestBase() {
     }
 
     @Test
-    fun mergeFiles_notDirectoryShouldThrowException() {
+    fun `mergeFiles - and given not a directory - should throw exception`() {
         // Given
         val file = testDir.resolve("existingFile")
 
@@ -175,10 +169,7 @@ class FilesUtilTest : FileTestBase() {
             FilesUtil.mergeFiles(file)
         } catch (e: Exception) {
             // Then
-            val expectedMessage = String.format(
-                "Files in given directory \"%s\" can't be merged",
-                file.toAbsolutePath().toString()
-            )
+            val expectedMessage = "Files in given directory \"${file.toAbsolutePath()}\" can't be merged"
             assertEquals(expectedMessage, e.message)
             assertInstanceOf<FileSystemException>(e.cause)
             return

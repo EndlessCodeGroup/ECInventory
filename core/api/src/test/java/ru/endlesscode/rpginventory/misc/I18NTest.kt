@@ -18,8 +18,10 @@
 
 package ru.endlesscode.rpginventory.misc
 
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.never
+import com.nhaarman.mockitokotlin2.spy
+import com.nhaarman.mockitokotlin2.verify
 import ru.endlesscode.rpginventory.FileTestBase
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -36,11 +38,11 @@ class I18NTest : FileTestBase() {
     override fun setUp() {
         super.setUp()
 
-        this.i18n = Mockito.spy(SimpleI18N(tmpDir.toFile()))
+        this.i18n = spy(SimpleI18N(tmpDir.toFile()))
     }
 
     @Test
-    fun constructor_creatingDirectoryWithExistingFileMustThrowException() {
+    fun `create and pass directory with existing locales folder - should throw exception`() {
         try {
             // When
             SimpleI18N(testDir.toFile())
@@ -54,38 +56,38 @@ class I18NTest : FileTestBase() {
     }
 
     @Test
-    fun reload_reloadingExistingLocaleMustBeSuccessful() {
+    fun `reload existing locale - should be successful`() {
         // When
         i18n.reload("test")
     }
 
     @Test
-    fun reload_reloadingMustBeCaseInsensitive() {
+    fun `reload existing locale with changed case - should be successful`() {
         // When
         i18n.reload("TeSt")
     }
 
     @Test
-    fun getMessage_byKey() {
+    fun `get message by key - should return right message`() {
         // When
         val message = i18n.getMessage("key")
 
         // Then
         assertEquals("Something value", message)
-        Mockito.verify<I18N>(i18n, Mockito.never()).stripColor(ArgumentMatchers.anyString())
+        verify(i18n, never()).stripColor(any())
     }
 
     @Test
-    fun getMessage_byKeyWithStripColor() {
+    fun `get message by key with strip color - should strip color`() {
         // When
         i18n.getMessage("key", true)
 
         // Then
-        Mockito.verify<I18N>(i18n).stripColor(ArgumentMatchers.anyString())
+        verify(i18n).stripColor(any())
     }
 
     @Test
-    fun getMessage_notExistingKeyMustReturnKey() {
+    fun `get message by not existing key - should return key`() {
         // Given
         val key = "not.existing.key"
 
@@ -97,7 +99,7 @@ class I18NTest : FileTestBase() {
     }
 
     @Test
-    fun getMessage_byKeyWithArgs() {
+    fun `get message with args - should return message with substituted arguments`() {
         // When
         val message = i18n.getMessage("with.args", "Text", 1)
 

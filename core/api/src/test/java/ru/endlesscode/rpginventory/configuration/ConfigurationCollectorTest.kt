@@ -2,14 +2,14 @@ package ru.endlesscode.rpginventory.configuration
 
 import com.google.common.reflect.TypeParameter
 import com.google.common.reflect.TypeToken
-import org.junit.Assert
-import org.junit.Test
 import ru.endlesscode.rpginventory.FileTestBase
 import ru.endlesscode.rpginventory.item.ConfigurableItemStack
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class ConfigurationCollectorTest : FileTestBase() {
 
@@ -47,36 +47,36 @@ class ConfigurationCollectorTest : FileTestBase() {
     )
 
     @Test
-    fun stringValuesRead() {
+    fun `when collect string values - should return right values`() {
         // Given
         this.saveResource(this.tmpDir, "stringValues.conf")
         val collector = ConfigurationCollector(this.tmpDir)
 
         // When
-        val collect = collector.collect(mapToken(String::class.java, String::class.java))
+        val collected = collector.collect(mapToken(String::class.java, String::class.java))
 
         // Then
-        Assert.assertEquals(this.stringValues, collect)
+        assertEquals(this.stringValues, collected)
     }
 
     @Test
-    fun cisValuesRead() {
+    fun `when collect ConfigurableItemStack values - should return right values`() {
         // Given
         this.saveResource(this.tmpDir, "cisValues.conf")
         val collector = ConfigurationCollector(this.tmpDir.toFile())
 
         // When
-        val collect = collector.collect(mapToken(String::class.java, ConfigurableItemStack::class.java))
+        val collected = collector.collect(mapToken(String::class.java, ConfigurableItemStack::class.java))
 
         // Then
-        Assert.assertEquals(this.cisValues, collect)
+        assertEquals(this.cisValues, collected)
     }
 
     private fun <K, V> mapToken(kClass: Class<K>, vClass: Class<V>): TypeToken<Map<K, V>> {
         // @formatter:off
-        return object:TypeToken<Map<K, V>>() {}
-            .where(object:TypeParameter<K>() {}, kClass)
-            .where(object:TypeParameter<V>() {}, vClass)
+        return object : TypeToken<Map<K, V>>() {}
+            .where(object : TypeParameter<K>() {}, kClass)
+            .where(object : TypeParameter<V>() {}, vClass)
         // @formatter:on
     }
 
@@ -86,7 +86,7 @@ class ConfigurationCollectorTest : FileTestBase() {
         try {
             Files.copy(resourceAsStream, resolve, StandardCopyOption.REPLACE_EXISTING)
         } catch (ignore: IOException) {
-            System.err.println("Failed to save$name")
+            System.err.println("Failed to save $name")
         }
     }
 }
