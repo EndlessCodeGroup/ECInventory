@@ -49,8 +49,8 @@ class ConfigurationCollectorTest : FileTestBase() {
     @Test
     fun `when collect string values - should return right values`() {
         // Given
-        this.saveResource(this.tmpDir, "stringValues.conf")
-        val collector = ConfigurationCollector(this.tmpDir)
+        this.saveResource(this.dir, "stringValues.conf")
+        val collector = ConfigurationCollector(this.dir)
 
         // When
         val collected = collector.collect(mapToken(String::class.java, String::class.java))
@@ -62,8 +62,8 @@ class ConfigurationCollectorTest : FileTestBase() {
     @Test
     fun `when collect ConfigurableItemStack values - should return right values`() {
         // Given
-        this.saveResource(this.tmpDir, "cisValues.conf")
-        val collector = ConfigurationCollector(this.tmpDir.toFile())
+        this.saveResource(this.dir, "cisValues.conf")
+        val collector = ConfigurationCollector(this.dir.toFile())
 
         // When
         val collected = collector.collect(mapToken(String::class.java, ConfigurableItemStack::class.java))

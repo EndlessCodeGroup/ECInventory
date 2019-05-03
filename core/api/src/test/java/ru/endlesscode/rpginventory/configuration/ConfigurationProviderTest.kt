@@ -18,13 +18,13 @@ class ConfigurationProviderTest : FileTestBase() {
     override fun setUp() {
         super.setUp()
 
-        this.configurationProvider = ConfigurationProvider(this.tmpDir, TestConfiguration::class.java)
+        this.configurationProvider = ConfigurationProvider(this.dir, TestConfiguration::class.java)
     }
 
     @Test
     fun `when ConfigurationProvider created - configuration file should be created`() {
         // Given
-        val configurationFile = this.tmpDir.resolve("testConfiguration.conf")
+        val configurationFile = this.dir.resolve("testConfiguration.conf")
 
         // Then
         assertTrue(Files.exists(configurationFile))

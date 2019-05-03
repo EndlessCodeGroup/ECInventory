@@ -18,6 +18,8 @@
 
 package ru.endlesscode.rpginventory
 
+import org.junit.AfterClass
+import org.junit.BeforeClass
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -28,26 +30,41 @@ import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 
 open class FileTestBase {
-    protected lateinit var testDir: Path
-    protected lateinit var tmpDir: Path
+
+    companion object {
+        private lateinit var testDir: Path
+
+        @JvmStatic
+        @BeforeClass
+        fun beforeAll() {
+            testDir = Files.createDirectories(Paths.get("testFiles"))
+            Files.createDirectories(testDir)
+        }
+
+        @JvmStatic
+        @AfterClass
+        fun afterAll() {
+            Files.deleteIfExists(testDir)
+        }
+    }
+
+    protected lateinit var dir: Path
 
     @BeforeTest
     open fun setUp() {
-        this.testDir = Files.createDirectories(Paths.get("testFiles"))
-        this.tmpDir = Files.createTempDirectory(testDir, null)
+        this.dir = Files.createTempDirectory(testDir, null)
     }
 
     @AfterTest
     open fun tearDown() {
-        Files.walk(tmpDir)
-            .sorted(Comparator.reverseOrder())
-            .forEach(Files::delete)
+        deleteRecursively(dir)
     }
 
-    protected fun createFile(path: String, content: String) {
-        val target = tmpDir.resolve(path)
+    protected fun createFile(path: String, content: String = ""): Path {
+        val target = dir.resolve(path)
         Files.createDirectories(target.parent)
         Files.write(target, content.toByteArray(), StandardOpenOption.CREATE)
+        return target
     }
 
     protected fun assertFileContentEquals(file: Path, vararg expectedContent: String) {
@@ -56,5 +73,11 @@ open class FileTestBase {
 
     protected fun assertFileContentEquals(file: Path, expectedContent: List<String>) {
         assertEquals(expectedContent, Files.readAllLines(file))
+    }
+
+    protected fun deleteRecursively(path: Path) {
+        Files.walk(path)
+            .sorted(Comparator.reverseOrder())
+            .forEach(Files::delete)
     }
 }

@@ -33,7 +33,7 @@ class FilesUtilTest : FileTestBase() {
     @Test
     fun `copyResourceToFile - and given existing resource and - should be successful`() {
         // Given
-        val target = tmpDir.resolve("resource")
+        val target = dir.resolve("resource")
 
         // When
         FilesUtil.copyResourceToFile("/resource", target)
@@ -45,10 +45,10 @@ class FilesUtilTest : FileTestBase() {
     @Test
     fun `copyResourceToFile - and given existing resource without leading slash - should be successful`() {
         // Given
-        val target = tmpDir.resolve("resource")
+        val target = dir.resolve("resource")
 
         // When
-        FilesUtil.copyResourceToFile("resource", tmpDir.resolve("resource"))
+        FilesUtil.copyResourceToFile("resource", dir.resolve("resource"))
 
         // Then
         assertFileContentEquals(target, "This is a test resource file.", "Это тестовый файл ресурсов.")
@@ -57,7 +57,7 @@ class FilesUtilTest : FileTestBase() {
     @Test
     fun `copyResourceToFile - and given existing resource and existing target file - should throw exception`() {
         // Given
-        val target = testDir.resolve("existingFile")
+        val target = createFile("existingFile")
 
         try {
             // When
@@ -76,7 +76,7 @@ class FilesUtilTest : FileTestBase() {
     @Test
     fun `copyResourceToFile - and given not existing resource - should throw exception`() {
         // Given
-        val target = tmpDir.resolve("newFile")
+        val target = dir.resolve("newFile")
 
         try {
             // When
@@ -94,19 +94,26 @@ class FilesUtilTest : FileTestBase() {
     @Test
     fun `readFileToString - and given existing file - should be successful`() {
         // Given
-        val target = testDir.resolve("existingFile")
+        val text = """
+            Multi-line
+            existing
+            file.
+            С русским
+            текстом.
+            """.trimIndent()
+        val target = createFile("existingFile", text)
 
         // When
         val content = FilesUtil.readFileToString(target)
 
         // Then
-        assertEquals("Multi-line\nexisting\nfile.\nС русским\nтекстом.", content)
+        assertEquals(text, content)
     }
 
     @Test
     fun `readFileToString - and given not existing file - should throw exception`() {
         // Given
-        val target = testDir.resolve("notExistingFile")
+        val target = dir.resolve("notExistingFile")
 
         try {
             // When
@@ -130,7 +137,7 @@ class FilesUtilTest : FileTestBase() {
         createFile("dir/3thirdFile", "Line 3")
 
         // When
-        val result = FilesUtil.mergeFiles(tmpDir)
+        val result = FilesUtil.mergeFiles(dir)
 
         // Then
         assertFileContentEquals(result, "Line one", "Line two", "Line 3")
@@ -144,7 +151,7 @@ class FilesUtilTest : FileTestBase() {
         createFile("dir/fileThree.merge", "Line 3")
 
         // When
-        val result = FilesUtil.mergeFiles(tmpDir) { path -> path.toString().endsWith(".merge") }
+        val result = FilesUtil.mergeFiles(dir) { path -> path.toString().endsWith(".merge") }
 
         // Then
         assertFileContentEquals(result, "Line one", "Line 3")
@@ -153,7 +160,7 @@ class FilesUtilTest : FileTestBase() {
     @Test
     fun `mergeFiles - and given empty directory - should return empty file`() {
         // When
-        val result = FilesUtil.mergeFiles(tmpDir)
+        val result = FilesUtil.mergeFiles(dir)
 
         // Then
         assertFileContentEquals(result!!, emptyList())
@@ -162,7 +169,7 @@ class FilesUtilTest : FileTestBase() {
     @Test
     fun `mergeFiles - and given not a directory - should throw exception`() {
         // Given
-        val file = testDir.resolve("existingFile")
+        val file = createFile("existingFile")
 
         try {
             // When

@@ -23,6 +23,7 @@ import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import ru.endlesscode.rpginventory.FileTestBase
+import java.nio.file.Files
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -38,14 +39,19 @@ class I18NTest : FileTestBase() {
     override fun setUp() {
         super.setUp()
 
-        this.i18n = spy(SimpleI18N(tmpDir.toFile()))
+        this.i18n = spy(SimpleI18N(dir.toFile()))
     }
 
     @Test
-    fun `create and pass directory with existing locales folder - should throw exception`() {
+    fun `create and pass directory with existing locales file - should throw exception`() {
+        // Given
+        val file = dir.resolve("locales")
+        deleteRecursively(file)
+        Files.createFile(file)
+
         try {
             // When
-            SimpleI18N(testDir.toFile())
+            SimpleI18N(dir.toFile())
         } catch (e: I18NException) {
             // Then
             assertEquals("Failed to create locales folder", e.message)
