@@ -49,6 +49,7 @@ open class FileTestBase {
     }
 
     protected lateinit var dir: Path
+        private set
 
     @BeforeTest
     open fun setUp() {

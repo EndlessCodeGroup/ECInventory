@@ -1,11 +1,13 @@
 package ru.endlesscode.rpginventory.item
 
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
+import org.bukkit.inventory.meta.ItemMeta
 import ru.endlesscode.rpginventory.util.safeValueOf
 import ru.endlesscode.rpginventory.util.translateColorCodes
 
@@ -19,8 +21,14 @@ class ConfigurableBukkitItemStack private constructor(cis: ConfigurableItemStack
 
     fun toItemStack(): ItemStack {
         val material = requireNotNull(Material.getMaterial(material)) { "Unknown material name \"$material\"" }
-        val itemStack = ItemStack(material)
-        val itemMeta = itemStack.itemMeta
+        return ItemStack(material).apply {
+            itemMeta = createItemMeta(material)
+        }
+    }
+
+    private fun createItemMeta(material: Material): ItemMeta? {
+        val itemMeta = Bukkit.getItemFactory().getItemMeta(material) ?: return null
+
         (itemMeta as Damageable).damage = this.damage
         itemMeta.isUnbreakable = this.unbreakable
 
@@ -28,12 +36,12 @@ class ConfigurableBukkitItemStack private constructor(cis: ConfigurableItemStack
             ?.takeIf(String::isNotEmpty)
             ?.let { itemMeta.displayName = it }
 
-        //Lore colorizing
+        // Lore colorizing
         if (this.lore.isNotEmpty()) {
             itemMeta.lore = this.lore.map { it.translateColorCodes() }
         }
 
-        //Enchantments processing
+        // Enchantments processing
         if (this.enchantments.isNotEmpty()) {
             this.enchantments.asSequence()
                 .mapNotNull { (name, level) ->
@@ -45,14 +53,12 @@ class ConfigurableBukkitItemStack private constructor(cis: ConfigurableItemStack
                 }
         }
 
-        //ItemFlags processing
+        // ItemFlags processing
         if (this.itemFlags.isNotEmpty()) {
             val itemFlags = this.itemFlags.mapNotNull { safeValueOf<ItemFlag>(it) }
             itemMeta.addItemFlags(*itemFlags.toTypedArray())
         }
 
-        itemStack.itemMeta = itemMeta
-
-        return itemStack
+        return itemMeta
     }
 }
