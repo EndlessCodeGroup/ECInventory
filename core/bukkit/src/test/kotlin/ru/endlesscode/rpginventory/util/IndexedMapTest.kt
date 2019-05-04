@@ -102,7 +102,7 @@ class IndexedMapTest {
     }
 
     @Test(expected = IndexOutOfBoundsException::class)
-    fun `get kay by non-existing index`() {
+    fun `get key by non-existing index`() {
         map.getKeyByIndex(-1)
     }
 
