@@ -16,96 +16,74 @@
  * along with RPGInventory.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.misc;
+package ru.endlesscode.rpginventory.misc
 
-import org.jetbrains.annotations.NotNull;
+import java.io.File
+import java.io.IOException
+import java.io.StringReader
+import java.nio.file.Files
+import java.nio.file.Path
+import java.text.MessageFormat
+import java.util.Properties
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Properties;
+abstract class I18N protected constructor(workDir: Path, langCode: String) {
 
-@SuppressWarnings({"unused", "WeakerAccess"})
-public abstract class I18N {
+    private val localeFolder: Path
 
-    private final Path localeFolder;
+    private val locale = Properties()
+    private val cache = hashMapOf<String, MessageFormat>()
 
-    private final Properties locale = new Properties();
-    private final HashMap<String, MessageFormat> cache = new HashMap<>();
+    protected constructor(workDir: File, langCode: String) : this(workDir.toPath(), langCode)
 
-    protected I18N(@NotNull File workDir, @NotNull String langCode) {
-        this(workDir.toPath(), langCode);
-    }
-
-    protected I18N(@NotNull Path workDir, @NotNull String langCode) {
+    init {
         try {
-            this.localeFolder = Files.createDirectories(workDir.resolve("locales"));
-        } catch (IOException e) {
-            throw new I18NException("Failed to create locales folder", e);
+            this.localeFolder = Files.createDirectories(workDir.resolve("locales"))
+        } catch (e: IOException) {
+            throw I18NException("Failed to create locales folder", e)
         }
 
-        load(langCode);
+        load(langCode)
     }
 
-    public void reload(@NotNull String langCode) {
-        load(langCode);
-        this.cache.clear();
+    fun reload(langCode: String) {
+        load(langCode)
+        this.cache.clear()
     }
 
-    private void load(String langCode) {
-        Path localeFile = this.prepareLocaleFile(langCode.toLowerCase());
-        try (StringReader sr = new StringReader(FilesUtil.readFileToString(localeFile))) {
-            this.locale.load(sr);
-        } catch (IOException e) {
-            throw new I18NException(String.format("Failed to load %s", localeFile.getFileName()), e);
+    private fun load(langCode: String) {
+        val localeFile = this.prepareLocaleFile(langCode.toLowerCase())
+        try {
+            StringReader(FilesUtil.readFileToString(localeFile)).use(this.locale::load)
+        } catch (e: IOException) {
+            throw I18NException("Failed to load ${localeFile.fileName}", e)
         }
     }
 
-    private Path prepareLocaleFile(String langCode) {
-        Path localeFile = this.localeFolder.resolve(langCode.concat(".lang"));
+    private fun prepareLocaleFile(langCode: String): Path {
+        val localeFile = this.localeFolder.resolve("$langCode.lang")
         if (Files.notExists(localeFile)) {
-            FilesUtil.copyResourceToFile(String.format("/locales/%s.lang", langCode), localeFile);
+            FilesUtil.copyResourceToFile("/locales/$langCode.lang", localeFile)
         }
 
-        return localeFile;
+        return localeFile
     }
 
-    public String getMessage(@NotNull String key) {
-        return this.getMessage(key, false);
+    fun getMessage(key: String, vararg args: Any): String {
+        return getMessage(key, false, *args)
     }
 
-    public String getMessage(@NotNull String key, boolean stripColor) {
-        return this.getMessage(key, stripColor, (Object[]) null);
+    @JvmOverloads
+    fun getMessage(key: String, stripColor: Boolean = false, vararg args: Any = emptyArray()): String {
+        val result = this.getMessageFromCache(key).format(args)
+        return if (stripColor) this.stripColor(result) else result
     }
 
-    public String getMessage(@NotNull String key, Object... args) {
-        return this.getMessage(key, false, args);
+    private fun getMessageFromCache(key: String): MessageFormat {
+        return this.cache.getOrPut(key) { MessageFormat(this.translateCodes(this.locale.getProperty(key, key))) }
     }
 
-    public String getMessage(@NotNull String key, boolean stripColor, Object... args) {
-        String result = this.getMessageFromCache(key).format(args);
-        return stripColor ? this.stripColor(result) : result;
-    }
+    abstract fun stripColor(message: String): String
 
-    private MessageFormat getMessageFromCache(String key) {
-        if (!this.cache.containsKey(key)) {
-            MessageFormat mf = new MessageFormat(
-                    this.translateCodes(this.locale.getProperty(key, key))
-            );
-            this.cache.put(key, mf);
-        }
-
-        return this.cache.get(key);
-    }
-
-    @NotNull
-    protected abstract String stripColor(String message);
-
-    @NotNull
-    protected abstract String translateCodes(String message);
+    abstract fun translateCodes(message: String): String
 
 }

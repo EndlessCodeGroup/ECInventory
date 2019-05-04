@@ -16,87 +16,75 @@
  * along with RPGInventory.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.misc;
+package ru.endlesscode.rpginventory.misc
 
-import org.jetbrains.annotations.NotNull;
-import ru.endlesscode.rpginventory.internal.function.CheckedConsumer;
+import java.io.IOException
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardOpenOption
+import java.util.stream.Collectors
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+object FilesUtil {
 
-@SuppressWarnings("WeakerAccess")
-public class FilesUtil {
-
-    public static String readFileToString(@NotNull Path file) {
-        return readFileToString(file, StandardCharsets.UTF_8);
-    }
-
-    public static String readFileToString(@NotNull Path file, Charset charset) {
+    @JvmStatic
+    @JvmOverloads
+    fun readFileToString(file: Path, charset: Charset = StandardCharsets.UTF_8): String {
         try {
-            return Files.lines(file, charset).collect(Collectors.joining("\n"));
-        } catch (IOException e) {
-            throw new IllegalArgumentException(String.format(
-                    "Given file \"%s\" can't be read",
-                    file.toAbsolutePath().toString()
-            ), e);
+            return Files.lines(file, charset).collect(Collectors.joining("\n"))
+        } catch (e: IOException) {
+            throw IllegalArgumentException("Given file \"${file.toAbsolutePath()}\" can't be read", e)
         }
     }
 
-    public static void copyResourceToFile(@NotNull String resource, @NotNull Path file) {
-        String validResourcePath = resource.startsWith("/") ? resource : "/".concat(resource);
+    @JvmStatic
+    fun copyResourceToFile(resource: String, file: Path) {
+        val validResourcePath = if (resource.startsWith("/")) resource else "/$resource"
 
-        try (InputStream is = FilesUtil.class.getResourceAsStream(validResourcePath)) {
-            if (is == null) {
-                throw new IllegalArgumentException(String.format("Resource file \"%s\" not exists", validResourcePath));
+        try {
+            FilesUtil::class.java.getResourceAsStream(validResourcePath).use { stream ->
+                if (stream == null) {
+                    throw IllegalArgumentException("Resource file \"$validResourcePath\" not exists")
+                }
+
+                Files.copy(stream, file)
             }
-
-            Files.copy(is, file);
-        } catch (IOException e) {
-            throw new IllegalArgumentException(String.format(
-                    "Failed to copy \"%s\" to given target: \"%s\"",
-                    validResourcePath, file.toAbsolutePath().toString()
-            ), e);
+        } catch (e: IOException) {
+            throw IllegalArgumentException("Failed to copy \"$validResourcePath\" to given target: \"${file.toAbsolutePath()}\"", e)
         }
+
     }
 
-    public static Path mergeFiles(@NotNull Path pathToDir) {
-        return mergeFiles(pathToDir, path -> true);
-    }
-
-    public static Path mergeFiles(@NotNull Path pathToDir, @NotNull Predicate<Path> predicate) {
-        final Path tmp;
+    @JvmStatic
+    @JvmOverloads
+    fun mergeFiles(pathToDir: Path, predicate: (Path) -> Boolean = { true }): Path {
+        val tmp: Path
         try {
-            tmp = Files.createTempFile(pathToDir, null, ".merged");
+            tmp = Files.createTempFile(pathToDir, null, ".merged")
             Files.walk(pathToDir)
-                    .filter(path -> Files.isRegularFile(path) && !path.equals(tmp))
-                    .filter(predicate)
-                    .map(file -> readFileToString(file) + "\n")
-                    .forEach(CheckedConsumer.wrap(content -> Files.write(tmp, content.getBytes(), StandardOpenOption.APPEND)));
-        } catch (IOException e) {
-            throw new IllegalArgumentException(String.format(
-                    "Files in given directory \"%s\" can't be merged",
-                    pathToDir.toAbsolutePath().toString()
-            ), e);
+                .filter { path -> Files.isRegularFile(path) && path != tmp }
+                .filter(predicate)
+                .map { file -> readFileToString(file) + "\n" }
+                .forEach { content -> Files.write(tmp, content.toByteArray(), StandardOpenOption.APPEND) }
+        } catch (e: IOException) {
+            throw IllegalArgumentException("Files in given directory \"${pathToDir.toAbsolutePath()}\" can't be merged", e)
         }
-        return tmp;
+
+        return tmp
     }
 
-    public static void makeSureDirectoryExists(@NotNull Path directory) throws IOException {
+    @JvmStatic
+    @Throws(IOException::class)
+    fun makeSureDirectoryExists(directory: Path) {
         if (!Files.isDirectory(directory)) {
-            final Path tmp = directory.getParent().resolve(
-                    directory.getFileName().toString() + ".niceJoke." + System.currentTimeMillis() % 10_000
-            );
-            Files.move(directory, tmp);
+            val tmp = directory.parent.resolve(
+                "${directory.fileName}.niceJoke.${System.currentTimeMillis() % 10000}"
+            )
+            Files.move(directory, tmp)
         }
 
-        Files.createDirectories(directory);
+        Files.createDirectories(directory)
     }
 
 }

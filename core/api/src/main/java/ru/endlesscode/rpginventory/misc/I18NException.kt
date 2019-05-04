@@ -16,25 +16,17 @@
  * along with RPGInventory.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.misc;
+package ru.endlesscode.rpginventory.misc
 
-@SuppressWarnings({"unused"})
-public class I18NException extends RuntimeException {
+@Suppress("unused")
+class I18NException : RuntimeException {
 
-    I18NException() {
-        super();
-    }
+    internal constructor() : super()
 
-    I18NException(String message) {
-        super(message);
-    }
+    internal constructor(message: String) : super(message)
 
-    I18NException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    internal constructor(message: String, cause: Throwable) : super(message, cause)
 
-    I18NException(Throwable cause) {
-        super(cause);
-    }
+    internal constructor(cause: Throwable) : super(cause)
 
 }
