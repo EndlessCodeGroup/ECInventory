@@ -20,6 +20,9 @@ package ru.endlesscode.rpginventory.misc
 
 import ru.endlesscode.rpginventory.FileTestBase
 import ru.endlesscode.rpginventory.assertFailsWith
+import java.nio.file.FileAlreadyExistsException
+import java.nio.file.FileSystemException
+import java.nio.file.NoSuchFileException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
