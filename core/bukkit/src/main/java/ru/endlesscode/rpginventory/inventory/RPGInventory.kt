@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack
 import ru.endlesscode.rpginventory.extensions.orAir
 import ru.endlesscode.rpginventory.extensions.roundToPowerOf
 import ru.endlesscode.rpginventory.util.IndexedMap
-import ru.endlesscode.rpginventory.util.toIndexedMap
+import ru.endlesscode.rpginventory.util.asIndexedMap
 import java.util.*
 import kotlin.math.min
 
@@ -43,7 +43,7 @@ class RPGInventory(
      */
     var view: Inventory? = null
 
-    private val internalSlotsMap: IndexedMap<Int, Slot> = layout.slotsMap.toIndexedMap()
+    private val internalSlotsMap: IndexedMap<Int, Slot> = layout.slotsMap.asIndexedMap()
     private val slots: MutableMap<String, InventorySlot>
 
     /**

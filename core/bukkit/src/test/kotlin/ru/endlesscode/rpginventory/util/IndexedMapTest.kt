@@ -75,7 +75,7 @@ class IndexedMapTest {
                 4 to "Four",
                 0 to "Zero"
         )
-        val indexedMap = existingMap.toIndexedMap()
+        val indexedMap = existingMap.asIndexedMap()
 
         assertEquals("Zero", indexedMap.getByIndex(0))
         assertEquals("Three", indexedMap.getByIndex(1))
@@ -89,7 +89,7 @@ class IndexedMapTest {
                 4 to "Four",
                 0 to "Zero"
         )
-        val indexedMap = existingMap.toIndexedMap()
+        val indexedMap = existingMap.asIndexedMap()
         indexedMap.clear()
 
         assertEquals(3, existingMap.size)

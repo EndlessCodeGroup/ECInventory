@@ -5,7 +5,7 @@ import java.util.*
 /**
  * Map where you can get elements by theirs index.
  */
-class IndexedMap<K : Comparable<K>, V> private constructor(
+internal class IndexedMap<K : Comparable<K>, V> private constructor(
         private val content: SortedMap<K, V>
 ) : SortedMap<K, V> by content {
 
@@ -84,6 +84,6 @@ class IndexedMap<K : Comparable<K>, V> private constructor(
 /**
  * Converts this [Map] to a [IndexedMap] so indexes order will be in key order.
  */
-fun <K : Comparable<K>, V> Map<out K, V>.toIndexedMap(): IndexedMap<K, V> {
+internal fun <K : Comparable<K>, V> Map<out K, V>.asIndexedMap(): IndexedMap<K, V> {
     return IndexedMap(this)
 }
