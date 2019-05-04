@@ -1,7 +1,6 @@
 package ru.endlesscode.rpginventory.configuration
 
 import ru.endlesscode.rpginventory.FileTestBase
-import ru.endlesscode.rpginventory.misc.TestConfiguration
 import java.nio.file.Files
 import kotlin.test.BeforeTest
 import kotlin.test.Test

@@ -1,6 +1,4 @@
-package ru.endlesscode.rpginventory.misc
-
-import ru.endlesscode.rpginventory.configuration.Configurable
+package ru.endlesscode.rpginventory.configuration
 
 class TestConfiguration : Configurable {
 
