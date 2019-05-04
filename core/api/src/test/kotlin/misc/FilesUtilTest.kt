@@ -19,14 +19,9 @@
 package ru.endlesscode.rpginventory.misc
 
 import ru.endlesscode.rpginventory.FileTestBase
-import ru.endlesscode.rpginventory.assertInstanceOf
-import java.nio.file.FileAlreadyExistsException
-import java.nio.file.FileSystemException
-import java.nio.file.NoSuchFileException
+import ru.endlesscode.rpginventory.assertFailsWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
-import kotlin.test.fail
 
 class FilesUtilTest : FileTestBase() {
 
@@ -59,18 +54,13 @@ class FilesUtilTest : FileTestBase() {
         // Given
         val target = createFile("existingFile")
 
-        try {
-            // When
+        // Then
+        assertFailsWith<IllegalArgumentException>(
+            message = "Failed to copy \"/resource\" to given target: \"${target.toAbsolutePath()}\"",
+            cause = FileAlreadyExistsException::class
+        ) {
             FilesUtil.copyResourceToFile("/resource", target)
-        } catch (e: IllegalArgumentException) {
-            // Then
-            val expectedMessage = "Failed to copy \"/resource\" to given target: \"${target.toAbsolutePath()}\""
-            assertEquals(expectedMessage, e.message)
-            assertInstanceOf<FileAlreadyExistsException>(e.cause)
-            return
         }
-
-        fail()
     }
 
     @Test
@@ -78,17 +68,10 @@ class FilesUtilTest : FileTestBase() {
         // Given
         val target = dir.resolve("newFile")
 
-        try {
-            // When
+        // Then
+        assertFailsWith<IllegalArgumentException>(message = "Resource file \"/notExistingResource\" not exists") {
             FilesUtil.copyResourceToFile("/notExistingResource", target)
-        } catch (e: IllegalArgumentException) {
-            // Then
-            assertEquals("Resource file \"/notExistingResource\" not exists", e.message)
-            assertNull(e.cause)
-            return
         }
-
-        fail()
     }
 
     @Test
@@ -115,18 +98,13 @@ class FilesUtilTest : FileTestBase() {
         // Given
         val target = dir.resolve("notExistingFile")
 
-        try {
-            // When
+        // Then
+        assertFailsWith<IllegalArgumentException>(
+            message = "Given file \"${target.toAbsolutePath()}\" can't be read",
+            cause = NoSuchFileException::class
+        ) {
             FilesUtil.readFileToString(target)
-        } catch (e: IllegalArgumentException) {
-            // Then
-            val expectedMessage = "Given file \"${target.toAbsolutePath()}\" can't be read"
-            assertEquals(expectedMessage, e.message)
-            assertInstanceOf<NoSuchFileException>(e.cause)
-            return
         }
-
-        fail()
     }
 
     @Test
@@ -171,17 +149,12 @@ class FilesUtilTest : FileTestBase() {
         // Given
         val file = createFile("existingFile")
 
-        try {
-            // When
+        // Then
+        assertFailsWith<IllegalArgumentException>(
+            message = "Files in given directory \"${file.toAbsolutePath()}\" can't be merged",
+            cause = FileSystemException::class
+        ) {
             FilesUtil.mergeFiles(file)
-        } catch (e: Exception) {
-            // Then
-            val expectedMessage = "Files in given directory \"${file.toAbsolutePath()}\" can't be merged"
-            assertEquals(expectedMessage, e.message)
-            assertInstanceOf<FileSystemException>(e.cause)
-            return
         }
-
-        fail()
     }
 }

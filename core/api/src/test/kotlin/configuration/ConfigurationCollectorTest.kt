@@ -4,7 +4,6 @@ import com.google.common.reflect.TypeParameter
 import com.google.common.reflect.TypeToken
 import ru.endlesscode.rpginventory.FileTestBase
 import ru.endlesscode.rpginventory.item.ConfigurableItemStack
-import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
@@ -83,10 +82,6 @@ class ConfigurationCollectorTest : FileTestBase() {
     private fun saveResource(targetDirectory: Path, name: String) {
         val resourceAsStream = this.javaClass.classLoader.getResourceAsStream(name) ?: return
         val resolve = targetDirectory.resolve(name)
-        try {
-            Files.copy(resourceAsStream, resolve, StandardCopyOption.REPLACE_EXISTING)
-        } catch (ignore: IOException) {
-            System.err.println("Failed to save $name")
-        }
+        Files.copy(resourceAsStream, resolve, StandardCopyOption.REPLACE_EXISTING)
     }
 }
