@@ -18,7 +18,6 @@
 
 package ru.endlesscode.rpginventory.inventory
 
-import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.ItemStack
 
 /**
@@ -34,7 +33,7 @@ interface Slot {
     val id: String
     val localizedName: String
     val slotHolder: ItemStack
-    val type: InventoryType.SlotType
+    val type: Type
 
     var maxStackSize: Int
 
