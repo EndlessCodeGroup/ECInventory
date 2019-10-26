@@ -43,11 +43,13 @@ interface Slot {
          * @see RPGInventory.getPassiveSlots
          */
         PASSIVE,
+
         /**
          * Indicates that the slot used just to store items.
          * @see RPGInventory.getStorageSlots
          */
         STORAGE,
+
         /**
          * The slot isn't storage and shouldn't be counted on stats counting.
          * @see RPGInventory.getActiveSlots

@@ -20,27 +20,17 @@ package ru.endlesscode.rpginventory.util
 
 import java.util.SortedMap
 
-/**
- * Map where you can get elements by theirs index.
- */
+/** Map where you can get elements by theirs index. */
 internal class IndexedMap<K : Comparable<K>, V> private constructor(
-        private val content: SortedMap<K, V>
+    private val content: SortedMap<K, V>
 ) : SortedMap<K, V> by content {
 
-    private var indexedKeys: MutableList<K>
+    private var indexedKeys: MutableList<K> = content.keys.toMutableList()
 
-    init {
-        this.indexedKeys = content.keys.toMutableList()
-    }
-
-    /**
-     * Creates empty [IndexedMap]
-     */
+    /** Creates empty [IndexedMap]. */
     constructor() : this(sortedMapOf())
 
-    /**
-     * Creates [IndexedMap] filled with elements from [map]
-     */
+    /** Creates [IndexedMap] filled with elements from [map]. */
     constructor(map: Map<out K, V>) : this(map.toSortedMap())
 
     override fun clear() {
@@ -55,7 +45,6 @@ internal class IndexedMap<K : Comparable<K>, V> private constructor(
         if (isReplacement) {
             indexedKeys[index] = key
         } else {
-            @Suppress("NestedLambdaShadowedImplicitParameter")
             indexedKeys.add(index, key)
         }
 
@@ -82,26 +71,16 @@ internal class IndexedMap<K : Comparable<K>, V> private constructor(
         return this.getValue(key)
     }
 
-    /**
-     * Returns index of the element with given [key], or -1 if the map does not contain such element.
-     */
-    fun getIndexOf(key: K): Int {
-        return indexedKeys.indexOfFirst { key == it }
-    }
+    /** Returns index of the element with given [key], or -1 if the map does not contain such element. */
+    fun getIndexOf(key: K): Int = indexedKeys.indexOfFirst { key == it }
 
     /**
      * Returns element's key by [index].
      *
      * @throws IndexOutOfBoundsException when the map doesn't contain a key for the specified index.
      */
-    fun getKeyByIndex(index: Int): K {
-        return indexedKeys[index]
-    }
+    fun getKeyByIndex(index: Int): K = indexedKeys[index]
 }
 
-/**
- * Converts this [Map] to a [IndexedMap] so indexes order will be in key order.
- */
-internal fun <K : Comparable<K>, V> Map<out K, V>.asIndexedMap(): IndexedMap<K, V> {
-    return IndexedMap(this)
-}
+/** Converts this [Map] to a [IndexedMap] so indexes order will be in key order. */
+internal fun <K : Comparable<K>, V> Map<out K, V>.asIndexedMap(): IndexedMap<K, V> = IndexedMap(this)

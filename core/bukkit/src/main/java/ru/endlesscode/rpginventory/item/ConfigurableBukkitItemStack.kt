@@ -32,9 +32,7 @@ import ru.endlesscode.rpginventory.util.translateColorCodes
 class ConfigurableBukkitItemStack private constructor(cis: ConfigurableItemStack) : ConfigurableItemStack(cis) {
 
     companion object {
-        fun from(cis: ConfigurableItemStack): ConfigurableBukkitItemStack {
-            return ConfigurableBukkitItemStack(cis)
-        }
+        fun from(cis: ConfigurableItemStack): ConfigurableBukkitItemStack = ConfigurableBukkitItemStack(cis)
     }
 
     fun toItemStack(): ItemStack {

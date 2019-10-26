@@ -66,11 +66,13 @@ class IndexedMapTest {
 
     @Test
     fun `put many values to non-empty map`() {
-        map.putAll(mapOf(
+        map.putAll(
+            mapOf(
                 6 to "Six",
                 3 to "Three[x2]",
                 100 to "One hundred"
-        ))
+            )
+        )
 
         assertEquals("Three[x2]", map.getByIndex(0))
         assertEquals("Six", map.getByIndex(1))
@@ -89,9 +91,9 @@ class IndexedMapTest {
     @Test
     fun `create indexed map from existing map`() {
         val existingMap = mapOf(
-                3 to "Three",
-                4 to "Four",
-                0 to "Zero"
+            3 to "Three",
+            4 to "Four",
+            0 to "Zero"
         )
         val indexedMap = existingMap.asIndexedMap()
 
@@ -103,9 +105,9 @@ class IndexedMapTest {
     @Test
     fun `changing of indexed map shouldn't affect source map`() {
         val existingMap = mapOf(
-                3 to "Three",
-                4 to "Four",
-                0 to "Zero"
+            3 to "Three",
+            4 to "Four",
+            0 to "Zero"
         )
         val indexedMap = existingMap.asIndexedMap()
         indexedMap.clear()

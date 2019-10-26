@@ -24,37 +24,29 @@ import org.bukkit.inventory.ItemStack
  * Class copied from CraftBukkit
  */
 class InventoryIterator internal constructor(
-        private val inventory: RPGInventory,
-        private var nextIndex: Int = 0
+    private val inventory: RPGInventory,
+    private var nextIndex: Int = 0
 ) : MutableListIterator<ItemStack> {
 
     private var lastDirection = Direction.NOT_MOVED
 
-    override fun hasNext(): Boolean {
-        return nextIndex < inventory.size
-    }
+    override fun hasNext(): Boolean = nextIndex < inventory.size
 
     override fun next(): ItemStack {
         lastDirection = Direction.FORWARD
         return inventory.getItem(nextIndex++)
     }
 
-    override fun nextIndex(): Int {
-        return nextIndex
-    }
+    override fun nextIndex(): Int = nextIndex
 
-    override fun hasPrevious(): Boolean {
-        return nextIndex > 0
-    }
+    override fun hasPrevious(): Boolean = nextIndex > 0
 
     override fun previous(): ItemStack {
         lastDirection = Direction.BACKWARD
         return inventory.getItem(--nextIndex)
     }
 
-    override fun previousIndex(): Int {
-        return nextIndex - 1
-    }
+    override fun previousIndex(): Int = nextIndex - 1
 
     override fun set(element: ItemStack) {
         if (lastDirection == Direction.NOT_MOVED) error("No current item!")

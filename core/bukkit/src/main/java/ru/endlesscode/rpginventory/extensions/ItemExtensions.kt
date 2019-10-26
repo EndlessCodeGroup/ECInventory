@@ -17,6 +17,7 @@
  */
 
 @file:JvmName("ItemUtils")
+
 package ru.endlesscode.rpginventory.extensions
 
 import org.bukkit.Material

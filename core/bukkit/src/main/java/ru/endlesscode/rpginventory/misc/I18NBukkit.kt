@@ -20,12 +20,11 @@ package ru.endlesscode.rpginventory.misc
 
 import org.bukkit.ChatColor
 import ru.endlesscode.rpginventory.RPGInventoryPlugin
+import ru.endlesscode.rpginventory.util.translateColorCodes
 
 class I18NBukkit(instance: RPGInventoryPlugin) : I18N(instance.dataFolder, instance.configuration.locale) {
 
-    override fun stripColor(message: String): String = ChatColor.stripColor(message)
+    override fun stripColor(message: String): String = checkNotNull(ChatColor.stripColor(message))
 
-    override fun translateCodes(message: String): String {
-        return ChatColor.translateAlternateColorCodes('&', message)
-    }
+    override fun translateCodes(message: String): String = message.translateColorCodes()
 }

@@ -44,14 +44,14 @@ object FilesUtil {
 
         try {
             FilesUtil::class.java.getResourceAsStream(validResourcePath).use { stream ->
-                if (stream == null) {
-                    throw IllegalArgumentException("Resource file \"$validResourcePath\" not exists")
-                }
-
+                requireNotNull(stream) { "Resource file \"$validResourcePath\" not exists" }
                 Files.copy(stream, file)
             }
         } catch (e: IOException) {
-            throw IllegalArgumentException("Failed to copy \"$validResourcePath\" to given target: \"${file.toAbsolutePath()}\"", e)
+            throw IllegalArgumentException(
+                message = "Failed to copy \"$validResourcePath\" to given target: \"${file.toAbsolutePath()}\"",
+                cause = e
+            )
         }
 
     }
@@ -65,10 +65,13 @@ object FilesUtil {
             Files.walk(pathToDir)
                 .filter { path -> Files.isRegularFile(path) && path != tmp }
                 .filter(predicate)
-                .map { file -> readFileToString(file) + "\n" }
+                .map { file -> "${readFileToString(file)}\n" }
                 .forEach { content -> Files.write(tmp, content.toByteArray(), StandardOpenOption.APPEND) }
         } catch (e: IOException) {
-            throw IllegalArgumentException("Files in given directory \"${pathToDir.toAbsolutePath()}\" can't be merged", e)
+            throw IllegalArgumentException(
+                message = "Files in given directory \"${pathToDir.toAbsolutePath()}\" can't be merged",
+                cause = e
+            )
         }
 
         return tmp
@@ -78,9 +81,8 @@ object FilesUtil {
     @Throws(IOException::class)
     fun makeSureDirectoryExists(directory: Path) {
         if (!Files.isDirectory(directory)) {
-            val tmp = directory.parent.resolve(
-                "${directory.fileName}.niceJoke.${System.currentTimeMillis() % 10000}"
-            )
+            val tmp = directory.parent
+                .resolve("${directory.fileName}.niceJoke.${System.currentTimeMillis() % 10000}")
             Files.move(directory, tmp)
         }
 

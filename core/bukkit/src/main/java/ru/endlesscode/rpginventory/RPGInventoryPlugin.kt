@@ -36,9 +36,7 @@ class RPGInventoryPlugin : JavaPlugin() {
     private lateinit var locale: I18N
 
     override fun onEnable() {
-        if (!loadParts()) {
-            return
-        }
+        if (!loadParts()) return
         //TODO: Logic
     }
 

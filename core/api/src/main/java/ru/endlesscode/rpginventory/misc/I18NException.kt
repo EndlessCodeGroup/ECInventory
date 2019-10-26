@@ -18,15 +18,4 @@
 
 package ru.endlesscode.rpginventory.misc
 
-@Suppress("unused")
-class I18NException : RuntimeException {
-
-    internal constructor() : super()
-
-    internal constructor(message: String) : super(message)
-
-    internal constructor(message: String, cause: Throwable) : super(message, cause)
-
-    internal constructor(cause: Throwable) : super(cause)
-
-}
+class I18NException internal constructor(message: String, cause: Throwable) : RuntimeException(message, cause)

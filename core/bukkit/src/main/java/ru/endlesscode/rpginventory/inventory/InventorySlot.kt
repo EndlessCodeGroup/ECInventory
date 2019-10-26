@@ -33,9 +33,9 @@ import ru.endlesscode.rpginventory.extensions.isNotEmpty
  * @property content The item stored in the slot. Or air if the slot is empty.
  */
 class InventorySlot(
-        prototype: Slot,
-        val holder: RPGInventory,
-        val position: Int
+    prototype: Slot,
+    val holder: RPGInventory,
+    val position: Int
 ) : Slot by prototype {
 
     var content: ItemStack = ItemStack(Material.AIR)
@@ -45,7 +45,7 @@ class InventorySlot(
                 value.amount = this.maxStackSize
             }
 
-            // We need to sync this change with the inventory's view it it is open
+            // We need to sync this change with the inventory's view if it is open
             holder.syncSlotWithView(this)
         }
 
@@ -56,26 +56,15 @@ class InventorySlot(
         }
 
     init {
-        if (prototype is InventorySlot) {
-            error("InventorySlot can't be used as prototype")
-        }
-
+        require(prototype !is InventorySlot) { "InventorySlot can't be used as prototype" }
         updateHolderMaxStackSize()
     }
 
-    /**
-     * Returns true if slot's content is empty.
-     */
-    fun isEmpty(): Boolean{
-        return content.isEmpty()
-    }
+    /** Returns true if slot's content is empty. */
+    fun isEmpty(): Boolean = content.isEmpty()
 
-    /**
-     * Returns [content] if it isn't empty and [slotHolder] otherwise.
-     */
-    fun getContentOrHolder(): ItemStack {
-        return if (isEmpty()) slotHolder else content
-    }
+    /** Returns [content] if it isn't empty and [slotHolder] otherwise. */
+    fun getContentOrHolder(): ItemStack = if (isEmpty()) slotHolder else content
 
     private fun updateHolderMaxStackSize() {
         if (holder.maxStackSize < maxStackSize) {
