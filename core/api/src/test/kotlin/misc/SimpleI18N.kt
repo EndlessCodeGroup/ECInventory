@@ -16,14 +16,14 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.extensions
+package ru.endlesscode.rpginventory.misc
 
-import kotlin.math.sign
+import java.io.File
 
-/**
- * Rounds the number up to given [power].
- */
-fun Int.roundToPowerOf(power: Int): Int {
-    val additional = if (this % power == 0) 0 else this.sign
-    return (this / power + additional) * power
+class SimpleI18N internal constructor(workDir: File) : I18N(workDir, "test") {
+
+    override fun stripColor(message: String): String = message
+
+    override fun translateCodes(message: String): String = message
+
 }

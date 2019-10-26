@@ -16,14 +16,16 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.extensions
+package ru.endlesscode.rpginventory.configuration
 
-import kotlin.math.sign
+class ConfigurationException : RuntimeException {
 
-/**
- * Rounds the number up to given [power].
- */
-fun Int.roundToPowerOf(power: Int): Int {
-    val additional = if (this % power == 0) 0 else this.sign
-    return (this / power + additional) * power
+    internal constructor(message: String, cause: Throwable) : super(message, cause)
+
+    internal constructor(cause: Throwable) : super(cause)
+
 }
+
+internal fun configError(cause: Throwable): Nothing = throw ConfigurationException(cause)
+
+internal fun configError(message: String, cause: Throwable): Nothing = throw ConfigurationException(message, cause)

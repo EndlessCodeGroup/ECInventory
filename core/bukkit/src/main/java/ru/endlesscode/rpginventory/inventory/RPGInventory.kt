@@ -1,3 +1,21 @@
+/*
+ * This file is part of RPGInventory3.
+ * Copyright (C) 2019 EndlessCode Group and contributors
+ *
+ * RPGInventory3 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * RPGInventory3 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package ru.endlesscode.rpginventory.inventory
 
 import org.bukkit.Bukkit
@@ -13,8 +31,8 @@ import org.bukkit.inventory.ItemStack
 import ru.endlesscode.rpginventory.extensions.orAir
 import ru.endlesscode.rpginventory.extensions.roundToPowerOf
 import ru.endlesscode.rpginventory.util.IndexedMap
-import ru.endlesscode.rpginventory.util.toIndexedMap
-import java.util.*
+import ru.endlesscode.rpginventory.util.asIndexedMap
+import java.util.HashMap
 import kotlin.math.min
 
 
@@ -25,8 +43,8 @@ import kotlin.math.min
  * @param layout Layout of the inventory.
  */
 class RPGInventory(
-        private val owner: InventoryHolder,
-        private val layout: InventoryLayout
+    private val owner: InventoryHolder,
+    private val layout: InventoryLayout
 ) : Inventory {
 
     companion object {
@@ -38,17 +56,13 @@ class RPGInventory(
         const val DEFAULT_MAX_STACK = 1
     }
 
-    /**
-     * Temporary [Inventory], used to show RPGInventory to player.
-     */
+    /** Temporary [Inventory], used to show RPGInventory to player. */
     var view: Inventory? = null
 
-    private val internalSlotsMap: IndexedMap<Int, Slot> = layout.slotsMap.toIndexedMap()
+    private val internalSlotsMap: IndexedMap<Int, Slot> = layout.slotsMap.asIndexedMap()
     private val slots: MutableMap<String, InventorySlot>
 
-    /**
-     * View size is maximal slot position rounded to nine
-     */
+    /** View size is maximal slot position rounded to nine. */
     private val viewSize: Int
         get() = internalSlotsMap.lastKey().roundToPowerOf(9)
 
@@ -62,12 +76,8 @@ class RPGInventory(
         this.slots = slots
     }
 
-    /**
-     * Returns the ItemStack found in the slot with the given [id][slotId], or `null` if there no such slot.
-     */
-    fun getItem(slotId: String): ItemStack? {
-        return slots[slotId]?.content
-    }
+    /** Returns the ItemStack found in the slot with the given [id][slotId], or `null` if there no such slot. */
+    fun getItem(slotId: String): ItemStack? = slots[slotId]?.content
 
     /**
      * Stores the ItemStack at the slot with given id.
@@ -79,12 +89,8 @@ class RPGInventory(
         slots[slotId]?.let { it.content = item.orAir() }
     }
 
-    /**
-     * Returns the slot with the given [id][slotId], or `null` if there no such slot.
-     */
-    fun getSlot(slotId: String): InventorySlot? {
-        return slots[slotId]
-    }
+    /** Returns the slot with the given [id][slotId], or `null` if there no such slot. */
+    fun getSlot(slotId: String): InventorySlot? = slots[slotId]
 
     /**
      * Returns slot by [index], or throws an exception if there no such slot.
@@ -96,35 +102,26 @@ class RPGInventory(
         return slots.getValue(slotId)
     }
 
-    /**
-     * Returns slot by theirs [position] or `null` if there no slot on given position.
-     */
+    /** Returns slot by theirs [position] or `null` if there no slot on given position. */
     fun getSlotAt(position: Int): InventorySlot? {
         return internalSlotsMap[position]?.let {
             slots[it.id]
         }
     }
 
-    /**
-     * Returns index of slot with given [id][slotId] or -1 if there no such slot.
-     */
+    /** Returns index of slot with given [id][slotId] or -1 if there no such slot. */
     fun getIndexOfSlot(slotId: String): Int {
         return slots[slotId]?.let {
             internalSlotsMap.getIndexOf(it.position)
         } ?: -1
     }
 
-    /**
-     * Returns index of slot with given [slot] or -1 if given slot isn't in the inventory.
-     */
+    /** Returns index of slot with given [slot] or -1 if given slot isn't in the inventory. */
     fun getIndexOfSlot(slot: InventorySlot): Int {
-        return if (slot.holder != this) -1
-        else internalSlotsMap.getIndexOf(slot.position)
+        return if (slot.holder == this) internalSlotsMap.getIndexOf(slot.position) else -1
     }
 
-    /**
-     * Returns the inventory's slots with the given [type] or all slots if type is `null`.
-     */
+    /** Returns the inventory's slots with the given [type] or all slots if type is `null`. */
     @JvmOverloads
     fun getSlots(type: Slot.Type? = null): List<InventorySlot> {
         return if (type == null) {
@@ -134,37 +131,21 @@ class RPGInventory(
         }
     }
 
-    /**
-     * Clears out a particular slot with given [id][slotId].
-     */
+    /** Clears out a particular slot with given [id][slotId]. */
     fun clear(slotId: String) {
         setItem(slotId, null)
     }
 
-    /**
-     * Returns the inventory's passive slots.
-     */
-    fun getPassiveSlots(): List<InventorySlot> {
-        return getSlots(Slot.Type.PASSIVE)
-    }
+    /** Returns the inventory's passive slots. */
+    fun getPassiveSlots(): List<InventorySlot> = getSlots(Slot.Type.PASSIVE)
 
-    /**
-     * Returns the inventory's storage slots.
-     */
-    fun getStorageSlots(): List<InventorySlot> {
-        return getSlots(Slot.Type.STORAGE)
-    }
+    /** Returns the inventory's storage slots. */
+    fun getStorageSlots(): List<InventorySlot> = getSlots(Slot.Type.STORAGE)
 
-    /**
-     * Returns the inventory's active slots.
-     */
-    fun getActiveSlots(): List<InventorySlot> {
-        return getSlots(Slot.Type.ACTIVE)
-    }
+    /** Returns the inventory's active slots. */
+    fun getActiveSlots(): List<InventorySlot> = getSlots(Slot.Type.ACTIVE)
 
-    /**
-     * Constructs and returns [Inventory] that can be shown to a player.
-     */
+    /** Constructs and returns [Inventory] that can be shown to a player. */
     fun constructView(): Inventory {
         return view ?: Bukkit.createInventory(holder, viewSize, title).also { view ->
             view.maxStackSize = maxStackSize
@@ -173,16 +154,12 @@ class RPGInventory(
         }
     }
 
-    /**
-     * This method should be called when inventory close.
-     */
+    /** This method should be called when inventory close. */
     fun onClose() {
         this.view = null
     }
 
-    /**
-     * Assigns given [slot] to the given [position], with replace of existing slot.
-     */
+    /** Assigns given [slot] to the given [position], with replace of existing slot. */
     fun assignSlot(position: Int, slot: Slot) {
         val inventorySlot = InventorySlot(slot, this, position)
         val existingSlotId = internalSlotsMap[position]?.id
@@ -206,33 +183,21 @@ class RPGInventory(
         return removedSlot
     }
 
-    /**
-     * Returns the first empty Slot or `null` if there no empty slots.
-     */
-    fun firstEmptySlot(): InventorySlot? {
-        return getStorageSlots().firstOrNull { it.isEmpty() }
-    }
+    /** Returns the first empty Slot or `null` if there no empty slots. */
+    fun firstEmptySlot(): InventorySlot? = getStorageSlots().firstOrNull { it.isEmpty() }
 
-    override fun getSize(): Int {
-        return slots.size
-    }
+    override fun getSize(): Int = slots.size
 
     @Deprecated("Use slot's maxStackSize instead")
-    override fun getMaxStackSize(): Int {
-        return maxStack
-    }
+    override fun getMaxStackSize(): Int = maxStack
 
     override fun setMaxStackSize(size: Int) {
         maxStack = size
     }
 
-    override fun getName(): String {
-        return layout.name
-    }
+    override fun getName(): String = layout.name
 
-    override fun getItem(index: Int): ItemStack {
-        return getSlot(index).content
-    }
+    override fun getItem(index: Int): ItemStack = getSlot(index).content
 
     override fun setItem(index: Int, item: ItemStack?) {
         getSlot(index).content = item.orAir()
@@ -370,8 +335,8 @@ class RPGInventory(
 
     override fun getContents(): Array<ItemStack> {
         return slots.values
-                .map { it.content }
-                .toTypedArray()
+            .map { it.content }
+            .toTypedArray()
     }
 
     override fun setContents(items: Array<out ItemStack>) {
@@ -380,8 +345,8 @@ class RPGInventory(
 
     override fun getStorageContents(): Array<ItemStack> {
         return getStorageSlots()
-                .map { it.content }
-                .toTypedArray()
+            .map { it.content }
+            .toTypedArray()
     }
 
     override fun setStorageContents(items: Array<out ItemStack>) {
@@ -513,25 +478,15 @@ class RPGInventory(
         slots.keys.forEach(::clear)
     }
 
-    override fun getViewers(): List<HumanEntity> {
-        return view?.viewers ?: emptyList()
-    }
+    override fun getViewers(): List<HumanEntity> = view?.viewers ?: emptyList()
 
-    override fun getTitle(): String {
-        return name
-    }
+    override fun getTitle(): String = name
 
-    override fun getType(): InventoryType {
-        return InventoryType.CHEST
-    }
+    override fun getType(): InventoryType = InventoryType.CHEST
 
-    override fun getHolder(): InventoryHolder {
-        return owner
-    }
+    override fun getHolder(): InventoryHolder = owner
 
-    override fun iterator(): MutableListIterator<ItemStack> {
-        return InventoryIterator(this)
-    }
+    override fun iterator(): MutableListIterator<ItemStack> = InventoryIterator(this)
 
     override fun iterator(index: Int): MutableListIterator<ItemStack> {
         // ie, with -1, previous() will return the last element
@@ -540,8 +495,7 @@ class RPGInventory(
     }
 
     override fun getLocation(): Location? {
-        val holder = this.holder
-        return when (holder) {
+        return when (val holder = this.holder) {
             is Container -> holder.location
             is Entity -> holder.location
             else -> null
@@ -582,7 +536,7 @@ class RPGInventory(
 
         return getStorageSlots().firstOrNull { slot ->
             val slotItem = slot.content
-            slotItem.amount < slotItem.maxStackSize  && slotItem.amount < slot.maxStackSize && slotItem.isSimilar(item)
+            slotItem.amount < slotItem.maxStackSize && slotItem.amount < slot.maxStackSize && slotItem.isSimilar(item)
         }
     }
 }

@@ -16,14 +16,15 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.extensions
+package ru.endlesscode.rpginventory.misc
 
-import kotlin.math.sign
+import org.bukkit.ChatColor
+import ru.endlesscode.rpginventory.RPGInventoryPlugin
+import ru.endlesscode.rpginventory.util.translateColorCodes
 
-/**
- * Rounds the number up to given [power].
- */
-fun Int.roundToPowerOf(power: Int): Int {
-    val additional = if (this % power == 0) 0 else this.sign
-    return (this / power + additional) * power
+class I18NBukkit(instance: RPGInventoryPlugin) : I18N(instance.dataFolder, instance.configuration.locale) {
+
+    override fun stripColor(message: String): String = checkNotNull(ChatColor.stripColor(message))
+
+    override fun translateCodes(message: String): String = message.translateColorCodes()
 }

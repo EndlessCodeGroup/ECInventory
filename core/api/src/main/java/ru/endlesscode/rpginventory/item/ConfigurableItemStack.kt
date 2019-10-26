@@ -1,3 +1,21 @@
+/*
+ * This file is part of RPGInventory3.
+ * Copyright (C) 2019 EndlessCode Group and contributors
+ *
+ * RPGInventory3 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * RPGInventory3 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package ru.endlesscode.rpginventory.item
 
 import ninja.leaping.configurate.objectmapping.Setting
@@ -5,37 +23,30 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 import java.util.Objects
 
 @ConfigSerializable
-open class ConfigurableItemStack {
+open class ConfigurableItemStack private constructor(
+    @Setting val material: String,
+    @Setting val damage: Int,
+    @Setting val displayName: String?,
+    @Setting val unbreakable: Boolean,
+    @Setting val lore: List<String>,
+    @Setting val enchantments: Map<String, Int>,
+    @Setting val itemFlags: List<String>
+) {
 
-    @Setting var material: String = "AIR"
-        private set
-    @Setting var damage: Int = 0
-        private set
+    /** Zero-argument constructor to be instantiated through object mapper. */
+    @Suppress("unused")
+    private constructor() : this(
+        material = "AIR",
+        damage = 0,
+        displayName = null,
+        unbreakable = false,
+        lore = emptyList(),
+        enchantments = emptyMap(),
+        itemFlags = emptyList()
+    )
 
-    //Meta
-    @Setting var displayName: String? = null
-        private set
-    @Setting var unbreakable: Boolean = false
-        private set
-    @Setting var lore: List<String> = emptyList()
-        private set
-
-    @Setting var enchantments: Map<String, Int> = emptyMap() // Enchantment:level
-        private set
-    @Setting var itemFlags: List<String> = emptyList()
-        private set
-
-    private constructor()
-
-    protected constructor(cis: ConfigurableItemStack) {
-        this.material = cis.material
-        this.damage = cis.damage
-        this.displayName = cis.displayName
-        this.unbreakable = cis.unbreakable
-        this.lore = cis.lore
-        this.enchantments = cis.enchantments
-        this.itemFlags = cis.itemFlags
-    }
+    protected constructor(cis: ConfigurableItemStack)
+        : this(cis.material, cis.damage, cis.displayName, cis.unbreakable, cis.lore, cis.enchantments, cis.itemFlags)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -68,42 +79,53 @@ open class ConfigurableItemStack {
             }
         }
 
-        private val cis: ConfigurableItemStack = ConfigurableItemStack()
+        var material: String = "AIR"
+        var damage: Int = 0
+
+        //Meta
+        var displayName: String? = null
+        var unbreakable: Boolean = false
+        var lore: List<String> = emptyList()
+
+        var enchantments: Map<String, Int> = emptyMap() // Enchantment:level
+        var itemFlags: List<String> = emptyList()
 
         init {
-            this.cis.material = material
+            this.material = material
         }
 
         fun withDamage(damage: Int): Builder {
-            this.cis.damage = damage
+            this.damage = damage
             return this
         }
 
         fun withDisplayName(displayName: String): Builder {
-            this.cis.displayName = displayName
+            this.displayName = displayName
             return this
         }
 
         fun withLore(lore: List<String>): Builder {
-            this.cis.lore = ArrayList(lore)
+            this.lore = ArrayList(lore)
             return this
         }
 
         fun withItemFlags(vararg flags: String): Builder {
-            this.cis.itemFlags = flags.toList()
+            this.itemFlags = flags.toList()
             return this
         }
 
         fun withEnchantments(enchantments: Map<String, Int>): Builder {
-            this.cis.enchantments = HashMap(enchantments)
+            this.enchantments = HashMap(enchantments)
             return this
         }
 
         fun unbreakable(unbreakable: Boolean): Builder {
-            this.cis.unbreakable = unbreakable
+            this.unbreakable = unbreakable
             return this
         }
 
-        fun build(): ConfigurableItemStack = this.cis
+        fun build(): ConfigurableItemStack {
+            return ConfigurableItemStack(material, damage, displayName, unbreakable, lore, enchantments, itemFlags)
+        }
     }
 }

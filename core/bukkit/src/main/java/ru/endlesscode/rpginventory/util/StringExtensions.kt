@@ -16,14 +16,10 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.extensions
+package ru.endlesscode.rpginventory.util
 
-import kotlin.math.sign
+import org.bukkit.ChatColor
 
-/**
- * Rounds the number up to given [power].
- */
-fun Int.roundToPowerOf(power: Int): Int {
-    val additional = if (this % power == 0) 0 else this.sign
-    return (this / power + additional) * power
+internal fun String.translateColorCodes(colorCode: Char = '&'): String {
+    return ChatColor.translateAlternateColorCodes(colorCode, this)
 }
