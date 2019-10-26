@@ -20,7 +20,7 @@ package ru.endlesscode.rpginventory.misc
 
 import java.nio.file.Path
 
-fun Path.loadFromResource(resource: String) {
+internal fun Path.loadFromResource(resource: String) {
     val validResourcePath = if (resource.startsWith("/")) resource else "/$resource"
     object {}.javaClass.getResourceAsStream(validResourcePath).use { stream ->
         requireNotNull(stream) { "Resource file \"$validResourcePath\" not exists" }
