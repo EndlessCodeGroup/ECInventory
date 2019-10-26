@@ -33,7 +33,7 @@ open class ConfigurableItemStack private constructor(
     @Setting val itemFlags: List<String>
 ) {
 
-    /** Zero-argument constructor to be instantiated through object mapper. */
+    // Zero-argument constructor to be instantiated through object mapper.
     @Suppress("unused")
     private constructor() : this(
         material = "AIR",

@@ -39,10 +39,11 @@ class ConfigurationCollector(private val configurationsDirectory: Path) {
         checkConfigurationDirectory()
     }
 
+    @Suppress("UnstableApiUsage")
     fun <T> collect(typeToken: TypeToken<T>): T {
         checkConfigurationDirectory()
 
-        val mergedConfig = configurationsDirectory.mergeFiles() { path ->
+        val mergedConfig = configurationsDirectory.mergeFiles { path ->
             path.fileName.toString().toLowerCase().endsWith(CONFIG_EXTENSION)
         }
 

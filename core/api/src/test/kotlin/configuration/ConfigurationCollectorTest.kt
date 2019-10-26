@@ -84,6 +84,7 @@ class ConfigurationCollectorTest : FileTestBase() {
         assertEquals(this.cisValues, collected)
     }
 
+    @Suppress("UnstableApiUsage")
     private fun <K, V> mapToken(kClass: Class<K>, vClass: Class<V>): TypeToken<Map<K, V>> {
         // @formatter:off
         return object : TypeToken<Map<K, V>>() {}
