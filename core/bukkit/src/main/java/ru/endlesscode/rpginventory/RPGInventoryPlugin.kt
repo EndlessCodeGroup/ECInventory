@@ -16,75 +16,59 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory;
+package ru.endlesscode.rpginventory
 
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
-import ru.endlesscode.rpginventory.configuration.ConfigurationProvider;
-import ru.endlesscode.rpginventory.configuration.MainConfiguration;
-import ru.endlesscode.rpginventory.misc.I18N;
-import ru.endlesscode.rpginventory.misc.I18NBukkit;
+import org.bukkit.configuration.file.FileConfiguration
+import org.bukkit.plugin.java.JavaPlugin
+import ru.endlesscode.rpginventory.configuration.ConfigurationProvider
+import ru.endlesscode.rpginventory.configuration.MainConfiguration
+import ru.endlesscode.rpginventory.misc.I18N
+import ru.endlesscode.rpginventory.misc.I18NBukkit
+import java.util.logging.Level
 
-import java.util.function.Consumer;
-import java.util.logging.Level;
+/** This class is entry point to the plugin. */
+class RPGInventoryPlugin : JavaPlugin() {
 
-/**
- * This class is entry point to plugin.
- */
-public class RPGInventoryPlugin extends JavaPlugin {
+    val configuration: MainConfiguration
+        get() = configProvider.config
 
-    private ConfigurationProvider<MainConfiguration> configProvider;
-    private I18N locale;
+    private lateinit var configProvider: ConfigurationProvider<MainConfiguration>
+    private lateinit var locale: I18N
 
-    @Override
-    public void onEnable() {
-        if (!this.loadParts()) {
-            return;
+    override fun onEnable() {
+        if (!loadParts()) {
+            return
         }
         //TODO: Logic
     }
 
-    private boolean loadParts() {
-        return makeSure(() -> {
-            this.configProvider = new ConfigurationProvider<>(this.getDataFolder(), MainConfiguration.class);
-            this.locale = new I18NBukkit(this);
-        }, (e) -> {
-            this.getLogger().log(Level.SEVERE, "Error on plugin enable.", e);
-            this.disable();
-        });
-    }
-
-    private boolean makeSure(Runnable action, Consumer<RuntimeException> exceptionConsumer) {
-        try {
-            action.run();
-        } catch (RuntimeException e) {
-            exceptionConsumer.accept(e);
-            return false;
+    private fun loadParts(): Boolean {
+        return makeSure {
+            this.configProvider = ConfigurationProvider(this.dataFolder, MainConfiguration::class.java)
+            this.locale = I18NBukkit(this)
         }
-
-        return true;
     }
 
-    private void disable() {
-        this.getServer().getPluginManager().disablePlugin(this);
+    private fun makeSure(action: () -> Unit): Boolean {
+        return try {
+            action()
+            true
+        } catch (e: Exception) {
+            criticalError(e)
+            false
+        }
     }
 
-    public MainConfiguration getConfiguration() {
-        return configProvider.getConfig();
+    private fun criticalError(exception: Exception) {
+        logger.log(Level.SEVERE, "Error on plugin enable.", exception)
+        server.pluginManager.disablePlugin(this)
     }
 
-    public I18N getLocale() {
-        return locale;
-    }
-
-    @Override
-    @Deprecated
-    public FileConfiguration getConfig() {
-        throw new UnsupportedOperationException("Use RPGInventoryPlugin#getConfiguration instead of RPGInventoryPlugin#getConfig()");
-    }
-
-    @Override
-    public void onDisable() {
-
+    @Deprecated(
+        message = "Use RPGInventoryPlugin#getConfiguration instead of RPGInventoryPlugin#getConfig()",
+        level = DeprecationLevel.ERROR
+    )
+    override fun getConfig(): FileConfiguration {
+        throw UnsupportedOperationException("Use RPGInventoryPlugin#getConfiguration instead of RPGInventoryPlugin#getConfig()")
     }
 }

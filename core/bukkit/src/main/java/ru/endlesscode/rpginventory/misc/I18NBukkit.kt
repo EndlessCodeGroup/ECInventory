@@ -16,27 +16,16 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.misc;
+package ru.endlesscode.rpginventory.misc
 
-import org.bukkit.ChatColor;
-import org.jetbrains.annotations.NotNull;
-import ru.endlesscode.rpginventory.RPGInventoryPlugin;
+import org.bukkit.ChatColor
+import ru.endlesscode.rpginventory.RPGInventoryPlugin
 
-public class I18NBukkit extends I18N {
+class I18NBukkit(instance: RPGInventoryPlugin) : I18N(instance.dataFolder, instance.configuration.locale) {
 
-    public I18NBukkit(RPGInventoryPlugin instance) {
-        super(instance.getDataFolder(), instance.getConfiguration().getLocale());
-    }
+    override fun stripColor(message: String): String = ChatColor.stripColor(message)
 
-    @NotNull
-    @Override
-    public String stripColor(String message) {
-        return ChatColor.stripColor(message);
-    }
-
-    @NotNull
-    @Override
-    public String translateCodes(String message) {
-        return ChatColor.translateAlternateColorCodes('&', message);
+    override fun translateCodes(message: String): String {
+        return ChatColor.translateAlternateColorCodes('&', message)
     }
 }
