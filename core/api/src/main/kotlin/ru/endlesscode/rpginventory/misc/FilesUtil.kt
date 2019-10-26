@@ -48,10 +48,7 @@ object FilesUtil {
                 Files.copy(stream, file)
             }
         } catch (e: IOException) {
-            throw IllegalArgumentException(
-                message = "Failed to copy \"$validResourcePath\" to given target: \"${file.toAbsolutePath()}\"",
-                cause = e
-            )
+            throw IllegalArgumentException("Failed to copy \"$validResourcePath\" to given target: \"${file.toAbsolutePath()}\"", e)
         }
 
     }
@@ -68,10 +65,7 @@ object FilesUtil {
                 .map { file -> "${readFileToString(file)}\n" }
                 .forEach { content -> Files.write(tmp, content.toByteArray(), StandardOpenOption.APPEND) }
         } catch (e: IOException) {
-            throw IllegalArgumentException(
-                message = "Files in given directory \"${pathToDir.toAbsolutePath()}\" can't be merged",
-                cause = e
-            )
+            throw IllegalArgumentException("Files in given directory \"${pathToDir.toAbsolutePath()}\" can't be merged", e)
         }
 
         return tmp
