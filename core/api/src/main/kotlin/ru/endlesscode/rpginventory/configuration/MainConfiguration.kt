@@ -19,43 +19,16 @@
 package ru.endlesscode.rpginventory.configuration
 
 import ninja.leaping.configurate.objectmapping.Setting
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 
 class MainConfiguration : Configurable {
 
-    @Setting(comment = "Make sure that you have correctly configured the \"resourcePack\" section before enabling the plugin.")
-    var isEnabled = false
+    @Setting
+    var enabled = false
 
-    @Setting(comment = "Default locale for use")
+    @Setting(comment = "Look for available locales in \"locale/\" directory")
     var locale = "en"
 
-    @Setting
-    val updates = UpdatesConfiguration()
-
-    @Setting
-    val resourcePack = ResourcePackConfiguration()
-
-    override val header: String = "This is RPGInventory configuration blah-blah-blah enjoy new config blah-blah-blah"
+    override val header: String = "RPGInventory3 configuration"
 
     override val nodeName: String = "RPGInventory"
-}
-
-@ConfigSerializable
-class UpdatesConfiguration {
-
-    @Setting
-    var isCheckUpdates = false
-
-    @Setting
-    var isDownloadUpdates = false
-}
-
-@ConfigSerializable
-class ResourcePackConfiguration {
-
-    @Setting(comment = "TODO: Write useful comment")
-    var sha = "unknown"
-
-    @Setting(comment = "TODO: Write useless comment")
-    var url = "unknown"
 }
