@@ -104,8 +104,13 @@ open class ConfigurableItemStack private constructor(
             return this
         }
 
+        fun withLore(vararg lore: String): Builder {
+            this.lore = lore.toList()
+            return this
+        }
+
         fun withLore(lore: List<String>): Builder {
-            this.lore = ArrayList(lore)
+            this.lore = lore.toList()
             return this
         }
 

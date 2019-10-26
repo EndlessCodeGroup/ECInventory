@@ -42,25 +42,20 @@ class ConfigurationCollectorTest : FileTestBase() {
         "magicStick" to ConfigurableItemStack.Builder.fromMaterial("STICK")
             .withDisplayName("&6Magic stick")
             .withLore(
-                listOf(
-                    "&7This stick can be obtained in",
-                    "&7the &cElite dungeon&7 after defeating",
-                    "&7a &4Bloody swordmaster&7."
-                )
+                "&7This stick can be obtained in",
+                "&7the &cElite dungeon&7 after defeating",
+                "&7a &4Bloody swordmaster&7."
             ).build(),
         "uselessStick" to ConfigurableItemStack.Builder.fromMaterial("STICK")
             .withDisplayName("&7Useless stick")
             .withLore(
-                listOf(
-                    "&7This stick can be obtained everywhere,",
-                    "&7where a tree available."
-                )
+                "&7This stick can be obtained everywhere,",
+                "&7where a tree available."
             ).build(),
         "justStick" to ConfigurableItemStack.Builder.fromMaterial("STICK")
             .withDisplayName("&aJust stick")
-            .withLore(
-                listOf("&7Where you found it?..")
-            ).build()
+            .withLore("&7Where you found it?..")
+            .build()
     )
 
     @Test
