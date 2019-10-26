@@ -20,11 +20,8 @@ package ru.endlesscode.rpginventory
 
 import org.junit.AfterClass
 import org.junit.BeforeClass
-import java.nio.file.Files
+import ru.endlesscode.rpginventory.misc.*
 import java.nio.file.Path
-import java.nio.file.Paths
-import java.nio.file.StandardOpenOption
-import java.util.Comparator
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
@@ -37,14 +34,14 @@ open class FileTestBase {
         @JvmStatic
         @BeforeClass
         fun beforeAll() {
-            testDir = Files.createDirectories(Paths.get("testFiles"))
-            Files.createDirectories(testDir)
+            testDir = pathOf("testFiles").createDirectories()
+            testDir.createDirectories()
         }
 
         @JvmStatic
         @AfterClass
         fun afterAll() {
-            Files.deleteIfExists(testDir)
+            testDir.deleteIfExists()
         }
     }
 
@@ -53,7 +50,7 @@ open class FileTestBase {
 
     @BeforeTest
     open fun setUp() {
-        this.dir = Files.createTempDirectory(testDir, null)
+        this.dir = testDir.createTempDirectory()
     }
 
     @AfterTest
@@ -63,8 +60,8 @@ open class FileTestBase {
 
     protected fun createFile(path: String, content: String = ""): Path {
         val target = dir.resolve(path)
-        Files.createDirectories(target.parent)
-        Files.write(target, content.toByteArray(), StandardOpenOption.CREATE)
+        target.parent.createDirectories()
+        target.writeText(content)
         return target
     }
 
@@ -73,12 +70,12 @@ open class FileTestBase {
     }
 
     protected fun assertFileContentEquals(file: Path, expectedContent: List<String>) {
-        assertEquals(expectedContent, Files.readAllLines(file))
+        assertEquals(expectedContent, file.readAllLines())
     }
 
     protected fun deleteRecursively(path: Path) {
-        Files.walk(path)
-            .sorted(Comparator.reverseOrder())
-            .forEach(Files::delete)
+        path.walk()
+            .sorted(reverseOrder())
+            .forEach(Path::delete)
     }
 }

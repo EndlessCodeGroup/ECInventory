@@ -24,7 +24,6 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import ru.endlesscode.rpginventory.FileTestBase
 import ru.endlesscode.rpginventory.assertFailsWith
-import java.nio.file.Files
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -47,7 +46,7 @@ class I18NTest : FileTestBase() {
         // Given
         val file = dir.resolve("locales")
         deleteRecursively(file)
-        Files.createFile(file)
+        file.createFile()
 
         // Then
         assertFailsWith<I18NException>(message = "Failed to create locales folder") {

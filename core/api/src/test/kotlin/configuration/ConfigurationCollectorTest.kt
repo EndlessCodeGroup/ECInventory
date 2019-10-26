@@ -22,7 +22,7 @@ import com.google.common.reflect.TypeParameter
 import com.google.common.reflect.TypeToken
 import ru.endlesscode.rpginventory.FileTestBase
 import ru.endlesscode.rpginventory.item.ConfigurableItemStack
-import java.nio.file.Files
+import ru.endlesscode.rpginventory.misc.copyTo
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import kotlin.test.Test
@@ -42,25 +42,20 @@ class ConfigurationCollectorTest : FileTestBase() {
         "magicStick" to ConfigurableItemStack.Builder.fromMaterial("STICK")
             .withDisplayName("&6Magic stick")
             .withLore(
-                listOf(
-                    "&7This stick can be obtained in",
-                    "&7the &cElite dungeon&7 after defeating",
-                    "&7a &4Bloody swordmaster&7."
-                )
+                "&7This stick can be obtained in",
+                "&7the &cElite dungeon&7 after defeating",
+                "&7a &4Bloody swordmaster&7."
             ).build(),
         "uselessStick" to ConfigurableItemStack.Builder.fromMaterial("STICK")
             .withDisplayName("&7Useless stick")
             .withLore(
-                listOf(
-                    "&7This stick can be obtained everywhere,",
-                    "&7where a tree available."
-                )
+                "&7This stick can be obtained everywhere,",
+                "&7where a tree available."
             ).build(),
         "justStick" to ConfigurableItemStack.Builder.fromMaterial("STICK")
             .withDisplayName("&aJust stick")
-            .withLore(
-                listOf("&7Where you found it?..")
-            ).build()
+            .withLore("&7Where you found it?..")
+            .build()
     )
 
     @Test
@@ -100,6 +95,6 @@ class ConfigurationCollectorTest : FileTestBase() {
     private fun saveResource(targetDirectory: Path, name: String) {
         val resourceAsStream = this.javaClass.classLoader.getResourceAsStream(name) ?: return
         val resolve = targetDirectory.resolve(name)
-        Files.copy(resourceAsStream, resolve, StandardCopyOption.REPLACE_EXISTING)
+        resourceAsStream.copyTo(resolve, StandardCopyOption.REPLACE_EXISTING)
     }
 }

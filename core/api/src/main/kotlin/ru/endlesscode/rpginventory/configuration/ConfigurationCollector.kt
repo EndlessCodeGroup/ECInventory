@@ -21,7 +21,8 @@ package ru.endlesscode.rpginventory.configuration
 import com.google.common.reflect.TypeToken
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader
 import ninja.leaping.configurate.objectmapping.ObjectMappingException
-import ru.endlesscode.rpginventory.misc.FilesUtil
+import ru.endlesscode.rpginventory.misc.makeSureDirectoryExists
+import ru.endlesscode.rpginventory.misc.mergeFiles
 import java.io.File
 import java.io.IOException
 import java.nio.file.Path
@@ -41,7 +42,7 @@ class ConfigurationCollector(private val configurationsDirectory: Path) {
     fun <T> collect(typeToken: TypeToken<T>): T {
         checkConfigurationDirectory()
 
-        val mergedConfig = FilesUtil.mergeFiles(configurationsDirectory) { path ->
+        val mergedConfig = configurationsDirectory.mergeFiles() { path ->
             path.fileName.toString().toLowerCase().endsWith(CONFIG_EXTENSION)
         }
 
@@ -58,7 +59,7 @@ class ConfigurationCollector(private val configurationsDirectory: Path) {
 
     private fun checkConfigurationDirectory() {
         try {
-            FilesUtil.makeSureDirectoryExists(this.configurationsDirectory)
+            configurationsDirectory.makeSureDirectoryExists()
         } catch (e: IOException) {
             configError("'${configurationsDirectory.fileName}' must be a directory.", e)
         }

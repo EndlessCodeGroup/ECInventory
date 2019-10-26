@@ -19,7 +19,7 @@
 package ru.endlesscode.rpginventory.configuration
 
 import ru.endlesscode.rpginventory.FileTestBase
-import java.nio.file.Files
+import ru.endlesscode.rpginventory.misc.exists
 import kotlin.test.*
 
 class ConfigurationProviderTest : FileTestBase() {
@@ -40,7 +40,7 @@ class ConfigurationProviderTest : FileTestBase() {
         val configurationFile = this.dir.resolve("testConfiguration.conf")
 
         // Then
-        assertTrue(Files.exists(configurationFile))
+        assertTrue(configurationFile.exists)
     }
 
     @Test
