@@ -1,55 +1,66 @@
-package ru.endlesscode.rpginventory.configuration;
+/*
+ * This file is part of RPGInventory3.
+ * Copyright (C) 2019 EndlessCode Group and contributors
+ *
+ * RPGInventory3 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * RPGInventory3 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-import com.google.common.reflect.TypeToken;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import org.jetbrains.annotations.NotNull;
-import ru.endlesscode.rpginventory.misc.FilesUtil;
+package ru.endlesscode.rpginventory.configuration
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
+import com.google.common.reflect.TypeToken
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader
+import ninja.leaping.configurate.objectmapping.ObjectMappingException
+import ru.endlesscode.rpginventory.misc.FilesUtil
+import java.io.File
+import java.io.IOException
+import java.nio.file.Path
 
-public class ConfigurationCollector {
+/**
+ * Collects configurations from given [configurationsDirectory].
+ * @see collect
+ */
+class ConfigurationCollector(private val configurationsDirectory: Path) {
 
-    private static final String CONFIG_EXTENSION = ".conf";
+    constructor(dataDirectory: File) : this(dataDirectory.toPath())
 
-    private final Path configurationsDirectory;
-
-    public ConfigurationCollector(@NotNull final File dataDirectory) {
-        this(dataDirectory.toPath());
+    init {
+        checkConfigurationDirectory()
     }
 
-    public ConfigurationCollector(@NotNull final Path dataDirectory) {
-        this.configurationsDirectory = dataDirectory;
-        checkConfigurationDirectory();
-    }
+    fun <T> collect(typeToken: TypeToken<T>): T {
+        checkConfigurationDirectory()
 
-    public <T> T collect(TypeToken<T> typeToken) {
-        checkConfigurationDirectory();
-
-        final Path mergedConfig = FilesUtil.mergeFiles(
-                configurationsDirectory,
-                path -> path.getFileName().toString().toLowerCase().endsWith(CONFIG_EXTENSION)
-        );
+        val mergedConfig = FilesUtil.mergeFiles(configurationsDirectory) { path ->
+            path.fileName.toString().toLowerCase().endsWith(CONFIG_EXTENSION)
+        }
 
         try {
-            HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setPath(mergedConfig).build();
-            CommentedConfigurationNode loaded = loader.load();
-            return loaded.getValue(typeToken);
-        } catch (ObjectMappingException | IOException e) {
-            throw new ConfigurationException(e);
+            val loader = HoconConfigurationLoader.builder().setPath(mergedConfig).build()
+            val loaded = loader.load()
+            return loaded.getValue(typeToken)
+        } catch (e: ObjectMappingException) {
+            configError(e)
+        } catch (e: IOException) {
+            configError(e)
         }
     }
 
-    private void checkConfigurationDirectory() {
+    private fun checkConfigurationDirectory() {
         try {
-            FilesUtil.makeSureDirectoryExists(this.configurationsDirectory);
-        } catch (IOException e) {
-            throw new ConfigurationException(
-                    "\"" + configurationsDirectory.getFileName().toString() + "\" must be a directory.", e
-            );
+            FilesUtil.makeSureDirectoryExists(this.configurationsDirectory)
+        } catch (e: IOException) {
+            configError("'${configurationsDirectory.fileName}' must be a directory.", e)
         }
     }
 }

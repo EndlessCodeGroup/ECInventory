@@ -17,7 +17,7 @@ class ConfigurationProviderTest : FileTestBase() {
     override fun setUp() {
         super.setUp()
 
-        this.configurationProvider = ConfigurationProvider(this.dir, TestConfiguration::class.java)
+        this.configurationProvider = ConfigurationProvider(this.dir)
     }
 
     @Test
