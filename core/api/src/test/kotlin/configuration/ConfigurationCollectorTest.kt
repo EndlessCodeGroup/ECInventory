@@ -22,7 +22,7 @@ import com.google.common.reflect.TypeParameter
 import com.google.common.reflect.TypeToken
 import ru.endlesscode.rpginventory.FileTestBase
 import ru.endlesscode.rpginventory.item.ConfigurableItemStack
-import java.nio.file.Files
+import ru.endlesscode.rpginventory.misc.copyTo
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import kotlin.test.Test
@@ -100,6 +100,6 @@ class ConfigurationCollectorTest : FileTestBase() {
     private fun saveResource(targetDirectory: Path, name: String) {
         val resourceAsStream = this.javaClass.classLoader.getResourceAsStream(name) ?: return
         val resolve = targetDirectory.resolve(name)
-        Files.copy(resourceAsStream, resolve, StandardCopyOption.REPLACE_EXISTING)
+        resourceAsStream.copyTo(resolve, StandardCopyOption.REPLACE_EXISTING)
     }
 }

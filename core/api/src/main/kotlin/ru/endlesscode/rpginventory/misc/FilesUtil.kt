@@ -18,69 +18,32 @@
 
 package ru.endlesscode.rpginventory.misc
 
-import java.io.IOException
-import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.StandardOpenOption
-import java.util.stream.Collectors
 
-object FilesUtil {
+fun Path.loadFromResource(resource: String) {
+    val validResourcePath = if (resource.startsWith("/")) resource else "/$resource"
+    object {}.javaClass.getResourceAsStream(validResourcePath).use { stream ->
+        requireNotNull(stream) { "Resource file \"$validResourcePath\" not exists" }
+        stream.copyTo(this)
+    }
+}
 
-    @JvmStatic
-    @JvmOverloads
-    fun readFileToString(file: Path, charset: Charset = StandardCharsets.UTF_8): String {
-        try {
-            return Files.lines(file, charset).collect(Collectors.joining("\n"))
-        } catch (e: IOException) {
-            throw IllegalArgumentException("Given file \"${file.toAbsolutePath()}\" can't be read", e)
-        }
+internal fun Path.mergeFiles(predicate: (Path) -> Boolean = { true }): Path {
+    val tmp: Path = this.createTempFile(suffix = ".merged")
+    this.walk()
+        .filter { path -> path.isRegularFile && path != tmp }
+        .filter(predicate)
+        .map { file -> "${file.readText()}\n" }
+        .forEach { content -> tmp.appendText(content) }
+
+    return tmp
+}
+
+internal fun Path.makeSureDirectoryExists() {
+    if (!this.isDirectory) {
+        val tmp = parent.resolve("$fileName.niceJoke.${System.currentTimeMillis() % 10000}")
+        this.moveTo(tmp)
     }
 
-    @JvmStatic
-    fun copyResourceToFile(resource: String, file: Path) {
-        val validResourcePath = if (resource.startsWith("/")) resource else "/$resource"
-
-        try {
-            FilesUtil::class.java.getResourceAsStream(validResourcePath).use { stream ->
-                requireNotNull(stream) { "Resource file \"$validResourcePath\" not exists" }
-                Files.copy(stream, file)
-            }
-        } catch (e: IOException) {
-            throw IllegalArgumentException("Failed to copy \"$validResourcePath\" to given target: \"${file.toAbsolutePath()}\"", e)
-        }
-
-    }
-
-    @JvmStatic
-    @JvmOverloads
-    fun mergeFiles(pathToDir: Path, predicate: (Path) -> Boolean = { true }): Path {
-        val tmp: Path
-        try {
-            tmp = Files.createTempFile(pathToDir, null, ".merged")
-            Files.walk(pathToDir)
-                .filter { path -> Files.isRegularFile(path) && path != tmp }
-                .filter(predicate)
-                .map { file -> "${readFileToString(file)}\n" }
-                .forEach { content -> Files.write(tmp, content.toByteArray(), StandardOpenOption.APPEND) }
-        } catch (e: IOException) {
-            throw IllegalArgumentException("Files in given directory \"${pathToDir.toAbsolutePath()}\" can't be merged", e)
-        }
-
-        return tmp
-    }
-
-    @JvmStatic
-    @Throws(IOException::class)
-    fun makeSureDirectoryExists(directory: Path) {
-        if (!Files.isDirectory(directory)) {
-            val tmp = directory.parent
-                .resolve("${directory.fileName}.niceJoke.${System.currentTimeMillis() % 10000}")
-            Files.move(directory, tmp)
-        }
-
-        Files.createDirectories(directory)
-    }
-
+    this.createDirectories()
 }

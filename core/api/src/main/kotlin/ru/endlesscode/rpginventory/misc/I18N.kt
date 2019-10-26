@@ -20,8 +20,6 @@ package ru.endlesscode.rpginventory.misc
 
 import java.io.File
 import java.io.IOException
-import java.io.StringReader
-import java.nio.file.Files
 import java.nio.file.Path
 import java.text.MessageFormat
 import java.util.Properties
@@ -37,7 +35,7 @@ abstract class I18N protected constructor(workDir: Path, langCode: String) {
 
     init {
         try {
-            this.localeFolder = Files.createDirectories(workDir.resolve("locales"))
+            this.localeFolder = workDir.resolve("locales").createDirectories()
         } catch (e: IOException) {
             throw I18NException("Failed to create locales folder", e)
         }
@@ -53,7 +51,7 @@ abstract class I18N protected constructor(workDir: Path, langCode: String) {
     private fun load(langCode: String) {
         val localeFile = this.prepareLocaleFile(langCode.toLowerCase())
         try {
-            StringReader(FilesUtil.readFileToString(localeFile)).use(this.locale::load)
+            localeFile.readText().reader().use(locale::load)
         } catch (e: IOException) {
             throw I18NException("Failed to load ${localeFile.fileName}", e)
         }
@@ -61,8 +59,8 @@ abstract class I18N protected constructor(workDir: Path, langCode: String) {
 
     private fun prepareLocaleFile(langCode: String): Path {
         val localeFile = this.localeFolder.resolve("$langCode.lang")
-        if (Files.notExists(localeFile)) {
-            FilesUtil.copyResourceToFile("/locales/$langCode.lang", localeFile)
+        if (localeFile.notExists) {
+            localeFile.loadFromResource("/locales/$langCode.lang")
         }
 
         return localeFile

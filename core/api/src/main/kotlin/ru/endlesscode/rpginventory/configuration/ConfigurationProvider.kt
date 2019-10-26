@@ -22,8 +22,8 @@ import ninja.leaping.configurate.ConfigurationOptions
 import ninja.leaping.configurate.commented.CommentedConfigurationNode
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader
 import ninja.leaping.configurate.objectmapping.ObjectMapper
+import ru.endlesscode.rpginventory.misc.makeSureDirectoryExists
 import java.io.File
-import java.nio.file.Files
 import java.nio.file.Path
 
 /**
@@ -64,9 +64,7 @@ class ConfigurationProvider<T : Configurable>(configFolder: Path, clazz: Class<T
 
     init {
         try {
-            if (!Files.exists(configFolder)) {
-                Files.createDirectories(configFolder)
-            }
+            configFolder.makeSureDirectoryExists()
 
             val configurable = clazz.newInstance()
             this.node = configurable.nodeName

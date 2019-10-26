@@ -29,56 +29,53 @@ import kotlin.test.assertEquals
 class FilesUtilTest : FileTestBase() {
 
     @Test
-    fun `copyResourceToFile - and given existing resource and - should be successful`() {
+    fun `loadFromResource - and given existing resource and - should be successful`() {
         // Given
         val target = dir.resolve("resource")
 
         // When
-        FilesUtil.copyResourceToFile("/resource", target)
+        target.loadFromResource("/resource")
 
         // Then
         assertFileContentEquals(target, "This is a test resource file.", "Это тестовый файл ресурсов.")
     }
 
     @Test
-    fun `copyResourceToFile - and given existing resource without leading slash - should be successful`() {
+    fun `loadFromResource - and given existing resource without leading slash - should be successful`() {
         // Given
         val target = dir.resolve("resource")
 
         // When
-        FilesUtil.copyResourceToFile("resource", dir.resolve("resource"))
+        target.loadFromResource("resource")
 
         // Then
         assertFileContentEquals(target, "This is a test resource file.", "Это тестовый файл ресурсов.")
     }
 
     @Test
-    fun `copyResourceToFile - and given existing resource and existing target file - should throw exception`() {
+    fun `loadFromResource - and given existing resource and existing target file - should throw exception`() {
         // Given
         val target = createFile("existingFile")
 
         // Then
-        assertFailsWith<IllegalArgumentException>(
-            message = "Failed to copy \"/resource\" to given target: \"${target.toAbsolutePath()}\"",
-            cause = FileAlreadyExistsException::class
-        ) {
-            FilesUtil.copyResourceToFile("/resource", target)
+        assertFailsWith<FileAlreadyExistsException> {
+            target.loadFromResource("/resource")
         }
     }
 
     @Test
-    fun `copyResourceToFile - and given not existing resource - should throw exception`() {
+    fun `loadFromResource - and given not existing resource - should throw exception`() {
         // Given
         val target = dir.resolve("newFile")
 
         // Then
         assertFailsWith<IllegalArgumentException>(message = "Resource file \"/notExistingResource\" not exists") {
-            FilesUtil.copyResourceToFile("/notExistingResource", target)
+            target.loadFromResource("/notExistingResource")
         }
     }
 
     @Test
-    fun `readFileToString - and given existing file - should be successful`() {
+    fun `readText - and given existing file - should be successful`() {
         // Given
         val text = """
             Multi-line
@@ -90,23 +87,20 @@ class FilesUtilTest : FileTestBase() {
         val target = createFile("existingFile", text)
 
         // When
-        val content = FilesUtil.readFileToString(target)
+        val content = target.readText()
 
         // Then
         assertEquals(text, content)
     }
 
     @Test
-    fun `readFileToString - and given not existing file - should throw exception`() {
+    fun `readText - and given not existing file - should throw exception`() {
         // Given
         val target = dir.resolve("notExistingFile")
 
         // Then
-        assertFailsWith<IllegalArgumentException>(
-            message = "Given file \"${target.toAbsolutePath()}\" can't be read",
-            cause = NoSuchFileException::class
-        ) {
-            FilesUtil.readFileToString(target)
+        assertFailsWith<NoSuchFileException> {
+            target.readText()
         }
     }
 
@@ -118,7 +112,7 @@ class FilesUtilTest : FileTestBase() {
         createFile("dir/3thirdFile", "Line 3")
 
         // When
-        val result = FilesUtil.mergeFiles(dir)
+        val result = dir.mergeFiles()
 
         // Then
         assertFileContentEquals(result, "Line one", "Line two", "Line 3")
@@ -132,7 +126,7 @@ class FilesUtilTest : FileTestBase() {
         createFile("dir/fileThree.merge", "Line 3")
 
         // When
-        val result = FilesUtil.mergeFiles(dir) { path -> path.toString().endsWith(".merge") }
+        val result = dir.mergeFiles { path -> path.toString().endsWith(".merge") }
 
         // Then
         assertFileContentEquals(result, "Line one", "Line 3")
@@ -141,7 +135,7 @@ class FilesUtilTest : FileTestBase() {
     @Test
     fun `mergeFiles - and given empty directory - should return empty file`() {
         // When
-        val result = FilesUtil.mergeFiles(dir)
+        val result = dir.mergeFiles()
 
         // Then
         assertFileContentEquals(result, emptyList())
@@ -153,11 +147,8 @@ class FilesUtilTest : FileTestBase() {
         val file = createFile("existingFile")
 
         // Then
-        assertFailsWith<IllegalArgumentException>(
-            message = "Files in given directory \"${file.toAbsolutePath()}\" can't be merged",
-            cause = FileSystemException::class
-        ) {
-            FilesUtil.mergeFiles(file)
+        assertFailsWith<FileSystemException> {
+            file.mergeFiles()
         }
     }
 }
