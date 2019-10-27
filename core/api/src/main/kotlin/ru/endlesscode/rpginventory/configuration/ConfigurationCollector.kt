@@ -39,18 +39,19 @@ class ConfigurationCollector(private val configurationsDirectory: Path) {
         checkConfigurationDirectory()
     }
 
+    /** Gets value of type [T] from merged config. Returns 'null` if value isn't present. */
     @Suppress("UnstableApiUsage")
-    fun <T> collect(typeToken: TypeToken<T>): T {
+    fun <T : Any> collect(typeToken: TypeToken<T>): T? {
         checkConfigurationDirectory()
 
         val mergedConfig = configurationsDirectory.mergeFiles { path ->
-            path.fileName.toString().toLowerCase().endsWith(CONFIG_EXTENSION)
+            path.fileName?.toString()?.toLowerCase()?.endsWith(CONFIG_EXTENSION) == true
         }
 
         try {
             val loader = HoconConfigurationLoader.builder().setPath(mergedConfig).build()
-            val loaded = loader.load()
-            return loaded.getValue(typeToken)
+            val loadedNode = loader.load()
+            return loadedNode.getValue(typeToken)
         } catch (e: ObjectMappingException) {
             configError(e)
         } catch (e: IOException) {
