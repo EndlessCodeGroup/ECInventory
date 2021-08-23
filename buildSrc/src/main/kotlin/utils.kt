@@ -49,7 +49,7 @@ fun Project.kotlinProject() {
     }
 
     repositories {
-        jcenter()
+        mavenCentral()
     }
 }
 

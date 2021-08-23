@@ -1,27 +1,29 @@
+import ru.endlesscode.bukkitgradle.dependencies.spigotApi
+
 plugins {
-    id("ru.endlesscode.bukkitgradle")
-    id("com.github.johnrengelman.shadow") version "5.1.0"
+    id("ru.endlesscode.bukkitgradle") version "0.10.0"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 bukkit {
-    version = "1.13"
+    apiVersion = "1.17.1"
 
     meta {
-        setName(rootProject.name)
-        setMain("ru.endlesscode.rpginventory.RPGInventoryPlugin")
-        setAuthors(listOf("osipxd", "Dereku", "EndlessCode Group"))
+        name.set(rootProject.name)
+        main.set("ru.endlesscode.rpginventory.RPGInventoryPlugin")
+        authors.set(listOf("osipxd", "Dereku", "EndlessCode Group"))
     }
 
-    run {
+    server {
+        setCore("paper")
         eula = true
     }
 }
 
-// Replace 'jar' task by 'shadowJar'
-tasks.jar.get().enabled = false
-tasks.assemble.get().dependsOn(tasks.shadowJar)
-
 tasks.shadowJar.configure {
+    tasks.jar.get().enabled = false
+    tasks.assemble.get().dependsOn(this)
+
     // Understandable filename
     archiveBaseName.set("$base.name-$project.name")
     archiveClassifier.set("")
@@ -34,7 +36,7 @@ tasks.shadowJar.configure {
 
 dependencies {
     api(project(":core:api"))
-    compileOnly(bukkit)
+    compileOnly(spigotApi)
 
     // Runtime dependencies will be bundled into the output jar
     implementation(deps.hocon) {
