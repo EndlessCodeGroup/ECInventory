@@ -22,7 +22,7 @@ import java.io.File
 import java.io.IOException
 import java.nio.file.Path
 import java.text.MessageFormat
-import java.util.Properties
+import java.util.*
 
 abstract class I18N protected constructor(workDir: Path, langCode: String) {
 
@@ -49,7 +49,7 @@ abstract class I18N protected constructor(workDir: Path, langCode: String) {
     }
 
     private fun load(langCode: String) {
-        val localeFile = this.prepareLocaleFile(langCode.toLowerCase())
+        val localeFile = this.prepareLocaleFile(langCode.lowercase())
         try {
             localeFile.readText().reader().use(locale::load)
         } catch (e: IOException) {

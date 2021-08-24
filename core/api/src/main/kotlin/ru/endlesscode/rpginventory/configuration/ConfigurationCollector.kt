@@ -45,7 +45,7 @@ class ConfigurationCollector(private val configurationsDirectory: Path) {
         checkConfigurationDirectory()
 
         val mergedConfig = configurationsDirectory.mergeFiles { path ->
-            path.fileName?.toString()?.toLowerCase()?.endsWith(CONFIG_EXTENSION) == true
+            path.fileName?.toString()?.lowercase()?.endsWith(CONFIG_EXTENSION) == true
         }
 
         try {

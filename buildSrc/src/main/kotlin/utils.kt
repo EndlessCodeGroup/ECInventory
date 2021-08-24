@@ -37,9 +37,9 @@ fun Project.kotlinProject() {
 
     tasks.withType(KotlinCompile::class) {
         kotlinOptions {
-            jvmTarget = "1.8"
-            apiVersion = "1.3"
-            languageVersion = "1.3"
+            jvmTarget = JAVA_8
+            apiVersion = "1.5"
+            languageVersion = "1.5"
         }
     }
 

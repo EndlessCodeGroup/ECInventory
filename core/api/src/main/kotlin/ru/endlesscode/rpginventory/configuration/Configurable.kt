@@ -23,7 +23,7 @@ interface Configurable {
     val header: String?
     val nodeName: String
 
-    val fileName: String get() = javaClass.simpleName.decapitalize()
+    val fileName: String get() = javaClass.simpleName.replaceFirstChar { it.lowercase() }
     val hasHeader: Boolean get() = !header.isNullOrEmpty()
 
 }

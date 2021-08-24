@@ -66,7 +66,7 @@ class ConfigurationProvider<T : Configurable>(configFolder: Path, clazz: Class<T
         try {
             configFolder.makeSureDirectoryExists()
 
-            val configurable = clazz.newInstance()
+            val configurable = clazz.getDeclaredConstructor().newInstance()
             this.node = configurable.nodeName
             this.header = configurable.header
             this.loader = buildConfigurationLoader(configFolder, configurable.fileName)
