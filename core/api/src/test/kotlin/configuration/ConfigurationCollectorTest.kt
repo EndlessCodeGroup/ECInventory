@@ -21,7 +21,7 @@ package ru.endlesscode.rpginventory.configuration
 import com.google.common.reflect.TypeParameter
 import com.google.common.reflect.TypeToken
 import ru.endlesscode.rpginventory.FileTestBase
-import ru.endlesscode.rpginventory.item.ConfigurableItemStack
+import ru.endlesscode.rpginventory.item.ConfigurableItem
 import ru.endlesscode.rpginventory.misc.copyTo
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
@@ -37,22 +37,22 @@ class ConfigurationCollectorTest : FileTestBase() {
         "fourth" to "Integer nec auctor ipsum, porttitor dictum sapien."
     )
 
-    private val cisValues = mapOf(
-        "stick" to ConfigurableItemStack.Builder.fromMaterial("STICK").build(),
-        "magicStick" to ConfigurableItemStack.Builder.fromMaterial("STICK")
+    private val itemsValues = mapOf(
+        "stick" to ConfigurableItem.Builder.fromMaterial("STICK").build(),
+        "magicStick" to ConfigurableItem.Builder.fromMaterial("STICK")
             .withDisplayName("&6Magic stick")
             .withLore(
                 "&7This stick can be obtained in",
                 "&7the &cElite dungeon&7 after defeating",
                 "&7a &4Bloody swordmaster&7."
             ).build(),
-        "uselessStick" to ConfigurableItemStack.Builder.fromMaterial("STICK")
+        "uselessStick" to ConfigurableItem.Builder.fromMaterial("STICK")
             .withDisplayName("&7Useless stick")
             .withLore(
                 "&7This stick can be obtained everywhere,",
                 "&7where a tree available."
             ).build(),
-        "justStick" to ConfigurableItemStack.Builder.fromMaterial("STICK")
+        "justStick" to ConfigurableItem.Builder.fromMaterial("STICK")
             .withDisplayName("&aJust stick")
             .withLore("&7Where you found it?..")
             .build()
@@ -78,10 +78,10 @@ class ConfigurationCollectorTest : FileTestBase() {
         val collector = ConfigurationCollector(this.dir.toFile())
 
         // When
-        val collected = collector.collect(mapToken(String::class.java, ConfigurableItemStack::class.java))
+        val collected = collector.collect(mapToken(String::class.java, ConfigurableItem::class.java))
 
         // Then
-        assertEquals(this.cisValues, collected)
+        assertEquals(this.itemsValues, collected)
     }
 
     @Suppress("UnstableApiUsage")

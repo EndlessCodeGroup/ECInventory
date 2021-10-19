@@ -20,18 +20,18 @@ package ru.endlesscode.rpginventory.item
 
 import ninja.leaping.configurate.objectmapping.Setting
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
-import java.util.Objects
 
+@Suppress("DataClassPrivateConstructor")
 @ConfigSerializable
-open class ConfigurableItemStack private constructor(
-    @Setting val material: String,
-    @Setting val damage: Int,
-    @Setting val displayName: String?,
-    @Setting val unbreakable: Boolean,
-    @Setting val lore: List<String>,
-    @Setting val enchantments: Map<String, Int>,
-    @Setting val itemFlags: List<String>
-) {
+data class ConfigurableItem private constructor(
+    @Setting override val material: String,
+    @Setting override val damage: Int,
+    @Setting override val displayName: String?,
+    @Setting override val unbreakable: Boolean,
+    @Setting override val lore: List<String>,
+    @Setting override val enchantments: Map<String, Int>,
+    @Setting override val itemFlags: List<String>
+) : Item {
 
     // Zero-argument constructor to be instantiated through object mapper.
     @Suppress("unused")
@@ -44,31 +44,6 @@ open class ConfigurableItemStack private constructor(
         enchantments = emptyMap(),
         itemFlags = emptyList()
     )
-
-    protected constructor(cis: ConfigurableItemStack)
-        : this(cis.material, cis.damage, cis.displayName, cis.unbreakable, cis.lore, cis.enchantments, cis.itemFlags)
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is ConfigurableItemStack) return false
-
-        return material == other.material &&
-            damage == other.damage &&
-            displayName == other.displayName &&
-            unbreakable == other.unbreakable &&
-            lore == other.lore &&
-            enchantments == other.enchantments &&
-            itemFlags == other.itemFlags
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(material, damage, displayName, unbreakable, lore, enchantments, itemFlags)
-    }
-
-    override fun toString(): String {
-        return "ConfigurableItemStack(material=$material, damage=$damage, displayName=$displayName)"
-    }
-
 
     class Builder private constructor(material: String) {
 
@@ -129,8 +104,8 @@ open class ConfigurableItemStack private constructor(
             return this
         }
 
-        fun build(): ConfigurableItemStack {
-            return ConfigurableItemStack(material, damage, displayName, unbreakable, lore, enchantments, itemFlags)
+        fun build(): ConfigurableItem {
+            return ConfigurableItem(material, damage, displayName, unbreakable, lore, enchantments, itemFlags)
         }
     }
 }
