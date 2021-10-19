@@ -20,8 +20,7 @@ package ru.endlesscode.rpginventory.inventory
 
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.extensions.isEmpty
-import ru.endlesscode.rpginventory.extensions.isNotEmpty
+import ru.endlesscode.rpginventory.extensions.isNullOrEmpty
 
 /**
  * Represents slot in the inventory, that has own behavior.
@@ -41,7 +40,7 @@ class InventorySlot(
     var content: ItemStack = ItemStack(Material.AIR)
         set(value) {
             field = content
-            if (value.isNotEmpty() && this.maxStackSize > 0 && value.amount > this.maxStackSize) {
+            if (!value.isNullOrEmpty() && this.maxStackSize > 0 && value.amount > this.maxStackSize) {
                 value.amount = this.maxStackSize
             }
 
@@ -61,7 +60,7 @@ class InventorySlot(
     }
 
     /** Returns true if slot's content is empty. */
-    fun isEmpty(): Boolean = content.isEmpty()
+    fun isEmpty(): Boolean = content.isNullOrEmpty()
 
     /** Returns [content] if it isn't empty and [slotTexture] otherwise. */
     fun getContentOrTexture(): ItemStack = if (isEmpty()) slotTexture else content

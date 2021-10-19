@@ -25,5 +25,4 @@ interface Configurable {
 
     val fileName: String get() = javaClass.simpleName.replaceFirstChar { it.lowercase() }
     val hasHeader: Boolean get() = !header.isNullOrEmpty()
-
 }

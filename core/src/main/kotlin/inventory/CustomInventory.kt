@@ -1,21 +1,3 @@
-/*
- * This file is part of RPGInventory3.
- * Copyright (C) 2019 EndlessCode Group and contributors
- *
- * RPGInventory3 is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * RPGInventory3 is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package ru.endlesscode.rpginventory.inventory
 
 import org.bukkit.Bukkit
@@ -28,7 +10,7 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.extensions.orAir
+import ru.endlesscode.rpginventory.extensions.orEmpty
 import ru.endlesscode.rpginventory.extensions.roundToPowerOf
 import ru.endlesscode.rpginventory.util.IndexedMap
 import ru.endlesscode.rpginventory.util.asIndexedMap
@@ -87,7 +69,7 @@ class CustomInventory(
      * @param item The ItemStack to set.
      */
     fun setItem(slotId: String, item: ItemStack?) {
-        slots[slotId]?.let { it.content = item.orAir() }
+        slots[slotId]?.let { it.content = item.orEmpty() }
     }
 
     /** Returns the slot with the given [id][slotId], or `null` if there no such slot. */
@@ -199,7 +181,7 @@ class CustomInventory(
     override fun getItem(index: Int): ItemStack = getSlot(index).content
 
     override fun setItem(index: Int, item: ItemStack?) {
-        getSlot(index).content = item.orAir()
+        getSlot(index).content = item.orEmpty()
     }
 
     /**

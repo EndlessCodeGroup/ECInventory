@@ -35,7 +35,6 @@ tasks.shadowJar {
 }
 
 dependencies {
-    api(project(":core:api"))
     compileOnly(spigotApi)
 
     // Runtime dependencies will be bundled into the output jar
@@ -43,4 +42,5 @@ dependencies {
         // Guava already in Bukkit
         exclude(group = "com.google.guava")
     }
+    testImplementation(spigotApi)
 }

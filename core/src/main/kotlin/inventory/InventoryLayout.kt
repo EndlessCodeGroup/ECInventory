@@ -16,31 +16,20 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@file:JvmName("ItemUtils")
+package ru.endlesscode.rpginventory.inventory
 
-package ru.endlesscode.rpginventory.extensions
-
-import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
-
-private val air by lazy { ItemStack(Material.AIR) }
-
-/**
- * Global instance of AIR item stack.
- */
-internal val AIR: ItemStack get() = air
+import java.util.*
 
 /**
- * Returns itself or [AIR] if the item stack is null.
+ * Layout of an inventory.
+ *
+ * @property name Name of an inventory.
+ * @property filler The item that will be used to fill unassigned slots.
+ * @property slotsMap The map of the slots. Sorted by key.
  */
-fun ItemStack?.orAir(): ItemStack = this ?: AIR
-
-/**
- * Returns `true` if the item stack is `null` or AIR.
- */
-fun ItemStack?.isEmpty(): Boolean = this == null || this.type == Material.AIR
-
-/**
- * Returns `true` if the item stack isn't `null` and isn't AIR.
- */
-fun ItemStack?.isNotEmpty(): Boolean = this != null && type != Material.AIR
+interface InventoryLayout {
+    val name: String
+    val filler: ItemStack
+    val slotsMap: SortedMap<Int, Slot>
+}

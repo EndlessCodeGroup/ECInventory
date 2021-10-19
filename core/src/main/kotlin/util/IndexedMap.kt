@@ -18,7 +18,7 @@
 
 package ru.endlesscode.rpginventory.util
 
-import java.util.SortedMap
+import java.util.*
 
 /** Map where you can get elements by theirs index. */
 internal class IndexedMap<K : Comparable<K>, V> private constructor(
