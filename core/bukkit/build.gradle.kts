@@ -2,7 +2,7 @@ import ru.endlesscode.bukkitgradle.dependencies.spigotApi
 
 plugins {
     id("ru.endlesscode.bukkitgradle") version "0.10.0"
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.github.johnrengelman.shadow") version "7.1.0"
 }
 
 bukkit {
@@ -20,7 +20,7 @@ bukkit {
     }
 }
 
-tasks.shadowJar.configure {
+tasks.shadowJar {
     tasks.jar.get().enabled = false
     tasks.assemble.get().dependsOn(this)
 
