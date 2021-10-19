@@ -37,7 +37,7 @@ class ConfigurationCollectorTest : FileTestBase() {
         "fourth" to "Integer nec auctor ipsum, porttitor dictum sapien."
     )
 
-    private val itemsValues = mapOf(
+    private val itemValues = mapOf(
         "stick" to ConfigurableItem.Builder.fromMaterial("STICK").build(),
         "magicStick" to ConfigurableItem.Builder.fromMaterial("STICK")
             .withDisplayName("&6Magic stick")
@@ -61,27 +61,27 @@ class ConfigurationCollectorTest : FileTestBase() {
     @Test
     fun `when collect string values - should return right values`() {
         // Given
-        this.saveResource(this.dir, "stringValues.conf")
-        val collector = ConfigurationCollector(this.dir)
+        this.saveResource(dir, "config/stringValues.conf")
+        val collector = ConfigurationCollector(dir)
 
         // When
         val collected = collector.collect(mapToken(String::class.java, String::class.java))
 
         // Then
-        assertEquals(this.stringValues, collected)
+        assertEquals(stringValues, collected)
     }
 
     @Test
     fun `when collect ConfigurableItemStack values - should return right values`() {
         // Given
-        this.saveResource(this.dir, "cisValues.conf")
-        val collector = ConfigurationCollector(this.dir.toFile())
+        saveResource(dir, "config/itemValues.conf")
+        val collector = ConfigurationCollector(dir.toFile())
 
         // When
         val collected = collector.collect(mapToken(String::class.java, ConfigurableItem::class.java))
 
         // Then
-        assertEquals(this.itemsValues, collected)
+        assertEquals(itemValues, collected)
     }
 
     @Suppress("UnstableApiUsage")
@@ -94,8 +94,8 @@ class ConfigurationCollectorTest : FileTestBase() {
     }
 
     private fun saveResource(targetDirectory: Path, name: String) {
-        val resourceAsStream = this.javaClass.classLoader.getResourceAsStream(name) ?: return
-        val resolve = targetDirectory.resolve(name)
+        val resourceAsStream = javaClass.classLoader.getResourceAsStream(name) ?: return
+        val resolve = targetDirectory.resolve(name.substringAfter('/'))
         resourceAsStream.copyTo(resolve, StandardCopyOption.REPLACE_EXISTING)
     }
 }
