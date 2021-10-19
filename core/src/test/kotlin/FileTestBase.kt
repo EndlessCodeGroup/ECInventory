@@ -22,6 +22,7 @@ import org.junit.AfterClass
 import org.junit.BeforeClass
 import ru.endlesscode.rpginventory.misc.*
 import java.nio.file.Path
+import kotlin.io.path.createTempDirectory
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
@@ -50,7 +51,7 @@ open class FileTestBase {
 
     @BeforeTest
     open fun setUp() {
-        this.dir = testDir.createTempDirectory()
+        dir = createTempDirectory(testDir)
     }
 
     @AfterTest

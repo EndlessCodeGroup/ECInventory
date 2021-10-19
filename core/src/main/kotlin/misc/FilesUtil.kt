@@ -19,6 +19,7 @@
 package ru.endlesscode.rpginventory.misc
 
 import java.nio.file.Path
+import kotlin.io.path.createTempFile
 
 internal fun Path.loadFromResource(resource: String) {
     val validResourcePath = if (resource.startsWith("/")) resource else "/$resource"
@@ -29,7 +30,7 @@ internal fun Path.loadFromResource(resource: String) {
 }
 
 internal fun Path.mergeFiles(predicate: (Path) -> Boolean = { true }): Path {
-    val tmp: Path = this.createTempFile(suffix = ".merged")
+    val tmp: Path = createTempFile(this, suffix = ".merged")
     this.walk()
         .filter { path -> path.isRegularFile && path != tmp }
         .filter(predicate)

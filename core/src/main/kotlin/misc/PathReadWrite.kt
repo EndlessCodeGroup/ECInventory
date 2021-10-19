@@ -51,14 +51,6 @@ fun Path.delete() {
 
 fun Path.deleteIfExists(): Boolean = Files.deleteIfExists(this)
 
-fun Path.createTempDirectory(prefix: String? = null): Path {
-    return Files.createTempDirectory(this, prefix)
-}
-
-fun Path.createTempFile(prefix: String? = null, suffix: String? = null): Path {
-    return Files.createTempFile(this, prefix, suffix)
-}
-
 fun Path.readText(charset: Charset = StandardCharsets.UTF_8): String {
     return Files.lines(this, charset).collect(Collectors.joining("\n"))
 }
