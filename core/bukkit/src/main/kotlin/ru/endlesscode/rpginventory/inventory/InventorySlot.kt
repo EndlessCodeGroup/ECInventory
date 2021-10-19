@@ -34,7 +34,7 @@ import ru.endlesscode.rpginventory.extensions.isNotEmpty
  */
 class InventorySlot(
     prototype: Slot,
-    val holder: RPGInventory,
+    val holder: CustomInventory,
     val position: Int
 ) : Slot by prototype {
 
@@ -63,8 +63,8 @@ class InventorySlot(
     /** Returns true if slot's content is empty. */
     fun isEmpty(): Boolean = content.isEmpty()
 
-    /** Returns [content] if it isn't empty and [slotHolder] otherwise. */
-    fun getContentOrHolder(): ItemStack = if (isEmpty()) slotHolder else content
+    /** Returns [content] if it isn't empty and [slotTexture] otherwise. */
+    fun getContentOrTexture(): ItemStack = if (isEmpty()) slotTexture else content
 
     private fun updateHolderMaxStackSize() {
         if (holder.maxStackSize < maxStackSize) {

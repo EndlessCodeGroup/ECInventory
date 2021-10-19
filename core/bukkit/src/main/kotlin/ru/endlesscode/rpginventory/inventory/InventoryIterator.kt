@@ -24,7 +24,7 @@ import org.bukkit.inventory.ItemStack
  * Class copied from CraftBukkit
  */
 class InventoryIterator internal constructor(
-    private val inventory: RPGInventory,
+    private val inventory: CustomInventory,
     private var nextIndex: Int = 0
 ) : MutableListIterator<ItemStack> {
 
