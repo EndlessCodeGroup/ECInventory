@@ -18,46 +18,58 @@
 
 package ru.endlesscode.rpginventory.configuration
 
-import com.google.common.reflect.TypeToken
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader
-import ninja.leaping.configurate.objectmapping.ObjectMappingException
+import com.typesafe.config.Config
+import com.typesafe.config.ConfigFactory
+import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.hocon.Hocon
+import kotlinx.serialization.serializer
 import ru.endlesscode.rpginventory.misc.makeSureDirectoryExists
-import ru.endlesscode.rpginventory.misc.mergeFiles
+import ru.endlesscode.rpginventory.misc.useFileTree
 import java.io.File
 import java.io.IOException
 import java.nio.file.Path
+import kotlin.io.path.extension
+import kotlin.io.path.isRegularFile
 
 /**
  * Collects configurations from given [configurationsDirectory].
  * @see collect
  */
-class ConfigurationCollector(private val configurationsDirectory: Path) {
+internal class ConfigurationCollector(
+    private val configurationsDirectory: Path,
+    private val hocon: Hocon = Hocon,
+) {
 
-    constructor(dataDirectory: File) : this(dataDirectory.toPath())
+    constructor(configurationsDirectory: File, hocon: Hocon = Hocon) : this(configurationsDirectory.toPath(), hocon)
 
     init {
         checkConfigurationDirectory()
     }
 
-    /** Gets value of type [T] from merged config. Returns 'null` if value isn't present. */
-    @Suppress("UnstableApiUsage")
-    fun <T : Any> collect(typeToken: TypeToken<T>): T? {
+    /** Returns value of type [T] from merged config. */
+    inline fun <reified T : Any> collect(): T = collect(hocon.serializersModule.serializer())
+
+    /** Returns value of type [T] from merged config. */
+    fun <T : Any> collect(deserializer: DeserializationStrategy<T>): T {
         checkConfigurationDirectory()
 
-        val mergedConfig = configurationsDirectory.mergeFiles { path ->
-            path.fileName?.toString()?.lowercase()?.endsWith(CONFIG_EXTENSION) == true
-        }
-
         try {
-            val loader = HoconConfigurationLoader.builder().setPath(mergedConfig).build()
-            val loadedNode = loader.load()
-            return loadedNode.getValue(typeToken)
-        } catch (e: ObjectMappingException) {
+            val mergedConfig = configurationsDirectory.useFileTree { paths ->
+                paths.filter { it.isRegularFile() && it.extension == CONFIG_EXTENSION }
+                    .map(::parseConfig)
+                    .fold(ConfigFactory.empty()) { mergedConfig, fileConfig -> mergedConfig.withFallback(fileConfig) }
+            }
+
+            return hocon.decodeFromConfig(deserializer, mergedConfig.resolve())
+        } catch (e: SerializationException) {
             configError(e)
         } catch (e: IOException) {
             configError(e)
         }
     }
+
+    private fun parseConfig(path: Path): Config = ConfigFactory.parseFile(path.toFile())
 
     private fun checkConfigurationDirectory() {
         try {

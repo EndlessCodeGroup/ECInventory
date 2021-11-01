@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import ru.endlesscode.bukkitgradle.dependencies.spigotApi
 
 plugins {
@@ -23,11 +24,14 @@ bukkit {
 
 dependencies {
     compileOnly(spigotApi)
+    compileOnly(libs.hocon)
 
-    // Runtime dependencies will be bundled into the output jar
-    implementation(libs.hocon) {
-        // Guava already in Bukkit
-        exclude(group = "com.google.guava")
-    }
     testImplementation(spigotApi)
+    testImplementation(libs.hocon)
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions {
+        freeCompilerArgs += "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi"
+    }
 }

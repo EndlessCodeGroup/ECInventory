@@ -18,8 +18,6 @@
 
 package ru.endlesscode.rpginventory.configuration
 
-import com.google.common.reflect.TypeParameter
-import com.google.common.reflect.TypeToken
 import ru.endlesscode.rpginventory.FileTestBase
 import ru.endlesscode.rpginventory.item.ConfigurableItem
 import ru.endlesscode.rpginventory.misc.copyTo
@@ -65,7 +63,7 @@ class ConfigurationCollectorTest : FileTestBase() {
         val collector = ConfigurationCollector(dir)
 
         // When
-        val collected = collector.collect(mapToken(String::class.java, String::class.java))
+        val collected = collector.collect<Map<String, String>>()
 
         // Then
         assertEquals(stringValues, collected)
@@ -75,22 +73,13 @@ class ConfigurationCollectorTest : FileTestBase() {
     fun `when collect ConfigurableItemStack values - should return right values`() {
         // Given
         saveResource(dir, "config/itemValues.conf")
-        val collector = ConfigurationCollector(dir.toFile())
+        val collector = ConfigurationCollector(dir)
 
         // When
-        val collected = collector.collect(mapToken(String::class.java, ConfigurableItem::class.java))
+        val collected = collector.collect<Map<String, ConfigurableItem>>()
 
         // Then
         assertEquals(itemValues, collected)
-    }
-
-    @Suppress("UnstableApiUsage")
-    private fun <K, V> mapToken(kClass: Class<K>, vClass: Class<V>): TypeToken<Map<K, V>> {
-        // @formatter:off
-        return object : TypeToken<Map<K, V>>() {}
-            .where(object : TypeParameter<K>() {}, kClass)
-            .where(object : TypeParameter<V>() {}, vClass)
-        // @formatter:on
     }
 
     private fun saveResource(targetDirectory: Path, name: String) {

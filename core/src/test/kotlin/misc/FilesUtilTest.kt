@@ -21,11 +21,7 @@ package ru.endlesscode.rpginventory.misc
 import ru.endlesscode.rpginventory.FileTestBase
 import ru.endlesscode.rpginventory.assertFailsWith
 import java.nio.file.FileAlreadyExistsException
-import java.nio.file.FileSystemException
-import java.nio.file.NoSuchFileException
-import kotlin.io.path.readText
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class FilesUtilTest : FileTestBase() {
 
@@ -72,84 +68,6 @@ class FilesUtilTest : FileTestBase() {
         // Then
         assertFailsWith<IllegalArgumentException>(message = "Resource file \"/notExistingResource\" not exists") {
             target.loadFromResource("/notExistingResource")
-        }
-    }
-
-    @Test
-    fun `readText - and given existing file - should be successful`() {
-        // Given
-        val text = """
-            Multi-line
-            existing
-            file.
-            С русским
-            текстом.
-            """.trimIndent()
-        val target = createFile("existingFile", text)
-
-        // When
-        val content = target.readText()
-
-        // Then
-        assertEquals(text, content)
-    }
-
-    @Test
-    fun `readText - and given not existing file - should throw exception`() {
-        // Given
-        val target = dir.resolve("notExistingFile")
-
-        // Then
-        assertFailsWith<NoSuchFileException> {
-            target.readText()
-        }
-    }
-
-    @Test
-    fun `mergeFiles - and given existing directory - should merge all files`() {
-        // Given
-        createFile("1oneFile", "Line one")
-        createFile("dir/2anotherFile", "Line two")
-        createFile("dir/3thirdFile", "Line 3")
-
-        // When
-        val result = dir.mergeFiles()
-
-        // Then
-        assertFileContentEquals(result, "Line one", "Line two", "Line 3")
-    }
-
-    @Test
-    fun `mergeFiles - and given existing directory and predicate - should merge only match files`() {
-        // Given
-        createFile("file.merge", "Line one")
-        createFile("dir/fileTwo", "Skipped line")
-        createFile("dir/fileThree.merge", "Line 3")
-
-        // When
-        val result = dir.mergeFiles { path -> path.toString().endsWith(".merge") }
-
-        // Then
-        assertFileContentEquals(result, "Line one", "Line 3")
-    }
-
-    @Test
-    fun `mergeFiles - and given empty directory - should return empty file`() {
-        // When
-        val result = dir.mergeFiles()
-
-        // Then
-        assertFileContentEquals(result, emptyList())
-    }
-
-    @Test
-    fun `mergeFiles - and given not a directory - should throw exception`() {
-        // Given
-        val file = createFile("existingFile")
-
-        // Then
-        assertFailsWith<FileSystemException> {
-            file.mergeFiles()
         }
     }
 }

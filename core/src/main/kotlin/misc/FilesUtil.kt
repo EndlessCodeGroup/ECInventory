@@ -19,7 +19,9 @@
 package ru.endlesscode.rpginventory.misc
 
 import java.nio.file.Path
-import kotlin.io.path.*
+import kotlin.io.path.createDirectories
+import kotlin.io.path.isDirectory
+import kotlin.io.path.moveTo
 
 internal fun Path.loadFromResource(resource: String) {
     val validResourcePath = if (resource.startsWith("/")) resource else "/$resource"
@@ -27,18 +29,6 @@ internal fun Path.loadFromResource(resource: String) {
         requireNotNull(stream) { "Resource file \"$validResourcePath\" not exists" }
         stream.copyTo(this)
     }
-}
-
-internal fun Path.mergeFiles(predicate: (Path) -> Boolean = { true }): Path {
-    val tmp: Path = createTempFile(this, suffix = ".merged")
-    useFileTree {
-        it.filter { path -> path.isRegularFile() && path != tmp }
-            .filter(predicate)
-            .map { file -> "${file.readText()}\n" }
-            .forEach { content -> tmp.appendText(content) }
-    }
-
-    return tmp
 }
 
 internal fun Path.makeSureDirectoryExists() {
