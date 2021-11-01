@@ -19,34 +19,34 @@
 package ru.endlesscode.rpginventory.configuration
 
 import ru.endlesscode.rpginventory.FileTestBase
-import ru.endlesscode.rpginventory.misc.exists
+import kotlin.io.path.exists
 import kotlin.test.*
 
-class ConfigurationProviderTest : FileTestBase() {
+class ConfigurationHolderTest : FileTestBase() {
 
     // SUT
-    private lateinit var configurationProvider: ConfigurationProvider<TestConfiguration>
+    private lateinit var configurationHolder: ConfigurationHolder<TestConfiguration>
 
     @BeforeTest
     override fun setUp() {
         super.setUp()
 
-        this.configurationProvider = ConfigurationProvider(this.dir)
+        configurationHolder = ConfigurationHolder(dir, TestConfiguration.SERIALIZER)
     }
 
     @Test
     fun `when ConfigurationProvider created - configuration file should be created`() {
         // Given
-        val configurationFile = this.dir.resolve("testConfiguration.conf")
+        val configurationFile = dir.resolve("testConfiguration.conf")
 
         // Then
-        assertTrue(configurationFile.exists)
+        assertTrue(configurationFile.exists())
     }
 
     @Test
     fun `when ConfigurationProvider created - config should not be null`() {
         // When
-        val config = this.configurationProvider.config
+        val config = configurationHolder.config
 
         // Then
         assertNotNull(config)
@@ -58,7 +58,7 @@ class ConfigurationProviderTest : FileTestBase() {
         val local = TestConfiguration()
 
         // When
-        val config = this.configurationProvider.config
+        val config = configurationHolder.config
 
         // Then
         assertEquals(local.aString, config.aString)
@@ -70,14 +70,14 @@ class ConfigurationProviderTest : FileTestBase() {
         // Given
         val newInt = 6
         val newString = "Lorem ipsum dolor sit amet, consectetur."
-        var config = this.configurationProvider.config
+        var config = configurationHolder.config
 
         // When
         config.anInt = newInt
         config.aString = newString
-        this.configurationProvider.save()
-        this.configurationProvider.reload()
-        config = this.configurationProvider.config
+        configurationHolder.save()
+        configurationHolder.reload()
+        config = configurationHolder.config
 
         // Then
         assertEquals(newString, config.aString)

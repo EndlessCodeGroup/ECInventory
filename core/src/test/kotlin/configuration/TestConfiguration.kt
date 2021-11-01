@@ -18,12 +18,20 @@
 
 package ru.endlesscode.rpginventory.configuration
 
-class TestConfiguration : Configurable {
+import kotlinx.serialization.Serializable
 
-    override val header: String? = null
-    override val nodeName: String = "TestNode"
+@Serializable
+internal class TestConfiguration(
+    var aString: String = "Lorem ipsum dolor sit amet.",
+    var anInt: Int = 5,
+) {
 
-    var aString = "Lorem ipsum dolor sit amet."
-    var anInt = 5
-
+    companion object {
+        val SERIALIZER = ConfigurationSerializer<TestConfiguration> { config ->
+            mapOf(
+                "aString" to config.aString,
+                "anInt" to config.anInt,
+            )
+        }
+    }
 }

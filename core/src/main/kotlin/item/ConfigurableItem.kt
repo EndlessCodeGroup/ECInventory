@@ -18,32 +18,18 @@
 
 package ru.endlesscode.rpginventory.item
 
-import ninja.leaping.configurate.objectmapping.Setting
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
+import kotlinx.serialization.Serializable
 
-@Suppress("DataClassPrivateConstructor")
-@ConfigSerializable
-data class ConfigurableItem private constructor(
-    @Setting override val material: String,
-    @Setting override val damage: Int,
-    @Setting override val displayName: String?,
-    @Setting override val unbreakable: Boolean,
-    @Setting override val lore: List<String>,
-    @Setting override val enchantments: Map<String, Int>,
-    @Setting override val itemFlags: List<String>
+@Serializable
+internal data class ConfigurableItem(
+    override val material: String,
+    override val damage: Int = 0,
+    override val displayName: String? = null,
+    override val unbreakable: Boolean = false,
+    override val lore: List<String> = emptyList(),
+    override val enchantments: Map<String, Int> = emptyMap(),
+    override val itemFlags: List<String> = emptyList(),
 ) : Item {
-
-    // Zero-argument constructor to be instantiated through object mapper.
-    @Suppress("unused")
-    private constructor() : this(
-        material = "AIR",
-        damage = 0,
-        displayName = null,
-        unbreakable = false,
-        lore = emptyList(),
-        enchantments = emptyMap(),
-        itemFlags = emptyList()
-    )
 
     class Builder private constructor(material: String) {
 

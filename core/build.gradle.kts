@@ -1,12 +1,14 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import ru.endlesscode.bukkitgradle.dependencies.spigotApi
 
 plugins {
-    id("ru.endlesscode.bukkitgradle") version "0.10.0"
-    id("com.github.johnrengelman.shadow") version "7.1.0"
+    `kotlin-convention`
+    alias(libs.plugins.serialization)
+    alias(libs.plugins.bukkitgradle)
 }
 
 bukkit {
-    apiVersion = "1.17.1"
+    apiVersion = libs.versions.bukkit.get()
 
     meta {
         name.set(rootProject.name)
@@ -20,27 +22,16 @@ bukkit {
     }
 }
 
-tasks.shadowJar {
-    tasks.jar.get().enabled = false
-    tasks.assemble.get().dependsOn(this)
-
-    // Understandable filename
-    archiveBaseName.set("$base.name-$project.name")
-    archiveClassifier.set("")
-
-    // Avoid conflicts with others
-    val shadedPackage = "ru.endlesscode.rpginventory.shaded"
-    relocate("com.typesafe.config", "$shadedPackage.config")
-    relocate("ninja.configurate", "$shadedPackage.configurate")
-}
-
 dependencies {
     compileOnly(spigotApi)
+    compileOnly(libs.hocon)
 
-    // Runtime dependencies will be bundled into the output jar
-    implementation(deps.hocon) {
-        // Guava already in Bukkit
-        exclude(group = "com.google.guava")
-    }
     testImplementation(spigotApi)
+    testImplementation(libs.hocon)
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions {
+        freeCompilerArgs += "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi"
+    }
 }

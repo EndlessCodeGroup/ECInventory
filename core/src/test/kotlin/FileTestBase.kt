@@ -20,8 +20,9 @@ package ru.endlesscode.rpginventory
 
 import org.junit.AfterClass
 import org.junit.BeforeClass
-import ru.endlesscode.rpginventory.misc.*
+import ru.endlesscode.rpginventory.misc.listFileTree
 import java.nio.file.Path
+import kotlin.io.path.*
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
@@ -34,7 +35,7 @@ open class FileTestBase {
         @JvmStatic
         @BeforeClass
         fun beforeAll() {
-            testDir = pathOf("testFiles").createDirectories()
+            testDir = Path("testFiles").createDirectories()
             testDir.createDirectories()
         }
 
@@ -50,7 +51,7 @@ open class FileTestBase {
 
     @BeforeTest
     open fun setUp() {
-        this.dir = testDir.createTempDirectory()
+        dir = createTempDirectory(testDir)
     }
 
     @AfterTest
@@ -70,12 +71,12 @@ open class FileTestBase {
     }
 
     protected fun assertFileContentEquals(file: Path, expectedContent: List<String>) {
-        assertEquals(expectedContent, file.readAllLines())
+        assertEquals(expectedContent, file.readLines())
     }
 
     protected fun deleteRecursively(path: Path) {
-        path.walk()
-            .sorted(reverseOrder())
-            .forEach(Path::delete)
+        path.listFileTree()
+            .asReversed()
+            .onEach(Path::deleteExisting)
     }
 }

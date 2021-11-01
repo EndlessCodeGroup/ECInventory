@@ -24,10 +24,10 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import ru.endlesscode.rpginventory.FileTestBase
 import ru.endlesscode.rpginventory.assertFailsWith
+import kotlin.io.path.createFile
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-
 
 class I18NTest : FileTestBase() {
 

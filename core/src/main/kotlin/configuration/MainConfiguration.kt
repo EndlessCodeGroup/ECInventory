@@ -18,17 +18,22 @@
 
 package ru.endlesscode.rpginventory.configuration
 
-import ninja.leaping.configurate.objectmapping.Setting
+import kotlinx.serialization.Serializable
 
-class MainConfiguration : Configurable {
+@Serializable
+class MainConfiguration(
+    var enabled: Boolean = false,
+    var locale: String = "en",
+) {
 
-    @Setting
-    var enabled = false
-
-    @Setting(comment = "Look for available locales in \"locale/\" directory")
-    var locale = "en"
-
-    override val header: String = "RPGInventory3 configuration"
-
-    override val nodeName: String = "RPGInventory"
+    internal companion object {
+        val SERIALIZER = ConfigurationSerializer<MainConfiguration>(
+            description = "RPGInventory3 configuration"
+        ) { config ->
+            mapOf(
+                "enabled" to config.enabled,
+                "locale" to config.locale,
+            )
+        }
+    }
 }
