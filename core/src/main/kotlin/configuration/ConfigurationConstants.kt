@@ -18,4 +18,4 @@
 
 package ru.endlesscode.rpginventory.configuration
 
-internal const val CONFIG_EXTENSION = ".conf"
+internal const val CONFIG_EXTENSION = "conf"

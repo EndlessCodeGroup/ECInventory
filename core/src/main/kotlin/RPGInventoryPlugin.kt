@@ -20,7 +20,7 @@ package ru.endlesscode.rpginventory
 
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin
-import ru.endlesscode.rpginventory.configuration.ConfigurationProvider
+import ru.endlesscode.rpginventory.configuration.ConfigurationHolder
 import ru.endlesscode.rpginventory.configuration.MainConfiguration
 import ru.endlesscode.rpginventory.misc.I18N
 import ru.endlesscode.rpginventory.misc.I18NBukkit
@@ -30,9 +30,9 @@ import java.util.logging.Level
 class RPGInventoryPlugin : JavaPlugin() {
 
     val configuration: MainConfiguration
-        get() = configProvider.config
+        get() = configHolder.config
 
-    private lateinit var configProvider: ConfigurationProvider<MainConfiguration>
+    private lateinit var configHolder: ConfigurationHolder<MainConfiguration>
     private lateinit var locale: I18N
 
     override fun onEnable() {
@@ -42,8 +42,8 @@ class RPGInventoryPlugin : JavaPlugin() {
 
     private fun loadParts(): Boolean {
         return makeSure {
-            this.configProvider = ConfigurationProvider(this.dataFolder, MainConfiguration::class.java)
-            this.locale = I18NBukkit(this)
+            configHolder = ConfigurationHolder(dataFolder, MainConfiguration.SERIALIZER)
+            locale = I18NBukkit(this)
         }
     }
 
