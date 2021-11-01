@@ -19,50 +19,15 @@
 package ru.endlesscode.rpginventory.misc
 
 import java.io.InputStream
-import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
-import java.nio.file.*
-import java.util.stream.Collectors
-import java.util.stream.Stream
-
-val Path.exists: Boolean get() = Files.exists(this)
-val Path.notExists: Boolean get() = Files.notExists(this)
-
-val Path.isDirectory: Boolean get() = Files.isDirectory(this)
-val Path.isRegularFile: Boolean get() = Files.isRegularFile(this)
-
-fun pathOf(path: String): Path = Paths.get(path)
+import java.nio.file.CopyOption
+import java.nio.file.Files
+import java.nio.file.Path
+import kotlin.streams.asSequence
+import kotlin.streams.toList
 
 fun InputStream.copyTo(target: Path, vararg options: CopyOption): Long {
     return Files.copy(this, target, *options)
 }
 
-fun Path.moveTo(target: Path): Path {
-    return Files.move(this, target)
-}
-
-fun Path.createDirectories(): Path = Files.createDirectories(this)
-
-fun Path.createFile(): Path = Files.createFile(this)
-
-fun Path.delete() {
-    Files.delete(this)
-}
-
-fun Path.deleteIfExists(): Boolean = Files.deleteIfExists(this)
-
-fun Path.readText(charset: Charset = StandardCharsets.UTF_8): String {
-    return Files.lines(this, charset).collect(Collectors.joining("\n"))
-}
-
-fun Path.readAllLines(charset: Charset = StandardCharsets.UTF_8): List<String> = Files.readAllLines(this, charset)
-
-fun Path.writeText(text: String, charset: Charset = Charsets.UTF_8): Path {
-    return Files.write(this, text.toByteArray(charset), StandardOpenOption.CREATE)
-}
-
-fun Path.appendText(text: String, charset: Charset = Charsets.UTF_8): Path {
-    return Files.write(this, text.toByteArray(charset), StandardOpenOption.APPEND)
-}
-
-fun Path.walk(): Stream<Path> = Files.walk(this)
+fun Path.listFileTree(): List<Path> = Files.walk(this).use { it.toList() }
+fun <T> Path.useFileTree(block: (Sequence<Path>) -> T): T = Files.walk(this).use { block(it.asSequence()) }

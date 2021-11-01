@@ -19,7 +19,7 @@
 package ru.endlesscode.rpginventory.configuration
 
 import ru.endlesscode.rpginventory.FileTestBase
-import ru.endlesscode.rpginventory.misc.exists
+import kotlin.io.path.exists
 import kotlin.test.*
 
 class ConfigurationProviderTest : FileTestBase() {
@@ -37,16 +37,16 @@ class ConfigurationProviderTest : FileTestBase() {
     @Test
     fun `when ConfigurationProvider created - configuration file should be created`() {
         // Given
-        val configurationFile = this.dir.resolve("testConfiguration.conf")
+        val configurationFile = dir.resolve("testConfiguration.conf")
 
         // Then
-        assertTrue(configurationFile.exists)
+        assertTrue(configurationFile.exists())
     }
 
     @Test
     fun `when ConfigurationProvider created - config should not be null`() {
         // When
-        val config = this.configurationProvider.config
+        val config = configurationProvider.config
 
         // Then
         assertNotNull(config)
@@ -58,7 +58,7 @@ class ConfigurationProviderTest : FileTestBase() {
         val local = TestConfiguration()
 
         // When
-        val config = this.configurationProvider.config
+        val config = configurationProvider.config
 
         // Then
         assertEquals(local.aString, config.aString)
@@ -70,14 +70,14 @@ class ConfigurationProviderTest : FileTestBase() {
         // Given
         val newInt = 6
         val newString = "Lorem ipsum dolor sit amet, consectetur."
-        var config = this.configurationProvider.config
+        var config = configurationProvider.config
 
         // When
         config.anInt = newInt
         config.aString = newString
-        this.configurationProvider.save()
-        this.configurationProvider.reload()
-        config = this.configurationProvider.config
+        configurationProvider.save()
+        configurationProvider.reload()
+        config = configurationProvider.config
 
         // Then
         assertEquals(newString, config.aString)

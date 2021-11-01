@@ -23,6 +23,9 @@ import java.io.IOException
 import java.nio.file.Path
 import java.text.MessageFormat
 import java.util.*
+import kotlin.io.path.createDirectories
+import kotlin.io.path.notExists
+import kotlin.io.path.readText
 
 abstract class I18N protected constructor(workDir: Path, langCode: String) {
 
@@ -35,7 +38,7 @@ abstract class I18N protected constructor(workDir: Path, langCode: String) {
 
     init {
         try {
-            this.localeFolder = workDir.resolve("locales").createDirectories()
+            localeFolder = workDir.resolve("locales").createDirectories()
         } catch (e: IOException) {
             throw I18NException("Failed to create locales folder", e)
         }
@@ -45,11 +48,11 @@ abstract class I18N protected constructor(workDir: Path, langCode: String) {
 
     fun reload(langCode: String) {
         load(langCode)
-        this.cache.clear()
+        cache.clear()
     }
 
     private fun load(langCode: String) {
-        val localeFile = this.prepareLocaleFile(langCode.lowercase())
+        val localeFile = prepareLocaleFile(langCode.lowercase())
         try {
             localeFile.readText().reader().use(locale::load)
         } catch (e: IOException) {
@@ -58,8 +61,8 @@ abstract class I18N protected constructor(workDir: Path, langCode: String) {
     }
 
     private fun prepareLocaleFile(langCode: String): Path {
-        val localeFile = this.localeFolder.resolve("$langCode.lang")
-        if (localeFile.notExists) {
+        val localeFile = localeFolder.resolve("$langCode.lang")
+        if (localeFile.notExists()) {
             localeFile.loadFromResource("/locales/$langCode.lang")
         }
 
@@ -72,12 +75,12 @@ abstract class I18N protected constructor(workDir: Path, langCode: String) {
 
     @JvmOverloads
     fun getMessage(key: String, stripColor: Boolean = false, vararg args: Any = emptyArray()): String {
-        val result = this.getMessageFromCache(key).format(args)
-        return if (stripColor) this.stripColor(result) else result
+        val result = getMessageFromCache(key).format(args)
+        return if (stripColor) stripColor(result) else result
     }
 
     private fun getMessageFromCache(key: String): MessageFormat {
-        return this.cache.getOrPut(key) { MessageFormat(this.translateCodes(this.locale.getProperty(key, key))) }
+        return cache.getOrPut(key) { MessageFormat(translateCodes(locale.getProperty(key, key))) }
     }
 
     abstract fun stripColor(message: String): String

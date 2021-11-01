@@ -23,6 +23,7 @@ import ru.endlesscode.rpginventory.assertFailsWith
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.FileSystemException
 import java.nio.file.NoSuchFileException
+import kotlin.io.path.readText
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
