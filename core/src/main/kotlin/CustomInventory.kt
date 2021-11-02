@@ -1,4 +1,4 @@
-package ru.endlesscode.rpginventory.inventory
+package ru.endlesscode.rpginventory
 
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -10,10 +10,12 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.extensions.orEmpty
-import ru.endlesscode.rpginventory.extensions.roundToPowerOf
+import ru.endlesscode.rpginventory.slot.InventorySlot
+import ru.endlesscode.rpginventory.slot.Slot
 import ru.endlesscode.rpginventory.util.IndexedMap
 import ru.endlesscode.rpginventory.util.asIndexedMap
+import ru.endlesscode.rpginventory.util.orEmpty
+import ru.endlesscode.rpginventory.util.roundToPowerOf
 import kotlin.math.min
 
 /**

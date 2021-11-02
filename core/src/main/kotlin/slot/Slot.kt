@@ -16,7 +16,7 @@
  * along with RPGInventory.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.inventory
+package ru.endlesscode.rpginventory.slot
 
 import org.bukkit.inventory.ItemStack
 
@@ -24,18 +24,17 @@ import org.bukkit.inventory.ItemStack
  * Represents slot.
  *
  * @property id Identifier of the slot.
- * @property localizedName A localized name of the slot.
- * @property slotTexture The item that will be placed to the slot when it is empty.
+ * @property name A localized name of the slot.
+ * @property texture The item that will be placed to the slot when it is empty.
  * @property type Slot type.
  * @property maxStackSize The maximum stack size for an ItemStack in this slot.
  */
 interface Slot {
     val id: String
-    val localizedName: String
-    val slotTexture: ItemStack
+    val name: String
+    val texture: ItemStack
     val type: Type
-
-    var maxStackSize: Int
+    val maxStackSize: Int
 
     enum class Type {
         /**

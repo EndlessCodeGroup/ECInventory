@@ -16,14 +16,18 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.extensions
+package ru.endlesscode.rpginventory.util
 
-import kotlin.math.sign
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
-/**
- * Rounds the number up to given [power].
- */
-fun Int.roundToPowerOf(power: Int): Int {
-    val additional = if (this % power == 0) 0 else this.sign
-    return (this / power + additional) * power
+class MathKtTest {
+
+    @Test
+    fun `round to power`() {
+        assertEquals(0, 0.roundToPowerOf(2))
+        assertEquals(10, 7.roundToPowerOf(5))
+        assertEquals(7, 7.roundToPowerOf(7))
+        assertEquals(-12, (-7).roundToPowerOf(6))
+    }
 }

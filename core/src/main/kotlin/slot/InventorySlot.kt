@@ -16,11 +16,12 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.inventory
+package ru.endlesscode.rpginventory.slot
 
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.extensions.isNullOrEmpty
+import ru.endlesscode.rpginventory.CustomInventory
+import ru.endlesscode.rpginventory.util.isNullOrEmpty
 
 /**
  * Represents slot in the inventory, that has own behavior.
@@ -62,8 +63,8 @@ class InventorySlot(
     /** Returns true if slot's content is empty. */
     fun isEmpty(): Boolean = content.isNullOrEmpty()
 
-    /** Returns [content] if it isn't empty and [slotTexture] otherwise. */
-    fun getContentOrTexture(): ItemStack = if (isEmpty()) slotTexture else content
+    /** Returns [content] if it isn't empty and [texture] otherwise. */
+    fun getContentOrTexture(): ItemStack = if (isEmpty()) texture else content
 
     private fun updateHolderMaxStackSize() {
         if (holder.maxStackSize < maxStackSize) {

@@ -16,7 +16,7 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.inventory
+package ru.endlesscode.rpginventory
 
 import org.bukkit.inventory.ItemStack
 
