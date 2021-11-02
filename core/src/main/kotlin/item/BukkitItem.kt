@@ -26,7 +26,7 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
 import org.bukkit.inventory.meta.ItemMeta
-import ru.endlesscode.rpginventory.util.safeValueOf
+import ru.endlesscode.rpginventory.util.enumValueOfOrNull
 import ru.endlesscode.rpginventory.util.translateColorCodes
 
 fun Item.createItemStack(): ItemStack {
@@ -65,7 +65,7 @@ private fun Item.createItemMeta(material: Material): ItemMeta? {
 
     // ItemFlags processing
     if (this.itemFlags.isNotEmpty()) {
-        val itemFlags = this.itemFlags.mapNotNull { safeValueOf<ItemFlag>(it) }
+        val itemFlags = this.itemFlags.mapNotNull { enumValueOfOrNull<ItemFlag>(it) }
         itemMeta.addItemFlags(*itemFlags.toTypedArray())
     }
 
