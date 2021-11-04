@@ -20,37 +20,43 @@ package ru.endlesscode.rpginventory
 
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin
-import ru.endlesscode.rpginventory.configuration.ConfigurationHolder
-import ru.endlesscode.rpginventory.configuration.MainConfiguration
-import ru.endlesscode.rpginventory.misc.I18N
-import ru.endlesscode.rpginventory.misc.I18NBukkit
+import ru.endlesscode.rpginventory.internal.DI
 import java.util.logging.Level
 
 /** This class is entry point to the plugin. */
 class RPGInventoryPlugin : JavaPlugin() {
 
-    val configuration: MainConfiguration
-        get() = configHolder.config
-
-    private lateinit var configHolder: ConfigurationHolder<MainConfiguration>
-    private lateinit var locale: I18N
+    init {
+        DI.init(this)
+    }
 
     override fun onEnable() {
-        if (!loadParts()) return
+        if (!loadParts()) {
+            pluginLoader.disablePlugin(this)
+            return
+        }
         //TODO: Logic
     }
 
     private fun loadParts(): Boolean {
+        if (!DI.config.enabled) {
+            logger.info("Plugin is disabled in config.")
+            return false
+        }
+
         return makeSure {
-            configHolder = ConfigurationHolder(dataFolder, MainConfiguration.SERIALIZER)
-            locale = I18NBukkit(this)
+            if (DI.data.isEmpty()) {
+                logger.info("Data configs not found, please add it to 'data' folder")
+                return@makeSure false
+            }
+            logger.info("Loaded ${DI.data.inventories.size} inventories and ${DI.data.slots.size} slots")
+            true
         }
     }
 
-    private fun makeSure(action: () -> Unit): Boolean {
+    private fun makeSure(action: () -> Boolean): Boolean {
         return try {
             action()
-            true
         } catch (e: Exception) {
             criticalError(e)
             false
@@ -59,7 +65,6 @@ class RPGInventoryPlugin : JavaPlugin() {
 
     private fun criticalError(exception: Exception) {
         logger.log(Level.SEVERE, "Error on plugin enable.", exception)
-        server.pluginManager.disablePlugin(this)
     }
 
     @Deprecated(

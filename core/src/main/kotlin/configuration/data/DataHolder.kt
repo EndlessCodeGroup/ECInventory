@@ -3,6 +3,7 @@ package ru.endlesscode.rpginventory.configuration.data
 import kotlinx.serialization.hocon.Hocon
 import ru.endlesscode.mimic.items.BukkitItemsRegistry
 import ru.endlesscode.rpginventory.configuration.ConfigurationCollector
+import ru.endlesscode.rpginventory.internal.DI
 import ru.endlesscode.rpginventory.util.MAX_STACK_SIZE
 import java.nio.file.Path
 
@@ -14,7 +15,7 @@ internal class DataHolder(
     constructor(
         itemsRegistry: BukkitItemsRegistry,
         pluginDataDir: Path,
-        hocon: Hocon = Hocon,
+        hocon: Hocon = DI.hocon,
     ) : this(itemsRegistry, ConfigurationCollector(pluginDataDir.resolve("data"), hocon))
 
     var data: DataConfig

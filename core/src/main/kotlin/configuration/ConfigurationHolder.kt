@@ -19,8 +19,8 @@
 package ru.endlesscode.rpginventory.configuration
 
 import kotlinx.serialization.hocon.Hocon
+import ru.endlesscode.rpginventory.internal.DI
 import ru.endlesscode.rpginventory.misc.makeSureDirectoryExists
-import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.createFile
 import kotlin.io.path.isDirectory
@@ -35,17 +35,8 @@ import kotlin.io.path.notExists
 internal class ConfigurationHolder<T : Any>(
     configsDirectory: Path,
     private val serializer: ConfigurationSerializer<T>,
-    private val hocon: Hocon = Hocon,
+    private val hocon: Hocon = DI.hocon,
 ) {
-
-    /**
-     * Creates new instance of the ConfigurationHolder.
-     *
-     * @param configsDirectory File that points to configs a directory.
-     * @param loader           A loader used to load and save config.
-     */
-    constructor(configsDirectory: File, loader: ConfigurationSerializer<T>, hocon: Hocon = Hocon)
-            : this(configsDirectory.toPath(), loader, hocon)
 
     var config: T
         private set

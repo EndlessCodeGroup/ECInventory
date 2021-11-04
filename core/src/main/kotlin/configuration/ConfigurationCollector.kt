@@ -24,9 +24,9 @@ import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.serializer
+import ru.endlesscode.rpginventory.internal.DI
 import ru.endlesscode.rpginventory.misc.makeSureDirectoryExists
 import ru.endlesscode.rpginventory.misc.useFileTree
-import java.io.File
 import java.io.IOException
 import java.nio.file.Path
 import kotlin.io.path.extension
@@ -38,10 +38,8 @@ import kotlin.io.path.isRegularFile
  */
 internal class ConfigurationCollector(
     private val configurationsDirectory: Path,
-    private val hocon: Hocon = Hocon,
+    private val hocon: Hocon = DI.hocon,
 ) {
-
-    constructor(configurationsDirectory: File, hocon: Hocon = Hocon) : this(configurationsDirectory.toPath(), hocon)
 
     init {
         checkConfigurationDirectory()

@@ -19,10 +19,10 @@
 package ru.endlesscode.rpginventory.misc
 
 import org.bukkit.ChatColor
-import ru.endlesscode.rpginventory.RPGInventoryPlugin
 import ru.endlesscode.rpginventory.util.translateColorCodes
+import java.nio.file.Path
 
-class I18NBukkit(instance: RPGInventoryPlugin) : I18N(instance.dataFolder, instance.configuration.locale) {
+class I18NBukkit(workDir: Path, initLocale: String) : I18N(workDir, initLocale) {
 
     override fun stripColor(message: String): String = checkNotNull(ChatColor.stripColor(message))
 
