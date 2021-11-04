@@ -4,12 +4,13 @@ import kotlinx.serialization.hocon.Hocon
 import org.bukkit.plugin.Plugin
 import ru.endlesscode.mimic.bukkit.load
 import ru.endlesscode.mimic.items.BukkitItemsRegistry
+import ru.endlesscode.rpginventory.InventoryLayout
 import ru.endlesscode.rpginventory.configuration.ConfigurationHolder
 import ru.endlesscode.rpginventory.configuration.MainConfiguration
-import ru.endlesscode.rpginventory.configuration.data.DataConfig
 import ru.endlesscode.rpginventory.configuration.data.DataHolder
 import ru.endlesscode.rpginventory.misc.I18N
 import ru.endlesscode.rpginventory.misc.I18NBukkit
+import ru.endlesscode.rpginventory.slot.Slot
 
 internal object DI {
 
@@ -26,7 +27,8 @@ internal object DI {
 
     val locale: I18N by lazy { I18NBukkit(dataPath, config.locale) }
     val config: MainConfiguration get() = configHolder.config
-    val data: DataConfig get() = dataHolder.data
+    val slots: Map<String, Slot> get() = dataHolder.slots
+    val inventories: Map<String, InventoryLayout> get() = dataHolder.inventories
 
     fun init(plugin: Plugin) {
         this.plugin = plugin

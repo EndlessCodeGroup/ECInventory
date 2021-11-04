@@ -6,6 +6,4 @@ import kotlinx.serialization.Serializable
 internal data class DataConfig(
     val inventories: Map<String, InventoryConfig> = emptyMap(),
     val slots: Map<String, SlotConfig> = emptyMap(),
-) {
-    fun isEmpty(): Boolean = inventories.isEmpty() && slots.isEmpty()
-}
+)
