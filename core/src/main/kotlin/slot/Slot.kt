@@ -35,6 +35,7 @@ interface Slot {
     val name: String
     val texture: ItemStack
     val type: Type
+    val contentValidator: ItemValidator
     val maxStackSize: Int
 
     @Serializable(with = SlotTypeSerializer::class)

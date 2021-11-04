@@ -21,7 +21,8 @@ package ru.endlesscode.rpginventory.slot
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.rpginventory.CustomInventory
-import ru.endlesscode.rpginventory.util.isNullOrEmpty
+import ru.endlesscode.rpginventory.util.isEmpty
+import ru.endlesscode.rpginventory.util.isNotEmpty
 
 /**
  * Represents slot in the inventory, that has own behavior.
@@ -35,14 +36,14 @@ import ru.endlesscode.rpginventory.util.isNullOrEmpty
 class InventorySlot(
     prototype: Slot,
     val holder: CustomInventory,
-    val position: Int
+    val position: Int,
 ) : Slot by prototype {
 
     var content: ItemStack = ItemStack(Material.AIR)
         set(value) {
             field = content
-            if (!value.isNullOrEmpty() && this.maxStackSize > 0 && value.amount > this.maxStackSize) {
-                value.amount = this.maxStackSize
+            if (value.isNotEmpty() && maxStackSize > 0 && value.amount > maxStackSize) {
+                value.amount = maxStackSize
             }
 
             // We need to sync this change with the inventory's view if it is open
@@ -60,10 +61,10 @@ class InventorySlot(
         updateHolderMaxStackSize()
     }
 
-    /** Returns true if slot's content is empty. */
-    fun isEmpty(): Boolean = content.isNullOrEmpty()
+    /** Returns `true` if slot's content is empty. */
+    fun isEmpty(): Boolean = content.isEmpty()
 
-    /** Returns [content] if it isn't empty and [texture] otherwise. */
+    /** Returns [content] if it isn't empty or [texture] otherwise. */
     fun getContentOrTexture(): ItemStack = if (isEmpty()) texture else content
 
     private fun updateHolderMaxStackSize() {
