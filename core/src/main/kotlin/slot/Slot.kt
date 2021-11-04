@@ -18,6 +18,7 @@
 
 package ru.endlesscode.rpginventory.slot
 
+import kotlinx.serialization.Serializable
 import org.bukkit.inventory.ItemStack
 
 /**
@@ -36,6 +37,7 @@ interface Slot {
     val type: Type
     val maxStackSize: Int
 
+    @Serializable(with = SlotTypeSerializer::class)
     enum class Type {
         /**
          * Indicates that the slot should be counted on stats counting.
