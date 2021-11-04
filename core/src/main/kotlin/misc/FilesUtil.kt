@@ -20,7 +20,7 @@ package ru.endlesscode.rpginventory.misc
 
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
-import kotlin.io.path.isDirectory
+import kotlin.io.path.isRegularFile
 import kotlin.io.path.moveTo
 
 internal fun Path.loadFromResource(resource: String) {
@@ -32,7 +32,7 @@ internal fun Path.loadFromResource(resource: String) {
 }
 
 internal fun Path.makeSureDirectoryExists() {
-    if (!this.isDirectory()) {
+    if (this.isRegularFile()) {
         val tmp = parent.resolve("$fileName.niceJoke.${System.currentTimeMillis() % 10000}")
         this.moveTo(tmp)
     }
