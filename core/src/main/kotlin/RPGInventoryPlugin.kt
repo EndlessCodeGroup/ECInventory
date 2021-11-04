@@ -46,8 +46,8 @@ class RPGInventoryPlugin : JavaPlugin() {
         }
 
         return makeSure {
-            if (DI.slots.isEmpty() && DI.inventories.isEmpty()) {
-                Log.i("Data configs not found, please add it to 'data' folder")
+            if (DI.inventories.isEmpty()) {
+                Log.i("Inventory configs not found, add it to 'data' folder")
                 return@makeSure false
             }
             Log.i("Loaded ${DI.inventories.size} inventories and ${DI.slots.size} slots")
