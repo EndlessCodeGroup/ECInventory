@@ -2,8 +2,13 @@ package ru.endlesscode.rpginventory.configuration.data
 
 import kotlinx.serialization.hocon.Hocon
 import ru.endlesscode.mimic.items.BukkitItemsRegistry
+import ru.endlesscode.rpginventory.InventoryLayout
 import ru.endlesscode.rpginventory.configuration.ConfigurationCollector
 import ru.endlesscode.rpginventory.internal.DI
+import ru.endlesscode.rpginventory.slot.ItemValidator
+import ru.endlesscode.rpginventory.slot.Slot
+import ru.endlesscode.rpginventory.slot.SlotImpl
+import ru.endlesscode.rpginventory.util.Log
 import ru.endlesscode.rpginventory.util.MAX_STACK_SIZE
 import java.nio.file.Path
 
@@ -18,40 +23,44 @@ internal class DataHolder(
         hocon: Hocon = DI.hocon,
     ) : this(itemsRegistry, ConfigurationCollector(pluginDataDir.resolve("data"), hocon))
 
-    var data: DataConfig
+    var slots: Map<String, Slot> = emptyMap()
+        private set
+    var inventories: Map<String, InventoryLayout> = emptyMap()
         private set
 
     init {
-        data = collectData()
+        collectData()
     }
 
     fun reload() {
-        data = collectData()
+        collectData()
     }
 
-    private fun collectData(): DataConfig {
+    private fun collectData() {
         val data = collector.collect<DataConfig>()
-        data.slots.forEach { (id, slot) -> slot.validate(id) }
-        data.inventories.forEach { (id, inventory) -> inventory.validate(id) }
-        return data
+        slots = data.slots.mapValues { (id, config) -> createSlot(id, config) }
     }
 
-    private fun SlotConfig.validate(id: String) {
-        val prefix = "Can't parse slot with ID '$id'."
-        check(maxStackSize in 1..MAX_STACK_SIZE) {
-            "$prefix Max stack size should be in range 1..$MAX_STACK_SIZE, bit it was $maxStackSize."
+    private fun createSlot(id: String, config: SlotConfig): Slot {
+        val prefix = "Parsing slot '$id':"
+        val textureItem = requireNotNull(itemsRegistry.getItem(config.texture)) {
+            "$prefix Unknown texture '${config.texture}'. $errorMimicIdExplanation"
         }
-        check(itemsRegistry.isItemExists(texture)) {
-            "$prefix Unknown texture '$texture'. $errorMimicIdExplanation"
+        val correctMaxStackSize = config.maxStackSize.coerceIn(1, MAX_STACK_SIZE)
+        if (correctMaxStackSize != config.maxStackSize) {
+            Log.w(
+                "$prefix max stack size should be in range 1..$MAX_STACK_SIZE, but was '${config.maxStackSize}'.",
+                "Will be used $correctMaxStackSize instead, please fix slot config.",
+            )
         }
-    }
 
-    private fun InventoryConfig.validate(id: String) {
-        val prefix = "Can't parse inventory with ID '$id'."
-        check(emptySlotTexture == null || itemsRegistry.isItemExists(emptySlotTexture)) {
-            "$prefix Unknown empty slot texture '$emptySlotTexture'. $errorMimicIdExplanation"
-        }
-        check(slots.isNotEmpty()) { "$prefix. Inventory should contain at least one slot." }
-        check(slots.values.all { it in data.slots.keys })
+        return SlotImpl(
+            id = id,
+            name = config.name,
+            texture = textureItem,
+            type = config.type,
+            contentValidator = ItemValidator.any,
+            maxStackSize = correctMaxStackSize,
+        )
     }
 }
