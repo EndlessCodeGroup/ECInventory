@@ -19,8 +19,11 @@
 package ru.endlesscode.rpginventory.configuration
 
 import ru.endlesscode.rpginventory.FileTestBase
-import ru.endlesscode.rpginventory.item.ConfigurableItem
+import ru.endlesscode.rpginventory.configuration.data.DataConfig
+import ru.endlesscode.rpginventory.configuration.data.InventoryConfig
+import ru.endlesscode.rpginventory.configuration.data.SlotConfig
 import ru.endlesscode.rpginventory.misc.copyTo
+import ru.endlesscode.rpginventory.slot.Slot
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import kotlin.test.Test
@@ -28,58 +31,69 @@ import kotlin.test.assertEquals
 
 class ConfigurationCollectorTest : FileTestBase() {
 
-    private val stringValues = mapOf(
-        "first" to "Nulla semper facilisis urna non fermentum.",
-        "second" to "Morbi at lorem vitae odio molestie scelerisque.",
-        "third" to "Vivamus non neque nec purus auctor hendrerit.",
-        "fourth" to "Integer nec auctor ipsum, porttitor dictum sapien."
-    )
-
-    private val itemValues = mapOf(
-        "stick" to ConfigurableItem.Builder.fromMaterial("STICK").build(),
-        "magicStick" to ConfigurableItem.Builder.fromMaterial("STICK")
-            .withDisplayName("&6Magic stick")
-            .withLore(
-                "&7This stick can be obtained in",
-                "&7the &cElite dungeon&7 after defeating",
-                "&7a &4Bloody swordmaster&7."
-            ).build(),
-        "uselessStick" to ConfigurableItem.Builder.fromMaterial("STICK")
-            .withDisplayName("&7Useless stick")
-            .withLore(
-                "&7This stick can be obtained everywhere,",
-                "&7where a tree available."
-            ).build(),
-        "justStick" to ConfigurableItem.Builder.fromMaterial("STICK")
-            .withDisplayName("&aJust stick")
-            .withLore("&7Where you found it?..")
-            .build()
-    )
+    // SUT
+    private val collector = ConfigurationCollector(dir)
 
     @Test
     fun `when collect string values - should return right values`() {
         // Given
-        this.saveResource(dir, "config/stringValues.conf")
-        val collector = ConfigurationCollector(dir)
+        saveResource(dir, "config/stringValues.conf")
 
         // When
         val collected = collector.collect<Map<String, String>>()
 
         // Then
-        assertEquals(stringValues, collected)
+        assertEquals(
+            expected = mapOf(
+                "first" to "Nulla semper facilisis urna non fermentum.",
+                "second" to "Morbi at lorem vitae odio molestie scelerisque.",
+                "third" to "Vivamus non neque nec purus auctor hendrerit.",
+                "fourth" to "Integer nec auctor ipsum, porttitor dictum sapien."
+            ),
+            actual = collected,
+        )
     }
 
     @Test
-    fun `when collect ConfigurableItemStack values - should return right values`() {
+    fun `when collect DataConfig - should return right values`() {
         // Given
-        saveResource(dir, "config/itemValues.conf")
-        val collector = ConfigurationCollector(dir)
+        saveResource(dir, "config/data.conf")
 
         // When
-        val collected = collector.collect<Map<String, ConfigurableItem>>()
+        val collected = collector.collect<DataConfig>()
 
         // Then
-        assertEquals(itemValues, collected)
+        assertEquals(
+            expected = DataConfig(
+                slots = mapOf(
+                    "right-ring" to SlotConfig(
+                        name = "Right ring",
+                        texture = "ring-slot",
+                        allowedItems = listOf("minecraft:diamond_shovel", "mimic:some_texture_item"),
+                        type = Slot.Type.PASSIVE,
+                        maxStackSize = 1,
+                    ),
+                    "left-ring" to SlotConfig(
+                        name = "Left ring",
+                        texture = "ring-slot",
+                        allowedItems = listOf("minecraft:diamond_shovel", "mimic:some_texture_item"),
+                        type = Slot.Type.PASSIVE,
+                        maxStackSize = 1,
+                    ),
+                ),
+                inventories = mapOf(
+                    "default" to InventoryConfig(
+                        name = "RPGInventory",
+                        emptySlotTexture = null,
+                        slots = mapOf(
+                            "24" to "left-ring",
+                            "26" to "right-ring",
+                        ),
+                    ),
+                )
+            ),
+            actual = collected,
+        )
     }
 
     private fun saveResource(targetDirectory: Path, name: String) {
