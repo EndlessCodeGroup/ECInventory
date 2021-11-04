@@ -498,7 +498,7 @@ class CustomInventory(
     }
 
     private fun buildViewContents(): Array<ItemStack> {
-        val contents = Array(viewSize) { layout.filler }
+        val contents = Array(viewSize) { layout.emptySlotTexture }
         for (slot in getSlots()) {
             contents[slot.position] = slot.getContentOrTexture()
         }
