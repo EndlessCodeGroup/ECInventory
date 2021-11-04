@@ -21,6 +21,7 @@ package ru.endlesscode.rpginventory
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin
 import ru.endlesscode.rpginventory.internal.DI
+import ru.endlesscode.rpginventory.misc.registerCommand
 import ru.endlesscode.rpginventory.util.Log
 
 /** This class is entry point to the plugin. */
@@ -36,6 +37,8 @@ class RPGInventoryPlugin : JavaPlugin() {
             pluginLoader.disablePlugin(this)
             return
         }
+
+        registerCommand()
         //TODO: Logic
     }
 

@@ -1,4 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import ru.endlesscode.bukkitgradle.dependencies.codemc
+import ru.endlesscode.bukkitgradle.dependencies.jitpack
+import ru.endlesscode.bukkitgradle.dependencies.papermc
 import ru.endlesscode.bukkitgradle.dependencies.spigotApi
 
 plugins {
@@ -26,9 +29,18 @@ dependencies {
     compileOnly(spigotApi)
     compileOnly(libs.hocon)
     compileOnly(libs.mimic)
+    compileOnly(libs.commandapi)
 
     testImplementation(spigotApi)
     testImplementation(libs.hocon)
+}
+
+repositories {
+    codemc()
+    papermc()
+    jitpack {
+        content { includeGroup("dev.jorel.CommandAPI") }
+    }
 }
 
 tasks.withType<KotlinCompile>().configureEach {
