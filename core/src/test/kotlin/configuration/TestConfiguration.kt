@@ -27,7 +27,7 @@ internal data class TestConfiguration(
 ) {
 
     companion object {
-        val SERIALIZER = ConfigurationSerializer<TestConfiguration> { config ->
+        val SERIALIZER = ConfigurationSerializer<TestConfiguration>(fileName = "test") { config ->
             mapOf(
                 "a-string" to config.aString,
                 "an-int" to config.anInt,
