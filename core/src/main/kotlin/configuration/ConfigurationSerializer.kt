@@ -29,7 +29,7 @@ import java.nio.file.Path
 import kotlin.io.path.writeText
 
 internal inline fun <reified T : Any> ConfigurationSerializer(
-    fileName: String = requireNotNull(T::class.simpleName).replaceFirstChar { it.lowercase() },
+    fileName: String,
     description: String? = null,
     noinline convertToMap: (T) -> Map<String, Any?>,
 ) = ConfigurationSerializer(

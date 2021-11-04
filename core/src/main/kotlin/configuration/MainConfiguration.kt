@@ -22,12 +22,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class MainConfiguration(
-    var enabled: Boolean = false,
+    var enabled: Boolean = true,
     var locale: String = "en",
 ) {
 
     internal companion object {
         val SERIALIZER = ConfigurationSerializer<MainConfiguration>(
+            fileName = "main",
             description = "RPGInventory3 configuration"
         ) { config ->
             mapOf(
