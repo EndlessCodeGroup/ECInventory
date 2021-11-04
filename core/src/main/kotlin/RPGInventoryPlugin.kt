@@ -21,12 +21,13 @@ package ru.endlesscode.rpginventory
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin
 import ru.endlesscode.rpginventory.internal.DI
-import java.util.logging.Level
+import ru.endlesscode.rpginventory.util.Log
 
 /** This class is entry point to the plugin. */
 class RPGInventoryPlugin : JavaPlugin() {
 
     init {
+        Log.init(logger)
         DI.init(this)
     }
 
@@ -40,16 +41,16 @@ class RPGInventoryPlugin : JavaPlugin() {
 
     private fun loadParts(): Boolean {
         if (!DI.config.enabled) {
-            logger.info("Plugin is disabled in config.")
+            Log.i("Plugin is disabled in config.")
             return false
         }
 
         return makeSure {
             if (DI.data.isEmpty()) {
-                logger.info("Data configs not found, please add it to 'data' folder")
+                Log.i("Data configs not found, please add it to 'data' folder")
                 return@makeSure false
             }
-            logger.info("Loaded ${DI.data.inventories.size} inventories and ${DI.data.slots.size} slots")
+            Log.i("Loaded ${DI.data.inventories.size} inventories and ${DI.data.slots.size} slots")
             true
         }
     }
@@ -64,7 +65,7 @@ class RPGInventoryPlugin : JavaPlugin() {
     }
 
     private fun criticalError(exception: Exception) {
-        logger.log(Level.SEVERE, "Error on plugin enable.", exception)
+        Log.e("Error on plugin enable.", exception)
     }
 
     @Deprecated(
