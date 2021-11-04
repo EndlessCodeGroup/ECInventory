@@ -29,6 +29,7 @@ class ConfigurationHolderTest : FileTestBase() {
 
     // SUT
     private val configurationHolder = ConfigurationHolder(dir, TestConfiguration.SERIALIZER)
+    private val config get() = configurationHolder.config
 
     @Test
     fun `when ConfigurationProvider created - configuration file should be created`() {
@@ -53,9 +54,6 @@ class ConfigurationHolderTest : FileTestBase() {
         // Given
         val local = TestConfiguration()
 
-        // When
-        val config = configurationHolder.config
-
         // Then
         assertEquals(local.aString, config.aString)
         assertEquals(local.anInt, config.anInt)
@@ -66,14 +64,12 @@ class ConfigurationHolderTest : FileTestBase() {
         // Given
         val newInt = 6
         val newString = "Lorem ipsum dolor sit amet, consectetur."
-        var config = configurationHolder.config
 
         // When
         config.anInt = newInt
         config.aString = newString
         configurationHolder.save()
         configurationHolder.reload()
-        config = configurationHolder.config
 
         // Then
         assertEquals(newString, config.aString)

@@ -20,6 +20,7 @@ package ru.endlesscode.rpginventory.configuration
 
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigObject
+import com.typesafe.config.ConfigRenderOptions
 import com.typesafe.config.ConfigValueFactory
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.hocon.Hocon
@@ -54,5 +55,7 @@ internal fun <T : Any> Hocon.decodeFromFile(configSerializer: ConfigurationSeria
 internal fun <T : Any> Hocon.encodeToFile(configSerializer: ConfigurationSerializer<T>, value: T, path: Path) {
     val configValue = ConfigValueFactory.fromAnyRef(configSerializer.convertToMap(value), configSerializer.description)
     check(configValue is ConfigObject)
-    path.writeText(configValue.render())
+    path.writeText(configValue.render(configRenderOptions))
 }
+
+private val configRenderOptions = ConfigRenderOptions.defaults().setOriginComments(false)
