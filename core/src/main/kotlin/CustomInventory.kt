@@ -132,7 +132,7 @@ class CustomInventory(
 
     /** Constructs and returns [Inventory] that can be shown to a player. */
     fun constructView(): Inventory {
-        return view ?: Bukkit.createInventory(holder, viewSize).also { view ->
+        return view ?: Bukkit.createInventory(holder, viewSize, name).also { view ->
             view.maxStackSize = maxStackSize
             view.contents = buildViewContents()
             this.view = view

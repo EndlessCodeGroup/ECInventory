@@ -5,6 +5,7 @@ bukkit = "1.17.1"
 [libraries]
 mimic = "ru.endlesscode.mimic:mimic-bukkit-api:0.6.1"
 hocon = "org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.3.0"
+commandapi = "dev.jorel.CommandAPI:commandapi-core:6.3.1"
 
 [plugins]
 bukkitgradle = "ru.endlesscode.bukkitgradle:0.10.0"
