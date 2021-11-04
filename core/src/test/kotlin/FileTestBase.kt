@@ -24,7 +24,6 @@ import ru.endlesscode.rpginventory.misc.listFileTree
 import java.nio.file.Path
 import kotlin.io.path.*
 import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 
 open class FileTestBase {
@@ -46,13 +45,7 @@ open class FileTestBase {
         }
     }
 
-    protected lateinit var dir: Path
-        private set
-
-    @BeforeTest
-    open fun setUp() {
-        dir = createTempDirectory(testDir)
-    }
+    protected val dir: Path = createTempDirectory(testDir)
 
     @AfterTest
     open fun tearDown() {

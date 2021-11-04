@@ -25,21 +25,13 @@ import com.nhaarman.mockitokotlin2.verify
 import ru.endlesscode.rpginventory.FileTestBase
 import ru.endlesscode.rpginventory.assertFailsWith
 import kotlin.io.path.createFile
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class I18NTest : FileTestBase() {
 
     // SUT
-    private lateinit var i18n: I18N
-
-    @BeforeTest
-    override fun setUp() {
-        super.setUp()
-
-        this.i18n = spy(SimpleI18N(dir.toFile()))
-    }
+    private val i18n: I18N = spy(SimpleI18N(dir.toFile()))
 
     @Test
     fun `create and pass directory with existing locales file - should throw exception`() {
