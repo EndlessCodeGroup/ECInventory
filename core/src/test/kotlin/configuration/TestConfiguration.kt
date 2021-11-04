@@ -21,7 +21,7 @@ package ru.endlesscode.rpginventory.configuration
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal class TestConfiguration(
+internal data class TestConfiguration(
     var aString: String = "Lorem ipsum dolor sit amet.",
     var anInt: Int = 5,
 ) {
@@ -29,8 +29,8 @@ internal class TestConfiguration(
     companion object {
         val SERIALIZER = ConfigurationSerializer<TestConfiguration> { config ->
             mapOf(
-                "aString" to config.aString,
-                "anInt" to config.anInt,
+                "a-string" to config.aString,
+                "an-int" to config.anInt,
             )
         }
     }
