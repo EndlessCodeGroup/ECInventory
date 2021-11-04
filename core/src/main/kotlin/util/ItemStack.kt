@@ -28,6 +28,9 @@ private val air by lazy { ItemStack(Material.AIR) }
  */
 internal val AIR: ItemStack get() = air
 
+/** Maximal possible item stack size. */
+internal const val MAX_STACK_SIZE = 64
+
 /**
  * Returns itself or [AIR] if the item stack is null.
  */

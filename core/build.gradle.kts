@@ -25,6 +25,7 @@ bukkit {
 dependencies {
     compileOnly(spigotApi)
     compileOnly(libs.hocon)
+    compileOnly(libs.mimic)
 
     testImplementation(spigotApi)
     testImplementation(libs.hocon)
