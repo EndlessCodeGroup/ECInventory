@@ -20,19 +20,15 @@ package ru.endlesscode.rpginventory.configuration
 
 import ru.endlesscode.rpginventory.FileTestBase
 import kotlin.io.path.exists
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class ConfigurationHolderTest : FileTestBase() {
 
     // SUT
-    private lateinit var configurationHolder: ConfigurationHolder<TestConfiguration>
-
-    @BeforeTest
-    override fun setUp() {
-        super.setUp()
-
-        configurationHolder = ConfigurationHolder(dir, TestConfiguration.SERIALIZER)
-    }
+    private val configurationHolder = ConfigurationHolder(dir, TestConfiguration.SERIALIZER)
 
     @Test
     fun `when ConfigurationProvider created - configuration file should be created`() {
