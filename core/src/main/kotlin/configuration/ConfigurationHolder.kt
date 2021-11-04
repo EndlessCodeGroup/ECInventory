@@ -23,7 +23,6 @@ import ru.endlesscode.rpginventory.internal.DI
 import ru.endlesscode.rpginventory.misc.makeSureDirectoryExists
 import java.nio.file.Path
 import kotlin.io.path.createFile
-import kotlin.io.path.isDirectory
 import kotlin.io.path.notExists
 
 /**
@@ -45,8 +44,7 @@ internal class ConfigurationHolder<T : Any>(
 
     init {
         try {
-            configsDirectory.parent.makeSureDirectoryExists()
-            check(configsDirectory.isDirectory())
+            configsDirectory.makeSureDirectoryExists()
 
             configPath = configsDirectory.resolve("${serializer.fileName}.$CONFIG_EXTENSION")
             if (configPath.notExists()) configPath.createFile()
