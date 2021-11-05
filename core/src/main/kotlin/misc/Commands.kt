@@ -19,8 +19,8 @@ private fun subcommandOpen(): CommandAPICommand =
     CommandAPICommand("open")
         .withArguments(inventoryArgument())
         .executesPlayer(PlayerCommandExecutor { sender, (id) ->
-            val inventory = CustomInventory(sender, DI.inventories.getValue(id as String))
-            sender.openInventory(inventory.constructView())
+            val inventory = CustomInventory(DI.inventories.getValue(id as String))
+            inventory.open(sender)
         })
 
 private fun inventoryArgument(): Argument = MultiLiteralArgument(*DI.inventories.keys.toTypedArray())
