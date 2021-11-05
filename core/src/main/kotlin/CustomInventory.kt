@@ -6,6 +6,7 @@ import org.bukkit.Material
 import org.bukkit.block.Container
 import org.bukkit.entity.Entity
 import org.bukkit.entity.HumanEntity
+import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
@@ -25,9 +26,8 @@ import kotlin.math.min
  * @param layout Layout of the inventory.
  */
 class CustomInventory(
-    private val holder: InventoryHolder,
-    private val layout: InventoryLayout
-) : Inventory {
+    private val layout: InventoryLayout,
+) : Inventory, InventoryHolder {
 
     companion object {
         /**
@@ -38,11 +38,11 @@ class CustomInventory(
         const val DEFAULT_MAX_STACK = 1
     }
 
-    /** Temporary [Inventory], used to show RPGInventory to player. */
-    var view: Inventory? = null
-
     /** Returns inventory layout name. */
     val name: String get() = layout.name
+
+    /** Temporary [Inventory], used to show RPGInventory to player. */
+    private var view: Inventory? = null
 
     private val internalSlotsMap: IndexedMap<Int, Slot> = layout.slotsMap.asIndexedMap()
     private val slots: MutableMap<String, InventorySlot>
@@ -131,12 +131,17 @@ class CustomInventory(
     fun getActiveSlots(): List<InventorySlot> = getSlots(Slot.Type.ACTIVE)
 
     /** Constructs and returns [Inventory] that can be shown to a player. */
-    fun constructView(): Inventory {
+    override fun getInventory(): Inventory {
         return view ?: Bukkit.createInventory(holder, viewSize, name).also { view ->
             view.maxStackSize = maxStackSize
             view.contents = buildViewContents()
             this.view = view
         }
+    }
+
+    /** Opens this inventory for the given [player]. */
+    fun open(player: Player) {
+        player.openInventory(holder.inventory)
     }
 
     /** This method should be called when inventory close. */
@@ -467,7 +472,7 @@ class CustomInventory(
 
     override fun getType(): InventoryType = InventoryType.CHEST
 
-    override fun getHolder(): InventoryHolder = holder
+    override fun getHolder(): InventoryHolder = this
 
     override fun iterator(): MutableListIterator<ItemStack> = InventoryIterator(this)
 
