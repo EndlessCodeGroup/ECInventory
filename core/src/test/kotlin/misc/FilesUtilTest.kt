@@ -18,8 +18,9 @@
 
 package ru.endlesscode.rpginventory.misc
 
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.throwable.shouldHaveMessage
 import ru.endlesscode.rpginventory.FileTestBase
-import ru.endlesscode.rpginventory.assertFailsWith
 import java.nio.file.FileAlreadyExistsException
 import kotlin.test.Test
 
@@ -34,7 +35,7 @@ class FilesUtilTest : FileTestBase() {
         target.loadFromResource("/resource")
 
         // Then
-        assertFileContentEquals(target, "This is a test resource file.", "Это тестовый файл ресурсов.")
+        target.shouldContainLines("This is a test resource file.", "Это тестовый файл ресурсов.")
     }
 
     @Test
@@ -46,7 +47,7 @@ class FilesUtilTest : FileTestBase() {
         target.loadFromResource("resource")
 
         // Then
-        assertFileContentEquals(target, "This is a test resource file.", "Это тестовый файл ресурсов.")
+        target.shouldContainLines("This is a test resource file.", "Это тестовый файл ресурсов.")
     }
 
     @Test
@@ -55,7 +56,7 @@ class FilesUtilTest : FileTestBase() {
         val target = createFile("existingFile")
 
         // Then
-        assertFailsWith<FileAlreadyExistsException> {
+        shouldThrow<FileAlreadyExistsException> {
             target.loadFromResource("/resource")
         }
     }
@@ -66,8 +67,8 @@ class FilesUtilTest : FileTestBase() {
         val target = dir.resolve("newFile")
 
         // Then
-        assertFailsWith<IllegalArgumentException>(message = "Resource file \"/notExistingResource\" not exists") {
+        shouldThrow<IllegalArgumentException> {
             target.loadFromResource("/notExistingResource")
-        }
+        }.shouldHaveMessage("Resource file \"/notExistingResource\" not exists")
     }
 }

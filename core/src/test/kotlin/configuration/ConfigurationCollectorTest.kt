@@ -18,6 +18,8 @@
 
 package ru.endlesscode.rpginventory.configuration
 
+import io.kotest.matchers.maps.shouldContainExactly
+import io.kotest.matchers.shouldBe
 import ru.endlesscode.rpginventory.FileTestBase
 import ru.endlesscode.rpginventory.configuration.data.DataConfig
 import ru.endlesscode.rpginventory.configuration.data.InventoryConfig
@@ -27,7 +29,6 @@ import ru.endlesscode.rpginventory.slot.Slot
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class ConfigurationCollectorTest : FileTestBase() {
 
@@ -43,14 +44,11 @@ class ConfigurationCollectorTest : FileTestBase() {
         val collected = collector.collect<Map<String, String>>()
 
         // Then
-        assertEquals(
-            expected = mapOf(
-                "first" to "Nulla semper facilisis urna non fermentum.",
-                "second" to "Morbi at lorem vitae odio molestie scelerisque.",
-                "third" to "Vivamus non neque nec purus auctor hendrerit.",
-                "fourth" to "Integer nec auctor ipsum, porttitor dictum sapien."
-            ),
-            actual = collected,
+        collected shouldContainExactly mapOf(
+            "first" to "Nulla semper facilisis urna non fermentum.",
+            "second" to "Morbi at lorem vitae odio molestie scelerisque.",
+            "third" to "Vivamus non neque nec purus auctor hendrerit.",
+            "fourth" to "Integer nec auctor ipsum, porttitor dictum sapien."
         )
     }
 
@@ -63,36 +61,33 @@ class ConfigurationCollectorTest : FileTestBase() {
         val collected = collector.collect<DataConfig>()
 
         // Then
-        assertEquals(
-            expected = DataConfig(
-                slots = mapOf(
-                    "right-ring" to SlotConfig(
-                        name = "Right ring",
-                        texture = "ring-slot",
-                        allowedItems = listOf("minecraft:diamond_shovel", "mimic:some_texture_item"),
-                        type = Slot.Type.PASSIVE,
-                        maxStackSize = 1,
-                    ),
-                    "left-ring" to SlotConfig(
-                        name = "Left ring",
-                        texture = "ring-slot",
-                        allowedItems = listOf("minecraft:diamond_shovel", "mimic:some_texture_item"),
-                        type = Slot.Type.PASSIVE,
-                        maxStackSize = 1,
+        collected shouldBe DataConfig(
+            slots = mapOf(
+                "right-ring" to SlotConfig(
+                    name = "Right ring",
+                    texture = "ring-slot",
+                    allowedItems = listOf("minecraft:diamond_shovel", "mimic:some_texture_item"),
+                    type = Slot.Type.PASSIVE,
+                    maxStackSize = 1,
+                ),
+                "left-ring" to SlotConfig(
+                    name = "Left ring",
+                    texture = "ring-slot",
+                    allowedItems = listOf("minecraft:diamond_shovel", "mimic:some_texture_item"),
+                    type = Slot.Type.PASSIVE,
+                    maxStackSize = 1,
+                ),
+            ),
+            inventories = mapOf(
+                "default" to InventoryConfig(
+                    name = "RPGInventory",
+                    emptySlotTexture = null,
+                    slots = mapOf(
+                        "24" to "left-ring",
+                        "26" to "right-ring",
                     ),
                 ),
-                inventories = mapOf(
-                    "default" to InventoryConfig(
-                        name = "RPGInventory",
-                        emptySlotTexture = null,
-                        slots = mapOf(
-                            "24" to "left-ring",
-                            "26" to "right-ring",
-                        ),
-                    ),
-                )
-            ),
-            actual = collected,
+            )
         )
     }
 

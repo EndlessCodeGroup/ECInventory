@@ -18,9 +18,11 @@
 
 package ru.endlesscode.rpginventory.util
 
+import io.kotest.assertions.assertSoftly
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.shouldBe
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class IndexedMapTest {
 
@@ -35,33 +37,41 @@ class IndexedMapTest {
 
     @Test
     fun `get values by index`() {
-        assertEquals("Three", map.getByIndex(0))
-        assertEquals("Nine", map.getByIndex(1))
-        assertEquals("Ten", map.getByIndex(2))
+        assertSoftly {
+            map.getByIndex(0) shouldBe "Three"
+            map.getByIndex(1) shouldBe "Nine"
+            map.getByIndex(2) shouldBe "Ten"
+        }
     }
 
     @Test
     fun `get keys by index`() {
-        assertEquals(3, map.getKeyByIndex(0))
-        assertEquals(9, map.getKeyByIndex(1))
-        assertEquals(10, map.getKeyByIndex(2))
+        assertSoftly {
+            map.getKeyByIndex(0) shouldBe 3
+            map.getKeyByIndex(1) shouldBe 9
+            map.getKeyByIndex(2) shouldBe 10
+        }
     }
 
     @Test
     fun `get keys index`() {
-        assertEquals(0, map.getIndexOf(3))
-        assertEquals(1, map.getIndexOf(9))
-        assertEquals(2, map.getIndexOf(10))
-        assertEquals(-1, map.getIndexOf(0))
+        assertSoftly {
+            map.getIndexOf(3) shouldBe 0
+            map.getIndexOf(9) shouldBe 1
+            map.getIndexOf(10) shouldBe 2
+            map.getIndexOf(0) shouldBe -1
+        }
     }
 
     @Test
     fun `put values with replacement and then get it by index`() {
         map[9] = "Nine[x2]"
 
-        assertEquals("Three", map.getByIndex(0))
-        assertEquals("Nine[x2]", map.getByIndex(1))
-        assertEquals("Ten", map.getByIndex(2))
+        assertSoftly {
+            map.getByIndex(0) shouldBe "Three"
+            map.getByIndex(1) shouldBe "Nine[x2]"
+            map.getByIndex(2) shouldBe "Ten"
+        }
     }
 
     @Test
@@ -74,18 +84,20 @@ class IndexedMapTest {
             )
         )
 
-        assertEquals("Three[x2]", map.getByIndex(0))
-        assertEquals("Six", map.getByIndex(1))
-        assertEquals("Nine", map.getByIndex(2))
-        assertEquals("Ten", map.getByIndex(3))
-        assertEquals("One hundred", map.getByIndex(4))
+        assertSoftly {
+            map.getByIndex(0) shouldBe "Three[x2]"
+            map.getByIndex(1) shouldBe "Six"
+            map.getByIndex(2) shouldBe "Nine"
+            map.getByIndex(3) shouldBe "Ten"
+            map.getByIndex(4) shouldBe "One hundred"
+        }
     }
 
     @Test
     fun `remove items`() {
         map.remove(9)
 
-        assertEquals("Ten", map.getByIndex(1))
+        map.getByIndex(1) shouldBe "Ten"
     }
 
     @Test
@@ -97,9 +109,11 @@ class IndexedMapTest {
         )
         val indexedMap = existingMap.asIndexedMap()
 
-        assertEquals("Zero", indexedMap.getByIndex(0))
-        assertEquals("Three", indexedMap.getByIndex(1))
-        assertEquals("Four", indexedMap.getByIndex(2))
+        assertSoftly {
+            indexedMap.getByIndex(0) shouldBe "Zero"
+            indexedMap.getByIndex(1) shouldBe "Three"
+            indexedMap.getByIndex(2) shouldBe "Four"
+        }
     }
 
     @Test
@@ -112,23 +126,29 @@ class IndexedMapTest {
         val indexedMap = existingMap.asIndexedMap()
         indexedMap.clear()
 
-        assertEquals(3, existingMap.size)
-        assertEquals(0, indexedMap.size)
+        existingMap.size shouldBe 3
+        indexedMap.size shouldBe 0
     }
 
-    @Test(expected = IndexOutOfBoundsException::class)
+    @Test
     fun `get value by non-existing index`() {
-        map.getByIndex(-1)
+        shouldThrow<IndexOutOfBoundsException> {
+            map.getByIndex(-1)
+        }
     }
 
-    @Test(expected = IndexOutOfBoundsException::class)
+    @Test
     fun `get key by non-existing index`() {
-        map.getKeyByIndex(-1)
+        shouldThrow<IndexOutOfBoundsException> {
+            map.getKeyByIndex(-1)
+        }
     }
 
-    @Test(expected = IndexOutOfBoundsException::class)
+    @Test
     fun `get first element after clear`() {
-        map.clear()
-        map.getByIndex(0)
+        shouldThrow<IndexOutOfBoundsException> {
+            map.clear()
+            map.getByIndex(0)
+        }
     }
 }

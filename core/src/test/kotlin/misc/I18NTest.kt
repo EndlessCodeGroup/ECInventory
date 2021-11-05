@@ -18,20 +18,19 @@
 
 package ru.endlesscode.rpginventory.misc
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.spy
-import com.nhaarman.mockitokotlin2.verify
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.throwable.shouldHaveMessage
+import io.mockk.spyk
+import io.mockk.verify
 import ru.endlesscode.rpginventory.FileTestBase
-import ru.endlesscode.rpginventory.assertFailsWith
 import kotlin.io.path.createFile
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class I18NTest : FileTestBase() {
 
     // SUT
-    private val i18n: I18N = spy(SimpleI18N(dir.toFile()))
+    private val i18n: I18N = spyk(SimpleI18N(dir.toFile()))
 
     @Test
     fun `create and pass directory with existing locales file - should throw exception`() {
@@ -41,9 +40,8 @@ class I18NTest : FileTestBase() {
         file.createFile()
 
         // Then
-        assertFailsWith<I18NException>(message = "Failed to create locales folder") {
-            SimpleI18N(dir.toFile())
-        }
+        shouldThrow<I18NException> { SimpleI18N(dir.toFile()) }
+            .shouldHaveMessage("Failed to create locales folder")
     }
 
     @Test
@@ -64,8 +62,8 @@ class I18NTest : FileTestBase() {
         val message = i18n.getMessage("key")
 
         // Then
-        assertEquals("Something value", message)
-        verify(i18n, never()).stripColor(any())
+        message shouldBe "Something value"
+        verify(exactly = 0) { i18n.stripColor(any()) }
     }
 
     @Test
@@ -74,7 +72,7 @@ class I18NTest : FileTestBase() {
         i18n.getMessage("key", true)
 
         // Then
-        verify(i18n).stripColor(any())
+        verify { i18n.stripColor(any()) }
     }
 
     @Test
@@ -86,7 +84,7 @@ class I18NTest : FileTestBase() {
         val message = i18n.getMessage(key)
 
         // Then
-        assertEquals(key, message)
+        message shouldBe key
     }
 
     @Test
@@ -95,7 +93,7 @@ class I18NTest : FileTestBase() {
         val message = i18n.getMessage("with.args", "Text", 1)
 
         // Then
-        assertEquals("Args: Text, 1", message)
+        message shouldBe "Args: Text, 1"
     }
 
 }
