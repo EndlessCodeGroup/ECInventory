@@ -41,7 +41,7 @@ class InventorySlot(
 
     var content: ItemStack = ItemStack(Material.AIR)
         set(value) {
-            field = content
+            field = value
             if (value.isNotEmpty() && maxStackSize > 0 && value.amount > maxStackSize) {
                 value.amount = maxStackSize
             }

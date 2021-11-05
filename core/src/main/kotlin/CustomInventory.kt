@@ -11,9 +11,7 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.slot.InventorySlot
-import ru.endlesscode.rpginventory.slot.Slot
-import ru.endlesscode.rpginventory.slot.SlotInteraction
+import ru.endlesscode.rpginventory.slot.*
 import ru.endlesscode.rpginventory.util.*
 import kotlin.math.min
 
@@ -532,11 +530,21 @@ class CustomInventory(
      *  - Shift + click
      *  - Swap with hotbar/shield
      */
-    internal fun handleInteraction(interaction: SlotInteraction) {
+    internal fun handleInteraction(interaction: SlotInteraction) = when (interaction) {
+        is TakeSlotContent -> takeSlotContent(interaction)
+        is PlaceSlotContent -> placeSlotContent(interaction)
+    }
+
+    private fun takeSlotContent(interaction: TakeSlotContent) {
+        if (interaction.slot.isEmpty()) {
+            interaction.cancel()
+        }
+    }
+
+    private fun placeSlotContent(interaction: PlaceSlotContent) {
         val slot = interaction.slot
         if (slot.isEmpty()) {
-            interaction.cancel()
-            return
+            slot.content = interaction.item
         }
     }
 }
