@@ -18,16 +18,21 @@
 
 package ru.endlesscode.rpginventory.util
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import io.kotest.common.ExperimentalKotest
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.datatest.withData
+import io.kotest.matchers.shouldBe
 
-class MathKtTest {
+@OptIn(ExperimentalKotest::class)
+class MathKtTest : FunSpec({
 
-    @Test
-    fun `round to power`() {
-        assertEquals(0, 0.roundToPowerOf(2))
-        assertEquals(10, 7.roundToPowerOf(5))
-        assertEquals(7, 7.roundToPowerOf(7))
-        assertEquals(-12, (-7).roundToPowerOf(6))
+    context("round to power") {
+        withData(
+            nameFn = { (number, power, expected) -> "$number round to power $power should be $expected" },
+            Triple(0, 2, 0),
+            Triple(7, 5, 10),
+            Triple(7, 7, 7),
+            Triple(-7, 6, -12),
+        ) { (number, power, expected) -> number roundToPowerOf power shouldBe expected }
     }
-}
+})

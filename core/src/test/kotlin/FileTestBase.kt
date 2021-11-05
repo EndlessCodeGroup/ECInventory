@@ -18,13 +18,13 @@
 
 package ru.endlesscode.rpginventory
 
-import org.junit.AfterClass
-import org.junit.BeforeClass
+import io.kotest.matchers.collections.shouldContainAll
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import ru.endlesscode.rpginventory.misc.listFileTree
 import java.nio.file.Path
 import kotlin.io.path.*
 import kotlin.test.AfterTest
-import kotlin.test.assertEquals
 
 open class FileTestBase {
 
@@ -32,14 +32,14 @@ open class FileTestBase {
         private lateinit var testDir: Path
 
         @JvmStatic
-        @BeforeClass
+        @BeforeAll
         fun beforeAll() {
             testDir = Path("testFiles").createDirectories()
             testDir.createDirectories()
         }
 
         @JvmStatic
-        @AfterClass
+        @AfterAll
         fun afterAll() {
             testDir.deleteIfExists()
         }
@@ -59,12 +59,8 @@ open class FileTestBase {
         return target
     }
 
-    protected fun assertFileContentEquals(file: Path, vararg expectedContent: String) {
-        assertFileContentEquals(file, expectedContent.asList())
-    }
-
-    protected fun assertFileContentEquals(file: Path, expectedContent: List<String>) {
-        assertEquals(expectedContent, file.readLines())
+    protected fun Path.shouldContainLines(vararg expectedContent: String) {
+        readLines().shouldContainAll(*expectedContent)
     }
 
     protected fun deleteRecursively(path: Path) {

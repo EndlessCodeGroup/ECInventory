@@ -18,12 +18,12 @@
 
 package ru.endlesscode.rpginventory.configuration
 
+import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.paths.shouldExist
+import io.kotest.matchers.shouldBe
 import ru.endlesscode.rpginventory.FileTestBase
-import kotlin.io.path.exists
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 class ConfigurationHolderTest : FileTestBase() {
 
@@ -34,10 +34,10 @@ class ConfigurationHolderTest : FileTestBase() {
     @Test
     fun `when ConfigurationProvider created - configuration file should be created`() {
         // Given
-        val configurationFile = dir.resolve("testConfiguration.conf")
+        val configurationFile = dir.resolve("test.conf")
 
         // Then
-        assertTrue(configurationFile.exists())
+        configurationFile.shouldExist()
     }
 
     @Test
@@ -46,7 +46,7 @@ class ConfigurationHolderTest : FileTestBase() {
         val config = configurationHolder.config
 
         // Then
-        assertNotNull(config)
+        config.shouldNotBeNull()
     }
 
     @Test
@@ -55,8 +55,10 @@ class ConfigurationHolderTest : FileTestBase() {
         val local = TestConfiguration()
 
         // Then
-        assertEquals(local.aString, config.aString)
-        assertEquals(local.anInt, config.anInt)
+        assertSoftly {
+            config.aString shouldBe local.aString
+            config.anInt shouldBe local.anInt
+        }
     }
 
     @Test
@@ -72,7 +74,9 @@ class ConfigurationHolderTest : FileTestBase() {
         configurationHolder.reload()
 
         // Then
-        assertEquals(newString, config.aString)
-        assertEquals(newInt, config.anInt)
+        assertSoftly {
+            config.aString shouldBe newString
+            config.anInt shouldBe newInt
+        }
     }
 }
