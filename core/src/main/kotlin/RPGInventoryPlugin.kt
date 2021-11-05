@@ -21,6 +21,7 @@ package ru.endlesscode.rpginventory
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin
 import ru.endlesscode.rpginventory.internal.DI
+import ru.endlesscode.rpginventory.listener.InventoryClicksRouter
 import ru.endlesscode.rpginventory.misc.registerCommand
 import ru.endlesscode.rpginventory.util.Log
 
@@ -39,7 +40,8 @@ class RPGInventoryPlugin : JavaPlugin() {
         }
 
         registerCommand()
-        //TODO: Logic
+
+        server.pluginManager.registerEvents(InventoryClicksRouter(), this)
     }
 
     private fun loadParts(): Boolean {

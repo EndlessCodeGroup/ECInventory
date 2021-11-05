@@ -13,10 +13,8 @@ import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.rpginventory.slot.InventorySlot
 import ru.endlesscode.rpginventory.slot.Slot
-import ru.endlesscode.rpginventory.util.IndexedMap
-import ru.endlesscode.rpginventory.util.asIndexedMap
-import ru.endlesscode.rpginventory.util.orEmpty
-import ru.endlesscode.rpginventory.util.roundToPowerOf
+import ru.endlesscode.rpginventory.slot.SlotInteraction
+import ru.endlesscode.rpginventory.util.*
 import kotlin.math.min
 
 /**
@@ -523,6 +521,22 @@ class CustomInventory(
         return getStorageSlots().firstOrNull { slot ->
             val slotItem = slot.content
             slotItem.amount < slotItem.maxStackSize && slotItem.amount < slot.maxStackSize && slotItem.isSimilar(item)
+        }
+    }
+
+    /*
+     * TODO:
+     *  - Take item
+     *  - Place item
+     *  - Swap item
+     *  - Shift + click
+     *  - Swap with hotbar/shield
+     */
+    internal fun handleInteraction(interaction: SlotInteraction) {
+        val slot = interaction.slot
+        if (slot.isEmpty()) {
+            interaction.cancel()
+            return
         }
     }
 }
