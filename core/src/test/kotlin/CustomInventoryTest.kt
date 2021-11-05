@@ -1,15 +1,13 @@
 package ru.endlesscode.rpginventory
 
 import io.kotest.core.spec.style.FeatureSpec
+import io.kotest.matchers.shouldBe
 import io.mockk.mockk
 import io.mockk.verify
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.slot.ItemValidator
-import ru.endlesscode.rpginventory.slot.Slot
-import ru.endlesscode.rpginventory.slot.SlotImpl
-import ru.endlesscode.rpginventory.slot.TakeSlotContent
+import ru.endlesscode.rpginventory.slot.*
 import ru.endlesscode.rpginventory.util.AIR
 
 class CustomInventoryTest : FeatureSpec({
@@ -31,6 +29,10 @@ class CustomInventoryTest : FeatureSpec({
     val inventory = CustomInventory(inventoryLayout)
     val slot = inventory.getSlot(0)
 
+    beforeSpec {
+        mockItemFactory()
+    }
+
     feature("inventory click handling") {
         val event = mockk<InventoryClickEvent>(relaxUnitFun = true)
 
@@ -38,6 +40,13 @@ class CustomInventoryTest : FeatureSpec({
             val interaction = TakeSlotContent(event, slot)
             inventory.handleInteraction(interaction)
             verify { interaction.cancel() }
+        }
+
+        scenario("place item to empty slot") {
+            val item = ItemStack(Material.STICK)
+            val interaction = PlaceSlotContent(event, slot, item)
+            inventory.handleInteraction(interaction)
+            slot.content shouldBe item
         }
     }
 })
