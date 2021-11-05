@@ -7,8 +7,10 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryEvent
 import ru.endlesscode.rpginventory.CustomInventory
+import ru.endlesscode.rpginventory.slot.PlaceSlotContent
 import ru.endlesscode.rpginventory.slot.SlotInteraction
 import ru.endlesscode.rpginventory.slot.TakeSlotContent
+import ru.endlesscode.rpginventory.util.orEmpty
 
 internal class InventoryClicksRouter : Listener {
 
@@ -46,9 +48,11 @@ internal class InventoryClicksRouter : Listener {
                 if (isCustomInventoryInteraction) TakeSlotContent(this, clickedSlot) else null
             }
 
-            PLACE_ALL -> TODO()
-            PLACE_SOME -> TODO()
-            PLACE_ONE -> TODO()
+            PLACE_ALL, PLACE_SOME, PLACE_ONE -> {
+                // If player tries to place items to vanilla inventory just ignore it
+                if (isCustomInventoryInteraction) PlaceSlotContent(this, clickedSlot, cursor.orEmpty()) else null
+            }
+
             SWAP_WITH_CURSOR -> TODO()
             MOVE_TO_OTHER_INVENTORY -> TODO()
             HOTBAR_MOVE_AND_READD -> TODO()
