@@ -37,29 +37,19 @@ class CustomInventoryTest : FeatureSpec({
     val inventory = spyk(CustomInventory(inventoryLayout, InstantTaskScheduler()))
     val slot = inventory.getSlot(0)
 
+    val inventoryView = TestInventoryView()
+    lateinit var event: TestInventoryClickEvent
+
     beforeSpec {
         mockItemFactory()
     }
 
-    feature("inventory interaction handling") {
-        val inventoryView = TestInventoryView()
-        lateinit var event: TestInventoryClickEvent
+    feature("take item") {
 
         fun takeContent(content: ItemStack = AIR): TakeSlotContent {
             event = TestInventoryClickEvent(inventoryView)
             slot.content = content
             return TakeSlotContent(event, slot)
-        }
-
-        fun placeContent(
-            item: ItemStack = ItemStack(Material.STICK),
-            current: ItemStack = AIR,
-            action: InventoryAction = InventoryAction.PLACE_ALL,
-        ): PlaceSlotContent {
-            event = TestInventoryClickEvent(inventoryView, action)
-            slot.content = current
-            event.cursor = item
-            return PlaceSlotContent(event, slot)
         }
 
         scenario("take content from empty slot") {
@@ -74,6 +64,20 @@ class CustomInventoryTest : FeatureSpec({
             inventory.handleInteraction(interaction)
 
             verify { inventory.syncSlotWithView(slot) }
+        }
+    }
+
+    feature("place item") {
+
+        fun placeContent(
+            item: ItemStack = ItemStack(Material.STICK),
+            current: ItemStack = AIR,
+            action: InventoryAction = InventoryAction.PLACE_ALL,
+        ): PlaceSlotContent {
+            event = TestInventoryClickEvent(inventoryView, action)
+            slot.content = current
+            event.cursor = item
+            return PlaceSlotContent(event, slot)
         }
 
         scenario("place item to empty slot") {
