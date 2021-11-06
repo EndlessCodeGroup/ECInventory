@@ -53,8 +53,10 @@ internal class DataHolder(
 
     private fun createSlot(id: String, config: SlotConfig): Slot {
         val prefix = "Parsing slot '$id':"
-        val textureItem = requireNotNull(itemsRegistry.getItem(config.texture)) {
-            "$prefix Unknown texture '${config.texture}'. $errorMimicIdExplanation"
+        val textureItem = config.texture?.let {
+            requireNotNull(itemsRegistry.getItem(it)) {
+                "$prefix Unknown texture '${config.texture}'. $errorMimicIdExplanation"
+            }
         }
         val correctMaxStackSize = config.maxStackSize.coerceIn(1, MAX_STACK_SIZE)
         if (correctMaxStackSize != config.maxStackSize) {
@@ -67,7 +69,7 @@ internal class DataHolder(
         return SlotImpl(
             id = id,
             name = config.name,
-            texture = textureItem,
+            texture = textureItem.orEmpty(),
             type = config.type,
             contentValidator = ItemValidator.any,
             maxStackSize = correctMaxStackSize,
