@@ -2,11 +2,12 @@ package ru.endlesscode.rpginventory.slot
 
 import org.bukkit.event.inventory.InventoryAction.*
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.rpginventory.slot.SlotInteractionResult.*
 
 internal sealed interface SlotInteraction {
-    val event: InventoryClickEvent
+    val event: InventoryInteractEvent
     val slot: InventorySlot
 
     /** Applies result of interaction to the [event]. */
@@ -18,7 +19,7 @@ internal sealed interface SlotInteraction {
 
             is Change -> {
                 if (result.currentItemReplacement != null) {
-                    event.currentItem = result.currentItemReplacement
+                    (event as? InventoryClickEvent)?.currentItem = result.currentItemReplacement
                 }
             }
 
@@ -29,8 +30,7 @@ internal sealed interface SlotInteraction {
     }
 
     fun syncCursor(cursorItem: ItemStack) {
-        @Suppress("DEPRECATION") // It is ok because syncCursor is called
-        event.cursor = cursorItem
+        event.view.cursor = cursorItem
     }
 }
 

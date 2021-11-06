@@ -94,4 +94,18 @@ class InventoryClicksRouterTest : FeatureSpec({
             verifyInteraction(PlaceSlotContent.fromClick(event, clickedSlot!!))
         }
     }
+
+    feature("inventory drag event") {
+
+        fun dragEvent(
+            cursor: ItemStack = ItemStack(Material.STICK),
+            slots: Map<Int, ItemStack> = mapOf(0 to cursor)
+        ) = TestInventoryDragEvent(inventoryView, cursor, slots = slots).also { interactEvent = it }
+
+        scenario("click non-functional inventory slot") {
+            router.onDrag(dragEvent())
+
+            verifyInteraction(interaction = null, eventCancelled = true)
+        }
+    }
 })
