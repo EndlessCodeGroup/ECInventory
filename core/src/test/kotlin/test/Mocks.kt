@@ -1,4 +1,4 @@
-package ru.endlesscode.rpginventory
+package ru.endlesscode.rpginventory.test
 
 import io.mockk.every
 import io.mockk.mockk
@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemFactory
 
 fun mockItemFactory() {
     val itemFactory = mockk<ItemFactory> {
+        every { getItemMeta(any()) } returns null
         every { equals(null, null) } returns true
     }
 

@@ -11,6 +11,8 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
+import ru.endlesscode.rpginventory.internal.DI
+import ru.endlesscode.rpginventory.internal.TaskScheduler
 import ru.endlesscode.rpginventory.slot.*
 import ru.endlesscode.rpginventory.util.*
 import kotlin.math.min
@@ -21,18 +23,10 @@ import kotlin.math.min
  * @param holder The Inventory's holder.
  * @param layout Layout of the inventory.
  */
-class CustomInventory(
+class CustomInventory internal constructor(
     private val layout: InventoryLayout,
+    private val scheduler: TaskScheduler,
 ) : Inventory, InventoryHolder {
-
-    companion object {
-        /**
-         * By default, will be used stack size 1, and it will be increased when
-         * will be added new slots with greater max stack size.
-         * @see InventorySlot
-         */
-        const val DEFAULT_MAX_STACK = 1
-    }
 
     /** Returns inventory layout name. */
     val name: String get() = layout.name
@@ -44,10 +38,12 @@ class CustomInventory(
     private val slots: MutableMap<String, InventorySlot>
 
     /** View size is maximal slot position rounded to nine. */
-    private val viewSize: Int
+    internal val viewSize: Int
         get() = internalSlotsMap.lastKey().roundToPowerOf(9)
 
     private var maxStack = DEFAULT_MAX_STACK
+
+    constructor(layout: InventoryLayout) : this(layout, DI.scheduler)
 
     init {
         val slots = mutableMapOf<String, InventorySlot>()
@@ -545,5 +541,14 @@ class CustomInventory(
         val slot = interaction.slot
         val result = slot.placeItem(interaction.item)
         interaction.setResultCursor(result)
+    }
+
+    companion object {
+        /**
+         * By default, will be used stack size 1, and it will be increased when
+         * will be added new slots with greater max stack size.
+         * @see InventorySlot
+         */
+        const val DEFAULT_MAX_STACK = 1
     }
 }
