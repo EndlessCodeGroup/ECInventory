@@ -42,29 +42,38 @@ class CustomInventoryTest : FeatureSpec({
     feature("inventory interaction handling") {
         val event = TestInventoryClickEvent()
 
+        fun takeContent(content: ItemStack = AIR): TakeSlotContent {
+            slot.content = content
+            return TakeSlotContent(event, slot)
+        }
+
+        fun placeContent(item: ItemStack = ItemStack(Material.STICK)): PlaceSlotContent {
+            event.cursor = item
+            return PlaceSlotContent(event, slot)
+        }
+
         fun TestInventoryClickEvent.mockCursor(item: ItemStack = ItemStack(Material.STICK)): ItemStack {
             cursor = item
             return item
         }
 
         scenario("take content from empty slot") {
-            val interaction = TakeSlotContent(event, slot)
+            val interaction = takeContent()
             inventory.handleInteraction(interaction)
 
             event.isCancelled.shouldBeTrue()
         }
 
         scenario("take content from slot") {
-            slot.content = ItemStack(Material.BLAZE_ROD)
-            val interaction = TakeSlotContent(event, slot)
+            val interaction = takeContent(ItemStack(Material.BLAZE_ROD))
             inventory.handleInteraction(interaction)
 
             verify { inventory.syncSlotWithView(slot) }
         }
 
         scenario("place item to empty slot") {
-            val item = event.mockCursor()
-            val interaction = PlaceSlotContent(event, slot)
+            val interaction = placeContent()
+            val item = interaction.item
             inventory.handleInteraction(interaction)
 
             assertSoftly {
@@ -74,9 +83,8 @@ class CustomInventoryTest : FeatureSpec({
         }
 
         scenario("swap slot content with cursor") {
-            val item = event.mockCursor()
-            slot.content = ItemStack(Material.BLAZE_ROD)
-            val interaction = PlaceSlotContent(event, slot)
+            val item = ItemStack(Material.BLAZE_ROD)
+            val interaction = placeContent(item)
             inventory.handleInteraction(interaction)
 
             slot.content shouldBe item
