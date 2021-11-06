@@ -54,7 +54,7 @@ class CustomInventoryTest : FeatureSpec({
         ): TakeSlotContent {
             event = TestInventoryClickEvent(inventoryView, action)
             slot.content = content
-            return TakeSlotContent(event, slot)
+            return TakeSlotContent.fromClick(event, slot)
         }
 
         scenario("take item from empty slot") {
@@ -97,7 +97,7 @@ class CustomInventoryTest : FeatureSpec({
             initEventCursor = cursor
             initEventCurrentItem = current
 
-            return PlaceSlotContent(event, slot)
+            return PlaceSlotContent.fromClick(event, slot)
         }
 
         fun assertState(
