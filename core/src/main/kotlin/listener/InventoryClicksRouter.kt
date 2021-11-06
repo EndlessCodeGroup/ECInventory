@@ -6,6 +6,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryAction.*
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.event.inventory.InventoryEvent
 import ru.endlesscode.rpginventory.CustomInventory
 import ru.endlesscode.rpginventory.slot.InventorySlot
@@ -22,6 +23,13 @@ internal class InventoryClicksRouter : Listener {
     fun onInventoryClosed(event: InventoryCloseEvent) {
         val inventory = event.customInventory ?: return
         inventory.onClose()
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    fun onDrag(event: InventoryDragEvent) {
+        event.customInventory ?: return
+        // TODO: Handle drag event later
+        event.isCancelled = true
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
