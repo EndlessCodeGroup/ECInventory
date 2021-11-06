@@ -1,16 +1,17 @@
 package ru.endlesscode.rpginventory.listener
 
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryAction.*
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryEvent
 import ru.endlesscode.rpginventory.CustomInventory
+import ru.endlesscode.rpginventory.slot.InventorySlot
 import ru.endlesscode.rpginventory.slot.PlaceSlotContent
 import ru.endlesscode.rpginventory.slot.SlotInteraction
 import ru.endlesscode.rpginventory.slot.TakeSlotContent
-import ru.endlesscode.rpginventory.util.orEmpty
 
 internal class InventoryClicksRouter : Listener {
 
@@ -23,7 +24,7 @@ internal class InventoryClicksRouter : Listener {
         inventory.onClose()
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     fun onClick(event: InventoryClickEvent) {
         val inventory = event.customInventory ?: return
         val interaction = event.toInteraction(inventory) ?: return
@@ -32,34 +33,33 @@ internal class InventoryClicksRouter : Listener {
 
     /** Converts this event to [SlotInteraction] or returns `null` if the event shouldn't be handled. */
     private fun InventoryClickEvent.toInteraction(inventory: CustomInventory): SlotInteraction? {
-        val isCustomInventoryInteraction = rawSlot == slot
-        val clickedSlot = inventory.getSlotAt(rawSlot)
+        val isCustomInventoryInteraction = clickedInventory?.holder == inventory
 
-        // Prevent interaction with non-functional inventory slots
-        if (clickedSlot == null) {
-            isCancelled = true
-            return null
-        }
+        return if (isCustomInventoryInteraction) {
+            val clickedSlot = inventory.getSlotAt(rawSlot)
 
-        return when (action) {
-            PICKUP_ALL, PICKUP_SOME, PICKUP_HALF, PICKUP_ONE,
-            DROP_ALL_CURSOR, DROP_ONE_CURSOR, DROP_ALL_SLOT, DROP_ONE_SLOT, -> {
-                // If player tries to take items from vanilla inventory just ignore it
-                if (isCustomInventoryInteraction) TakeSlotContent(this, clickedSlot) else null
+            // Prevent interaction with non-functional inventory slots
+            if (clickedSlot == null) {
+                isCancelled = true
+                null
+            } else {
+                createSlotInteraction(clickedSlot)
             }
-
-            PLACE_ALL, PLACE_SOME, PLACE_ONE -> {
-                // If player tries to place items to vanilla inventory just ignore it
-                if (isCustomInventoryInteraction) PlaceSlotContent(this, clickedSlot, cursor.orEmpty()) else null
-            }
-
-            SWAP_WITH_CURSOR -> TODO()
-            MOVE_TO_OTHER_INVENTORY -> TODO()
-            HOTBAR_MOVE_AND_READD -> TODO()
-            HOTBAR_SWAP -> TODO()
-            CLONE_STACK -> TODO()
-            COLLECT_TO_CURSOR -> TODO()
-            NOTHING, UNKNOWN -> null
+        } else {
+            null
         }
+    }
+
+    private fun InventoryClickEvent.createSlotInteraction(slot: InventorySlot): SlotInteraction? = when (action) {
+        PICKUP_ALL, PICKUP_SOME, PICKUP_HALF, PICKUP_ONE,
+        DROP_ALL_CURSOR, DROP_ONE_CURSOR, DROP_ALL_SLOT, DROP_ONE_SLOT,
+        COLLECT_TO_CURSOR -> TakeSlotContent(this, slot)
+        PLACE_ALL, PLACE_SOME, PLACE_ONE -> PlaceSlotContent(this, slot)
+        SWAP_WITH_CURSOR -> TODO()
+        MOVE_TO_OTHER_INVENTORY -> TODO()
+        HOTBAR_MOVE_AND_READD -> TODO()
+        HOTBAR_SWAP -> TODO()
+        CLONE_STACK -> TODO()
+        NOTHING, UNKNOWN -> null
     }
 }
