@@ -18,6 +18,8 @@ internal object DI {
     private val servicesManager get() = plugin.server.servicesManager
     private val dataPath get() = plugin.dataFolder.toPath()
 
+    val scheduler: TaskScheduler by lazy { PluginTaskScheduler(plugin) }
+
     private val itemsRegistry: BukkitItemsRegistry by lazy { checkNotNull(servicesManager.load()) }
 
     val hocon: Hocon by lazy { Hocon { useConfigNamingConvention = true } }
