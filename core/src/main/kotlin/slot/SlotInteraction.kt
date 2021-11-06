@@ -10,14 +10,18 @@ internal sealed interface SlotInteraction {
     /** Applies result of interaction to the [event]. */
     fun apply(result: SlotInteractionResult) {
         when (result) {
-            is SlotInteractionResult.Cancel -> {
+            is SlotInteractionResult.Deny -> {
                 event.isCancelled = true
             }
 
-            is SlotInteractionResult.Success -> {
+            is SlotInteractionResult.Change -> {
                 if (!result.syncCursor) {
                     event.currentItem = result.cursorItem
                 }
+            }
+
+            is SlotInteractionResult.Accept -> {
+                // Event just passed
             }
         }
     }

@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack
 import ru.endlesscode.rpginventory.internal.DI
 import ru.endlesscode.rpginventory.internal.TaskScheduler
 import ru.endlesscode.rpginventory.slot.*
-import ru.endlesscode.rpginventory.slot.SlotInteractionResult.Success
+import ru.endlesscode.rpginventory.slot.SlotInteractionResult.Change
 import ru.endlesscode.rpginventory.util.*
 import kotlin.math.min
 
@@ -536,7 +536,7 @@ class CustomInventory internal constructor(
 
         interaction.apply(result)
 
-        if (result is Success) {
+        if (result is Change) {
             if (result.syncCursor) scheduler.runTask { interaction.syncCursor(result.cursorItem) }
             if (result.syncSlot) scheduler.runTask { syncSlotWithView(slot) }
         }
