@@ -543,8 +543,7 @@ class CustomInventory(
 
     private fun placeSlotContent(interaction: PlaceSlotContent) {
         val slot = interaction.slot
-        if (slot.isEmpty()) {
-            slot.content = interaction.item
-        }
+        val result = slot.placeItem(interaction.item)
+        interaction.setResultCursor(result)
     }
 }

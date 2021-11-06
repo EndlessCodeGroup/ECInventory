@@ -21,6 +21,9 @@ internal data class PlaceSlotContent(
     override val event: InventoryClickEvent,
     override val slot: InventorySlot,
 ) : SlotInteraction {
-
     val item: ItemStack = checkNotNull(event.cursor) { "Cursor item shouldn't be null" }
+
+    fun setResultCursor(cursor: ItemStack) {
+        event.currentItem = cursor
+    }
 }
