@@ -7,13 +7,24 @@ internal sealed interface SlotInteraction {
     val event: InventoryClickEvent
     val slot: InventorySlot
 
-    fun cancel() {
-        event.isCancelled = true
+    /** Applies result of interaction to the [event]. */
+    fun apply(result: SlotInteractionResult) {
+        when (result) {
+            is SlotInteractionResult.Cancel -> {
+                event.isCancelled = true
+            }
+
+            is SlotInteractionResult.Success -> {
+                if (!result.syncCursor) {
+                    event.currentItem = result.cursorItem
+                }
+            }
+        }
     }
 
-    /** Set item that will be placed to cursor after the event. */
-    fun setResultCursor(cursor: ItemStack) {
-        event.currentItem = cursor
+    fun syncCursor(cursorItem: ItemStack) {
+        @Suppress("DEPRECATION") // It is ok because syncCursor is called
+        event.cursor = cursorItem
     }
 }
 

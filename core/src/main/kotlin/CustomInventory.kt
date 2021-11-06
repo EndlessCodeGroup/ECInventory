@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack
 import ru.endlesscode.rpginventory.internal.DI
 import ru.endlesscode.rpginventory.internal.TaskScheduler
 import ru.endlesscode.rpginventory.slot.*
+import ru.endlesscode.rpginventory.slot.SlotInteractionResult.Success
 import ru.endlesscode.rpginventory.util.*
 import kotlin.math.min
 
@@ -526,29 +527,19 @@ class CustomInventory internal constructor(
      *  - Shift + click
      *  - Swap with hotbar/shield
      */
-    internal fun handleInteraction(interaction: SlotInteraction) = when (interaction) {
-        is TakeSlotContent -> takeSlotContent(interaction)
-        is PlaceSlotContent -> placeSlotContent(interaction)
-    }
-
-    private fun takeSlotContent(interaction: TakeSlotContent) {
+    internal fun handleInteraction(interaction: SlotInteraction) {
         val slot = interaction.slot
-        val takenItem = slot.takeItem()
-        if (takenItem.isEmpty()) {
-            interaction.cancel()
-            return
-        } else {
-            interaction.setResultCursor(takenItem)
-            // Synchronize slot with view after the event happen
-            // if slot has texture item it will be placed to the inventory view.
-            scheduler.runTask { syncSlotWithView(slot) }
+        val result = when (interaction) {
+            is TakeSlotContent -> slot.takeItem()
+            is PlaceSlotContent -> slot.placeItem(interaction.item)
         }
-    }
 
-    private fun placeSlotContent(interaction: PlaceSlotContent) {
-        val slot = interaction.slot
-        val result = slot.placeItem(interaction.item)
-        interaction.setResultCursor(result)
+        interaction.apply(result)
+
+        if (result is Success) {
+            if (result.syncCursor) scheduler.runTask { interaction.syncCursor(result.cursorItem) }
+            if (result.syncSlot) scheduler.runTask { syncSlotWithView(slot) }
+        }
     }
 
     companion object {
