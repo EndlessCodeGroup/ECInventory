@@ -64,6 +64,15 @@ class InventorySlot(
     /** Returns [content] if it isn't empty or [texture] otherwise. */
     fun getContentOrTexture(): ItemStack = if (isEmpty()) texture else content
 
+    /** Returns the slot content or [AIR] if slot content can't be taken. */
+    fun takeItem(): ItemStack {
+        if (this.isEmpty()) return AIR
+
+        return content.also {
+            content = AIR
+        }
+    }
+
     /**
      * Places the given [item] to this slot and returns [ItemStack] that should be taken from the slot,
      * or [AIR] if none item should be taken.
@@ -71,10 +80,9 @@ class InventorySlot(
     fun placeItem(item: ItemStack): ItemStack {
         if (item.isEmpty()) return AIR
 
-        val previousContent = content
-        content = item.clone()
-
-        return previousContent
+        return content.also {
+            content = item.clone()
+        }
     }
 
     override fun toString(): String {

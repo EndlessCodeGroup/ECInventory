@@ -54,6 +54,14 @@ class CustomInventoryTest : FeatureSpec({
             event.isCancelled.shouldBeTrue()
         }
 
+        scenario("take content from slot") {
+            slot.content = ItemStack(Material.BLAZE_ROD)
+            val interaction = TakeSlotContent(event, slot)
+            inventory.handleInteraction(interaction)
+
+            verify { inventory.syncSlotWithView(slot) }
+        }
+
         scenario("place item to empty slot") {
             val item = event.mockCursor()
             val interaction = PlaceSlotContent(event, slot)
