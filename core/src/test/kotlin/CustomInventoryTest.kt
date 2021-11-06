@@ -7,6 +7,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.spyk
 import io.mockk.verify
 import org.bukkit.Material
+import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.rpginventory.internal.InstantTaskScheduler
 import ru.endlesscode.rpginventory.slot.*
@@ -42,9 +43,10 @@ class CustomInventoryTest : FeatureSpec({
 
     feature("inventory interaction handling") {
         val inventoryView = TestInventoryView()
-        val event = TestInventoryClickEvent(inventoryView)
+        lateinit var event: TestInventoryClickEvent
 
         fun takeContent(content: ItemStack = AIR): TakeSlotContent {
+            event = TestInventoryClickEvent(inventoryView)
             slot.content = content
             return TakeSlotContent(event, slot)
         }
@@ -52,7 +54,9 @@ class CustomInventoryTest : FeatureSpec({
         fun placeContent(
             item: ItemStack = ItemStack(Material.STICK),
             current: ItemStack = AIR,
+            action: InventoryAction = InventoryAction.PLACE_ALL,
         ): PlaceSlotContent {
+            event = TestInventoryClickEvent(inventoryView, action)
             slot.content = current
             event.cursor = item
             return PlaceSlotContent(event, slot)
@@ -83,6 +87,16 @@ class CustomInventoryTest : FeatureSpec({
             }
         }
 
+        scenario("place single item") {
+            val stack = ItemStack(Material.STICK, slot.maxStackSize + 1)
+            val interaction = placeContent(stack, action = InventoryAction.PLACE_ONE)
+            inventory.handleInteraction(interaction)
+
+            assertSoftly {
+                slot.content shouldBe ItemStack(Material.STICK, 1)
+            }
+        }
+
         scenario("place more than max stack size to empty slot") {
             val item = ItemStack(Material.STICK, slot.maxStackSize + 1)
             val interaction = placeContent(item)
@@ -106,6 +120,20 @@ class CustomInventoryTest : FeatureSpec({
             }
         }
 
+        scenario("place single similar item") {
+            val stack = ItemStack(Material.STICK, slot.maxStackSize)
+            val interaction = placeContent(
+                stack,
+                current = ItemStack(Material.STICK),
+                action = InventoryAction.PLACE_ONE,
+            )
+            inventory.handleInteraction(interaction)
+
+            assertSoftly {
+                slot.content shouldBe ItemStack(Material.STICK, 2)
+            }
+        }
+
         scenario("place similar item to slot") {
             val item = ItemStack(Material.STICK)
             val interaction = placeContent(item, current = ItemStack(Material.STICK, slot.maxStackSize - 1))
@@ -126,8 +154,8 @@ class CustomInventoryTest : FeatureSpec({
         }
 
         scenario("replace item in slot") {
-            val newItem = ItemStack(Material.BLAZE_ROD)
-            val currentItem = ItemStack(Material.STICK)
+            val newItem = ItemStack(Material.BLAZE_ROD, 3)
+            val currentItem = ItemStack(Material.STICK, 2)
             val interaction = placeContent(newItem, current = currentItem)
             inventory.handleInteraction(interaction)
 

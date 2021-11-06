@@ -1,5 +1,6 @@
 package ru.endlesscode.rpginventory.slot
 
+import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 
@@ -42,4 +43,5 @@ internal data class PlaceSlotContent(
     override val slot: InventorySlot,
 ) : SlotInteraction {
     val item: ItemStack = checkNotNull(event.cursor) { "Cursor item shouldn't be null" }
+    val amount: Int = if (event.action == InventoryAction.PLACE_ONE) 1 else item.amount
 }
