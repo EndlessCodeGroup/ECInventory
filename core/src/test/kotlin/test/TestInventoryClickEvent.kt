@@ -23,11 +23,4 @@ class TestInventoryClickEvent(
     override fun setCurrentItem(stack: ItemStack?) {
         currentItem = stack
     }
-
-    private var cursor: ItemStack? = AIR
-
-    override fun getCursor(): ItemStack? = cursor
-    override fun setCursor(stack: ItemStack?) {
-        cursor = stack
-    }
 }
