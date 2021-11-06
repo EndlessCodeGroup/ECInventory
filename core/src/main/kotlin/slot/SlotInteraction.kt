@@ -51,5 +51,9 @@ internal data class PlaceSlotContent(
     override val slot: InventorySlot,
 ) : SlotInteraction {
     val item: ItemStack = checkNotNull(event.cursor) { "Cursor item shouldn't be null" }
-    val amount: Int = if (event.action == PLACE_ONE) 1 else item.amount
+    val amount: Int = when(event.action) {
+        PLACE_ONE -> 1
+        SWAP_WITH_CURSOR -> if (event.isRightClick) 1 else item.amount
+        else -> item.amount
+    }
 }

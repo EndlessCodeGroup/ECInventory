@@ -538,10 +538,10 @@ class CustomInventory internal constructor(
 
     companion object {
         /**
-         * By default, will be used stack size 1, and it will be increased when
+         * By default, will be used stack size 64, and it will be increased when
          * will be added new slots with greater max stack size.
          * @see InventorySlot
          */
-        const val DEFAULT_MAX_STACK = 1
+        const val DEFAULT_MAX_STACK = 64
     }
 }
