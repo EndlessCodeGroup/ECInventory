@@ -8,6 +8,8 @@ import ru.endlesscode.rpginventory.CustomInventory
 import ru.endlesscode.rpginventory.internal.DI
 
 private val rootCommand get() = CommandAPICommand("inventories").withAliases("inv")
+// TODO: This is temporary solution for debug purpose here should be normal SQL storage
+private val inventories = mutableMapOf<String, CustomInventory>()
 
 internal fun registerCommand() {
     rootCommand
@@ -18,8 +20,9 @@ internal fun registerCommand() {
 private fun subcommandOpen(): CommandAPICommand =
     CommandAPICommand("open")
         .withArguments(inventoryArgument())
-        .executesPlayer(PlayerCommandExecutor { sender, (id) ->
-            val inventory = CustomInventory(DI.inventories.getValue(id as String))
+        .executesPlayer(PlayerCommandExecutor { sender, (idArg) ->
+            val id = idArg as String
+            val inventory = inventories.getOrPut(id) { CustomInventory(DI.inventories.getValue(id)) }
             inventory.open(sender)
         })
 
