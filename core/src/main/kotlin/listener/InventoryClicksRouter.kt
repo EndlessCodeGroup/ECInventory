@@ -67,8 +67,8 @@ internal class InventoryClicksRouter : Listener {
         PICKUP_ALL, PICKUP_SOME, PICKUP_HALF, PICKUP_ONE,
         DROP_ALL_SLOT, DROP_ONE_SLOT,
         MOVE_TO_OTHER_INVENTORY,
-        COLLECT_TO_CURSOR -> TakeSlotContent(this, slot)
-        PLACE_ALL, PLACE_SOME, PLACE_ONE, SWAP_WITH_CURSOR -> PlaceSlotContent(this, slot)
+        COLLECT_TO_CURSOR -> TakeSlotContent.fromClick(this, slot)
+        PLACE_ALL, PLACE_SOME, PLACE_ONE, SWAP_WITH_CURSOR -> PlaceSlotContent.fromClick(this, slot)
         HOTBAR_MOVE_AND_READD -> TODO()
         HOTBAR_SWAP -> TODO()
         CLONE_STACK,

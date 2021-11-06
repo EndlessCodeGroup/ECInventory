@@ -36,13 +36,13 @@ class InventoryClicksRouterTest : FeatureSpec({
         mockItemFactory()
     }
 
-    fun clickEvent(
-        action: InventoryAction = InventoryAction.NOTHING,
-        slot: Int = 0,
-    ) = TestInventoryClickEvent(inventoryView, action, slot)
-
     feature("inventory click event") {
         lateinit var event: TestInventoryClickEvent
+
+        fun clickEvent(
+            action: InventoryAction = InventoryAction.NOTHING,
+            slot: Int = 0,
+        ) = TestInventoryClickEvent(inventoryView, action, slot)
 
         fun verifyInteraction(
             interaction: SlotInteraction?,
@@ -85,7 +85,7 @@ class InventoryClicksRouterTest : FeatureSpec({
             event = clickEvent(InventoryAction.PICKUP_ALL)
             router.onClick(event)
 
-            verifyInteraction(TakeSlotContent(event, clickedSlot!!))
+            verifyInteraction(TakeSlotContent.fromClick(event, clickedSlot!!))
         }
 
         scenario("place item to slot") {
@@ -94,7 +94,7 @@ class InventoryClicksRouterTest : FeatureSpec({
             event.cursor = ItemStack(Material.STICK)
             router.onClick(event)
 
-            verifyInteraction(PlaceSlotContent(event, clickedSlot!!))
+            verifyInteraction(PlaceSlotContent.fromClick(event, clickedSlot!!))
         }
     }
 })
