@@ -529,7 +529,9 @@ class CustomInventory internal constructor(
         interaction.apply(result)
 
         if (result is Change) {
-            if (result.syncCursor) scheduler.runTask { interaction.syncCursor(result.cursorItem) }
+            if (result.cursorReplacement != null) {
+                scheduler.runTask { interaction.syncCursor(result.cursorReplacement) }
+            }
             if (result.syncSlot) scheduler.runTask { syncSlotWithView(slot) }
         }
     }

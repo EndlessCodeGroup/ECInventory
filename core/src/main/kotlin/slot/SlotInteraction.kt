@@ -17,8 +17,8 @@ internal sealed interface SlotInteraction {
             }
 
             is Change -> {
-                if (!result.syncCursor) {
-                    event.currentItem = result.cursorItem
+                if (result.currentItemReplacement != null) {
+                    event.currentItem = result.currentItemReplacement
                 }
             }
 

@@ -9,9 +9,8 @@ sealed interface SlotInteractionResult {
     object Accept : SlotInteractionResult
 
     data class Change(
-        val cursorItem: ItemStack,
-        val syncCursor: Boolean = false,
+        val currentItemReplacement: ItemStack? = null,
+        val cursorReplacement: ItemStack? = null,
         val syncSlot: Boolean = false,
     ) : SlotInteractionResult
 }
-
