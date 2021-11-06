@@ -2,6 +2,7 @@ package ru.endlesscode.rpginventory
 
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.shouldBe
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.bukkit.Material
@@ -33,19 +34,22 @@ class CustomInventoryTest : FeatureSpec({
         mockItemFactory()
     }
 
-    feature("inventory click handling") {
+    feature("inventory interaction handling") {
         val event = mockk<InventoryClickEvent>(relaxUnitFun = true)
 
         scenario("take content from empty slot") {
             val interaction = TakeSlotContent(event, slot)
             inventory.handleInteraction(interaction)
+
             verify { interaction.cancel() }
         }
 
         scenario("place item to empty slot") {
             val item = ItemStack(Material.STICK)
-            val interaction = PlaceSlotContent(event, slot, item)
+            every { event.cursor } returns ItemStack(Material.STICK)
+            val interaction = PlaceSlotContent(event, slot)
             inventory.handleInteraction(interaction)
+
             slot.content shouldBe item
         }
     }

@@ -20,5 +20,7 @@ internal data class TakeSlotContent(
 internal data class PlaceSlotContent(
     override val event: InventoryClickEvent,
     override val slot: InventorySlot,
-    val item: ItemStack,
-) : SlotInteraction
+) : SlotInteraction {
+
+    val item: ItemStack = checkNotNull(event.cursor) { "Cursor item shouldn't be null" }
+}
