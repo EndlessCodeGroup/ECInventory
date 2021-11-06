@@ -1,14 +1,17 @@
 package ru.endlesscode.rpginventory
 
+import io.kotest.assertions.assertSoftly
 import io.kotest.core.spec.style.FeatureSpec
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
-import io.mockk.every
-import io.mockk.mockk
+import io.mockk.spyk
 import io.mockk.verify
 import org.bukkit.Material
-import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
+import ru.endlesscode.rpginventory.internal.InstantTaskScheduler
 import ru.endlesscode.rpginventory.slot.*
+import ru.endlesscode.rpginventory.test.TestInventoryClickEvent
+import ru.endlesscode.rpginventory.test.mockItemFactory
 import ru.endlesscode.rpginventory.util.AIR
 
 class CustomInventoryTest : FeatureSpec({
@@ -27,7 +30,9 @@ class CustomInventoryTest : FeatureSpec({
             )
         )
     )
-    val inventory = CustomInventory(inventoryLayout)
+
+    // SUT
+    val inventory = spyk(CustomInventory(inventoryLayout, InstantTaskScheduler()))
     val slot = inventory.getSlot(0)
 
     beforeSpec {
@@ -35,10 +40,10 @@ class CustomInventoryTest : FeatureSpec({
     }
 
     feature("inventory interaction handling") {
-        val event = mockk<InventoryClickEvent>(relaxUnitFun = true)
+        val event = TestInventoryClickEvent()
 
-        fun InventoryClickEvent.mockCursor(item: ItemStack = ItemStack(Material.STICK)): ItemStack {
-            every { cursor } returns item
+        fun TestInventoryClickEvent.mockCursor(item: ItemStack = ItemStack(Material.STICK)): ItemStack {
+            cursor = item
             return item
         }
 
@@ -46,7 +51,7 @@ class CustomInventoryTest : FeatureSpec({
             val interaction = TakeSlotContent(event, slot)
             inventory.handleInteraction(interaction)
 
-            verify { interaction.cancel() }
+            event.isCancelled.shouldBeTrue()
         }
 
         scenario("place item to empty slot") {
@@ -54,8 +59,10 @@ class CustomInventoryTest : FeatureSpec({
             val interaction = PlaceSlotContent(event, slot)
             inventory.handleInteraction(interaction)
 
-            slot.content shouldBe item
-            verify { event.currentItem = air() }
+            assertSoftly {
+                slot.content shouldBe item
+                event.currentItem shouldBe AIR
+            }
         }
 
         scenario("swap slot content with cursor") {
