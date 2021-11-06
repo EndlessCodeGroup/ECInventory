@@ -18,9 +18,9 @@
 
 package ru.endlesscode.rpginventory.slot
 
-import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.rpginventory.CustomInventory
+import ru.endlesscode.rpginventory.util.AIR
 import ru.endlesscode.rpginventory.util.isEmpty
 import ru.endlesscode.rpginventory.util.isNotEmpty
 
@@ -39,7 +39,10 @@ class InventorySlot(
     val position: Int,
 ) : Slot by prototype {
 
-    var content: ItemStack = ItemStack(Material.AIR)
+    override val texture: ItemStack = prototype.texture
+        get() = field.clone()
+
+    var content: ItemStack = AIR
         set(value) {
             field = value
             if (value.isNotEmpty() && maxStackSize > 0 && value.amount > maxStackSize) {
@@ -47,13 +50,7 @@ class InventorySlot(
             }
 
             // We need to sync this change with the inventory's view if it is open
-            holder.syncSlotWithView(this)
-        }
-
-    override var maxStackSize: Int = 1
-        set(value) {
-            field = value
-            updateHolderMaxStackSize()
+            //holder.syncSlotWithView(this)
         }
 
     init {
@@ -66,6 +63,23 @@ class InventorySlot(
 
     /** Returns [content] if it isn't empty or [texture] otherwise. */
     fun getContentOrTexture(): ItemStack = if (isEmpty()) texture else content
+
+    /**
+     * Places the given [item] to this slot and returns [ItemStack] that should be taken from the slot,
+     * or [AIR] if none item should be taken.
+     */
+    fun placeItem(item: ItemStack): ItemStack {
+        if (item.isEmpty()) return AIR
+
+        val previousContent = content
+        content = item.clone()
+
+        return previousContent
+    }
+
+    override fun toString(): String {
+        return "InventorySlot(id=$id, position=$position, content=$content)"
+    }
 
     private fun updateHolderMaxStackSize() {
         if (holder.maxStackSize < maxStackSize) {

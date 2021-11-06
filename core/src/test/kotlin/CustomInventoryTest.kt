@@ -37,6 +37,11 @@ class CustomInventoryTest : FeatureSpec({
     feature("inventory interaction handling") {
         val event = mockk<InventoryClickEvent>(relaxUnitFun = true)
 
+        fun InventoryClickEvent.mockCursor(item: ItemStack = ItemStack(Material.STICK)): ItemStack {
+            every { cursor } returns item
+            return item
+        }
+
         scenario("take content from empty slot") {
             val interaction = TakeSlotContent(event, slot)
             inventory.handleInteraction(interaction)
@@ -45,8 +50,17 @@ class CustomInventoryTest : FeatureSpec({
         }
 
         scenario("place item to empty slot") {
-            val item = ItemStack(Material.STICK)
-            every { event.cursor } returns ItemStack(Material.STICK)
+            val item = event.mockCursor()
+            val interaction = PlaceSlotContent(event, slot)
+            inventory.handleInteraction(interaction)
+
+            slot.content shouldBe item
+            verify { event.currentItem = air() }
+        }
+
+        scenario("swap slot content with cursor") {
+            val item = event.mockCursor()
+            slot.content = ItemStack(Material.BLAZE_ROD)
             val interaction = PlaceSlotContent(event, slot)
             inventory.handleInteraction(interaction)
 
