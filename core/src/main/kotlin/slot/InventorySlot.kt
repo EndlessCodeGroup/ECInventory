@@ -81,11 +81,11 @@ class InventorySlot(
         if (item.isEmpty()) return SlotInteractionResult.Deny
 
         // Slot is empty, so we don't need to return slot content
-        if (this.isEmpty()) {
+        return if (this.isEmpty()) {
             val stack = item.clone()
 
             // More than a single stack! Keep extra items in cursor.
-            return if (item.amount > maxStackSize) {
+            if (item.amount > maxStackSize) {
                 val cursor = item.clone()
                 stack.amount = maxStackSize
                 cursor.amount = item.amount - maxStackSize
@@ -99,7 +99,7 @@ class InventorySlot(
             }
         } else if (item.isSimilar(content)) {
             // Item is similar to content, so we can try to append it to content
-            return if (this.isFull()) {
+            if (this.isFull()) {
                 // Stack already full, deny this interaction
                 SlotInteractionResult.Deny
             } else if (content.amount + item.amount <= maxStackSize) {
@@ -114,10 +114,15 @@ class InventorySlot(
                 content.amount = maxStackSize
                 SlotInteractionResult.Change(cursor, syncCursor = true, syncSlot = true)
             }
+        } else {
+            // Item is not similar and slot already contain another item, so we can swap content and cursor
+            if (item.amount <= maxStackSize) {
+                content = item.clone()
+                SlotInteractionResult.Accept
+            } else {
+                SlotInteractionResult.Deny
+            }
         }
-
-        // TODO
-        return SlotInteractionResult.Deny
     }
 
     override fun toString(): String {
