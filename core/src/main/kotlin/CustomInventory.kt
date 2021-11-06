@@ -519,18 +519,10 @@ class CustomInventory internal constructor(
         }
     }
 
-    /*
-     * TODO:
-     *  - Take item
-     *  - Place item
-     *  - Swap item
-     *  - Shift + click
-     *  - Swap with hotbar/shield
-     */
     internal fun handleInteraction(interaction: SlotInteraction) {
         val slot = interaction.slot
         val result = when (interaction) {
-            is TakeSlotContent -> slot.takeItem()
+            is TakeSlotContent -> slot.takeItem(interaction.amount)
             is PlaceSlotContent -> slot.placeItem(interaction.item, interaction.amount)
         }
 
