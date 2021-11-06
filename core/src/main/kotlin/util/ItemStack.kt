@@ -21,7 +21,7 @@ package ru.endlesscode.rpginventory.util
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
-private val air by lazy { ItemStack(Material.AIR) }
+private val air by lazy { ItemStack(Material.AIR, 0) }
 
 /**
  * Global instance of AIR item stack.
@@ -39,14 +39,14 @@ internal fun ItemStack?.orEmpty(): ItemStack = this ?: AIR
 /**
  * Returns `true` if the item stack is AIR.
  */
-internal fun ItemStack.isEmpty(): Boolean = type == Material.AIR
+internal fun ItemStack.isEmpty(): Boolean = type.isAir
 
 /**
  * Returns `true` if the item stack isn't `null` and isn't AIR.
  */
-internal fun ItemStack.isNotEmpty(): Boolean = type != Material.AIR
+internal fun ItemStack.isNotEmpty(): Boolean = !type.isAir
 
 /**
  * Returns `true` if the item stack is `null` or AIR.
  */
-internal fun ItemStack?.isNullOrEmpty(): Boolean = this == null || type == Material.AIR
+internal fun ItemStack?.isNullOrEmpty(): Boolean = this == null || type.isAir
