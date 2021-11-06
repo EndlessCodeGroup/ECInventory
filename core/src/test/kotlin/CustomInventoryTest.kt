@@ -1,6 +1,7 @@
 package ru.endlesscode.rpginventory
 
 import io.kotest.assertions.assertSoftly
+import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
@@ -56,14 +57,14 @@ class CustomInventoryTest : FeatureSpec({
             return TakeSlotContent(event, slot)
         }
 
-        scenario("take content from empty slot") {
+        scenario("take item from empty slot") {
             val interaction = takeContent()
             inventory.handleInteraction(interaction)
 
             event.isCancelled.shouldBeTrue()
         }
 
-        scenario("take content from slot") {
+        scenario("take item from slot") {
             val interaction = takeContent(ItemStack(Material.BLAZE_ROD))
             inventory.handleInteraction(interaction)
 
@@ -80,101 +81,116 @@ class CustomInventoryTest : FeatureSpec({
 
     feature("place item") {
 
+        var initEventCursor: ItemStack? = null
+        var initEventCurrentItem: ItemStack? = null
+
         fun placeContent(
-            item: ItemStack = ItemStack(Material.STICK),
+            cursor: ItemStack = ItemStack(Material.STICK),
             current: ItemStack = AIR,
-            action: InventoryAction = PLACE_ALL,
+            action: InventoryAction = SWAP_WITH_CURSOR,
         ): PlaceSlotContent {
             event = TestInventoryClickEvent(inventoryView, action)
             slot.content = current
-            event.cursor = item
+            event.cursor = cursor
+            event.currentItem = slot.getContentOrTexture()
+
+            initEventCursor = cursor
+            initEventCurrentItem = current
+
             return PlaceSlotContent(event, slot)
         }
 
+        fun assertState(
+            content: ItemStack,
+            cursor: ItemStack? = initEventCursor,
+            currentItem: ItemStack? = initEventCurrentItem,
+            isCancelled: Boolean = false,
+        ) {
+            assertSoftly {
+                withClue("Unexpected content") { slot.content shouldBe content }
+                withClue("Unexpected currentItem") { event.currentItem shouldBe currentItem }
+                withClue("Unexpected cursor") { event.cursor shouldBe cursor }
+                withClue("Event should${if (isCancelled) "n't" else ""} be cancelled") {
+                    event.isCancelled shouldBe isCancelled
+                }
+            }
+        }
+
         scenario("place item to empty slot") {
-            val interaction = placeContent()
-            val item = interaction.item
+            val cursor = ItemStack(Material.STICK)
+            val interaction = placeContent(cursor)
             inventory.handleInteraction(interaction)
 
-            assertSoftly {
-                slot.content shouldBe item
-                event.currentItem shouldBe AIR
-            }
+            assertState(content = cursor)
         }
 
         scenario("place single item") {
-            val stack = ItemStack(Material.STICK, slot.maxStackSize + 1)
-            val interaction = placeContent(stack, action = PLACE_ONE)
+            val cursor = ItemStack(Material.STICK, slot.maxStackSize + 1)
+            val interaction = placeContent(cursor, action = PLACE_ONE)
             inventory.handleInteraction(interaction)
 
-            assertSoftly {
-                slot.content shouldBe ItemStack(Material.STICK, 1)
-            }
+            assertState(content = ItemStack(Material.STICK, 1))
         }
 
         scenario("place more than max stack size to empty slot") {
-            val item = ItemStack(Material.STICK, slot.maxStackSize + 1)
-            val interaction = placeContent(item)
+            val cursor = ItemStack(Material.STICK, slot.maxStackSize + 1)
+            val interaction = placeContent(cursor)
             inventory.handleInteraction(interaction)
 
-            assertSoftly {
-                slot.content shouldBe ItemStack(Material.STICK, slot.maxStackSize)
-                event.cursor shouldBe ItemStack(Material.STICK, 1)
-            }
+            assertState(
+                content = ItemStack(Material.STICK, slot.maxStackSize),
+                cursor = ItemStack(Material.STICK, 1),
+            )
         }
 
         scenario("place similar item to full slot") {
-            val item = ItemStack(Material.STICK)
-            val currentContent = ItemStack(Material.STICK, slot.maxStackSize)
-            val interaction = placeContent(item, current = currentContent)
+            val cursor = ItemStack(Material.STICK)
+            val current = ItemStack(Material.STICK, slot.maxStackSize)
+            val interaction = placeContent(cursor, current = current)
             inventory.handleInteraction(interaction)
 
-            assertSoftly {
-                slot.content shouldBe currentContent
-                event.isCancelled.shouldBeTrue()
-            }
+            assertState(
+                content = current,
+                isCancelled = true,
+            )
         }
 
         scenario("place single similar item") {
-            val stack = ItemStack(Material.STICK, slot.maxStackSize)
-            val interaction = placeContent(
-                stack,
-                current = ItemStack(Material.STICK),
-                action = PLACE_ONE,
-            )
+            val cursor = ItemStack(Material.STICK, slot.maxStackSize)
+            val current = ItemStack(Material.STICK)
+            val interaction = placeContent(cursor, current, action = PLACE_ONE)
             inventory.handleInteraction(interaction)
 
-            assertSoftly {
-                slot.content shouldBe ItemStack(Material.STICK, 2)
-            }
+            assertState(content = ItemStack(Material.STICK, 2))
         }
 
         scenario("place similar item to slot") {
-            val item = ItemStack(Material.STICK)
-            val interaction = placeContent(item, current = ItemStack(Material.STICK, slot.maxStackSize - 1))
+            val cursor = ItemStack(Material.STICK)
+            val current = ItemStack(Material.STICK, slot.maxStackSize - 1)
+            val interaction = placeContent(cursor, current)
             inventory.handleInteraction(interaction)
 
-            slot.content shouldBe ItemStack(Material.STICK, slot.maxStackSize)
+            assertState(content = ItemStack(Material.STICK, slot.maxStackSize))
         }
 
         scenario("place similar item to slot with overflow") {
-            val item = ItemStack(Material.STICK, 2)
-            val interaction = placeContent(item, current = ItemStack(Material.STICK, slot.maxStackSize - 1))
+            val cursor = ItemStack(Material.STICK, 2)
+            val current = ItemStack(Material.STICK, slot.maxStackSize - 1)
+            val interaction = placeContent(cursor, current)
             inventory.handleInteraction(interaction)
 
-            assertSoftly {
-                slot.content shouldBe ItemStack(Material.STICK, slot.maxStackSize)
-                event.cursor shouldBe ItemStack(Material.STICK, 1)
-            }
+            assertState(
+                content = ItemStack(Material.STICK, slot.maxStackSize),
+                cursor = ItemStack(Material.STICK, 1),
+            )
         }
 
         scenario("replace item in slot") {
-            val newItem = ItemStack(Material.BLAZE_ROD, 3)
-            val currentItem = ItemStack(Material.STICK, 2)
-            val interaction = placeContent(newItem, current = currentItem)
+            val cursor = ItemStack(Material.BLAZE_ROD, 3)
+            val interaction = placeContent(cursor, ItemStack(Material.STICK, 2))
             inventory.handleInteraction(interaction)
 
-            slot.content shouldBe newItem
+            assertState(content = cursor)
         }
 
         scenario("try to replace item with item not fitting to slot") {
@@ -183,10 +199,10 @@ class CustomInventoryTest : FeatureSpec({
             val interaction = placeContent(largeStack, current = currentItem)
             inventory.handleInteraction(interaction)
 
-            assertSoftly {
-                slot.content shouldBe currentItem
-                event.isCancelled.shouldBeTrue()
-            }
+            assertState(
+                content = currentItem,
+                isCancelled = true,
+            )
         }
     }
 })

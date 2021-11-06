@@ -96,7 +96,7 @@ class InventorySlot(
                 cursor.amount = item.amount - maxStackSize
 
                 content = stack
-                SlotInteractionResult.Change(cursor, syncCursor = true, syncSlot = true)
+                SlotInteractionResult.Change(currentItemReplacement = AIR, cursorReplacement = cursor, syncSlot = true)
             } else {
                 // All items fit to the slot
                 stack.amount = amount
@@ -118,7 +118,7 @@ class InventorySlot(
                 cursor.amount -= maxStackSize - content.amount
 
                 content.amount = maxStackSize
-                SlotInteractionResult.Change(cursor, syncCursor = true, syncSlot = true)
+                SlotInteractionResult.Change(cursorReplacement = cursor, syncSlot = true)
             }
         } else {
             // Item is not similar and slot already contain another item, so we can swap content and cursor
