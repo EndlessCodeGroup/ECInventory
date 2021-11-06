@@ -61,21 +61,24 @@ class InventorySlot(
     /** Returns `true` if slot's content is empty. */
     fun isEmpty(): Boolean = content.isEmpty()
 
+    /** Returns `true` if slot contains maximal possible amount of items. */
+    fun isFull(): Boolean = !isEmpty() && content.amount == maxStackSize
+
     /** Returns [content] if it isn't empty or [texture] otherwise. */
     fun getContentOrTexture(): ItemStack = if (isEmpty()) texture else content
 
     /** Takes item from this slot and returns result of this interaction. */
     fun takeItem(): SlotInteractionResult {
-        if (this.isEmpty()) return SlotInteractionResult.Cancel
+        if (this.isEmpty()) return SlotInteractionResult.Deny
 
-        return SlotInteractionResult.Success(content, syncSlot = texture.isNotEmpty()).also {
+        return SlotInteractionResult.Change(content, syncSlot = texture.isNotEmpty()).also {
             content = AIR
         }
     }
 
     /** Places the given [item] to this slot and returns result of this interaction. */
     fun placeItem(item: ItemStack): SlotInteractionResult {
-        if (item.isEmpty()) return SlotInteractionResult.Cancel
+        if (item.isEmpty()) return SlotInteractionResult.Deny
 
         // Slot is empty, so we don't need to return slot content
         if (this.isEmpty()) {
@@ -88,15 +91,33 @@ class InventorySlot(
                 cursor.amount = item.amount - maxStackSize
 
                 content = stack
-                SlotInteractionResult.Success(cursor, syncCursor = true, syncSlot = true)
+                SlotInteractionResult.Change(cursor, syncCursor = true, syncSlot = true)
             } else {
+                // All items fit to the slot, clear cursor
                 content = stack
-                SlotInteractionResult.Success(AIR)
+                SlotInteractionResult.Change(AIR)
+            }
+        } else if (item.isSimilar(content)) {
+            // Item is similar to content, so we can try to append it to content
+            return if (this.isFull()) {
+                // Stack already full, deny this interaction
+                SlotInteractionResult.Deny
+            } else if (content.amount + item.amount <= maxStackSize) {
+                // There are enough place for all items
+                content.amount += item.amount
+                SlotInteractionResult.Accept
+            } else {
+                // We can place some items
+                val cursor = item.clone()
+                cursor.amount = cursor.amount - maxStackSize + content.amount
+
+                content.amount = maxStackSize
+                SlotInteractionResult.Change(cursor, syncCursor = true, syncSlot = true)
             }
         }
 
         // TODO
-        return SlotInteractionResult.Cancel
+        return SlotInteractionResult.Deny
     }
 
     override fun toString(): String {

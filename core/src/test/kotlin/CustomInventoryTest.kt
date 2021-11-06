@@ -49,14 +49,13 @@ class CustomInventoryTest : FeatureSpec({
             return TakeSlotContent(event, slot)
         }
 
-        fun placeContent(item: ItemStack = ItemStack(Material.STICK)): PlaceSlotContent {
+        fun placeContent(
+            item: ItemStack = ItemStack(Material.STICK),
+            current: ItemStack = AIR,
+        ): PlaceSlotContent {
+            slot.content = current
             event.cursor = item
             return PlaceSlotContent(event, slot)
-        }
-
-        fun TestInventoryClickEvent.mockCursor(item: ItemStack = ItemStack(Material.STICK)): ItemStack {
-            cursor = item
-            return item
         }
 
         scenario("take content from empty slot") {
@@ -95,6 +94,37 @@ class CustomInventoryTest : FeatureSpec({
         scenario("place more than max stack size to empty slot") {
             val item = ItemStack(Material.STICK, slot.maxStackSize + 1)
             val interaction = placeContent(item)
+            inventory.handleInteraction(interaction)
+
+            assertSoftly {
+                slot.content shouldBe ItemStack(Material.STICK, slot.maxStackSize)
+                event.cursor shouldBe ItemStack(Material.STICK, 1)
+            }
+        }
+
+        scenario("place similar item to full slot") {
+            val item = ItemStack(Material.STICK)
+            val currentContent = ItemStack(Material.STICK, slot.maxStackSize)
+            val interaction = placeContent(item, current = currentContent)
+            inventory.handleInteraction(interaction)
+
+            assertSoftly {
+                slot.content shouldBe currentContent
+                event.isCancelled.shouldBeTrue()
+            }
+        }
+
+        scenario("place similar item to slot") {
+            val item = ItemStack(Material.STICK)
+            val interaction = placeContent(item, current = ItemStack(Material.STICK, slot.maxStackSize - 1))
+            inventory.handleInteraction(interaction)
+
+            slot.content shouldBe ItemStack(Material.STICK, slot.maxStackSize)
+        }
+
+        scenario("place similar item to slot with overflow") {
+            val item = ItemStack(Material.STICK, 2)
+            val interaction = placeContent(item, current = ItemStack(Material.STICK, slot.maxStackSize - 1))
             inventory.handleInteraction(interaction)
 
             assertSoftly {

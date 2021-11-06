@@ -4,9 +4,11 @@ import org.bukkit.inventory.ItemStack
 
 sealed interface SlotInteractionResult {
 
-    object Cancel : SlotInteractionResult
+    object Deny : SlotInteractionResult
 
-    data class Success(
+    object Accept : SlotInteractionResult
+
+    data class Change(
         val cursorItem: ItemStack,
         val syncCursor: Boolean = false,
         val syncSlot: Boolean = false,
