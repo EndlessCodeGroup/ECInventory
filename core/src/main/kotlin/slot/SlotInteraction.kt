@@ -1,8 +1,9 @@
 package ru.endlesscode.rpginventory.slot
 
-import org.bukkit.event.inventory.InventoryAction
+import org.bukkit.event.inventory.InventoryAction.*
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
+import ru.endlesscode.rpginventory.slot.SlotInteractionResult.*
 
 internal sealed interface SlotInteraction {
     val event: InventoryClickEvent
@@ -11,17 +12,17 @@ internal sealed interface SlotInteraction {
     /** Applies result of interaction to the [event]. */
     fun apply(result: SlotInteractionResult) {
         when (result) {
-            is SlotInteractionResult.Deny -> {
+            is Deny -> {
                 event.isCancelled = true
             }
 
-            is SlotInteractionResult.Change -> {
+            is Change -> {
                 if (!result.syncCursor) {
                     event.currentItem = result.cursorItem
                 }
             }
 
-            is SlotInteractionResult.Accept -> {
+            is Accept -> {
                 // Event just passed
             }
         }
@@ -36,12 +37,19 @@ internal sealed interface SlotInteraction {
 internal data class TakeSlotContent(
     override val event: InventoryClickEvent,
     override val slot: InventorySlot,
-) : SlotInteraction
+) : SlotInteraction {
+
+    val amount: Int = when (event.action) {
+        PICKUP_ONE, DROP_ONE_SLOT -> 1
+        PICKUP_HALF -> (slot.content.amount + 1) / 2
+        else -> slot.content.amount
+    }
+}
 
 internal data class PlaceSlotContent(
     override val event: InventoryClickEvent,
     override val slot: InventorySlot,
 ) : SlotInteraction {
     val item: ItemStack = checkNotNull(event.cursor) { "Cursor item shouldn't be null" }
-    val amount: Int = if (event.action == InventoryAction.PLACE_ONE) 1 else item.amount
+    val amount: Int = if (event.action == PLACE_ONE) 1 else item.amount
 }

@@ -68,11 +68,16 @@ class InventorySlot(
     fun getContentOrTexture(): ItemStack = if (isEmpty()) texture else content
 
     /** Takes item from this slot and returns result of this interaction. */
-    fun takeItem(): SlotInteractionResult {
+    fun takeItem(amount: Int): SlotInteractionResult {
         if (this.isEmpty()) return SlotInteractionResult.Deny
 
-        return SlotInteractionResult.Change(content, syncSlot = texture.isNotEmpty()).also {
-            content = AIR
+        return if (amount < content.amount) {
+            content.amount -= amount
+            SlotInteractionResult.Accept
+        } else {
+            SlotInteractionResult.Change(content, syncSlot = texture.isNotEmpty()).also {
+                content = AIR
+            }
         }
     }
 
