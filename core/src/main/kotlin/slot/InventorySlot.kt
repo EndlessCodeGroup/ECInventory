@@ -77,7 +77,7 @@ class InventorySlot(
     }
 
     /** Places the given [item] to this slot and returns result of this interaction. */
-    fun placeItem(item: ItemStack): SlotInteractionResult {
+    fun placeItem(item: ItemStack, amount: Int): SlotInteractionResult {
         if (item.isEmpty()) return SlotInteractionResult.Deny
 
         // Slot is empty, so we don't need to return slot content
@@ -85,7 +85,7 @@ class InventorySlot(
             val stack = item.clone()
 
             // More than a single stack! Keep extra items in cursor.
-            if (item.amount > maxStackSize) {
+            if (amount > maxStackSize) {
                 val cursor = item.clone()
                 stack.amount = maxStackSize
                 cursor.amount = item.amount - maxStackSize
@@ -93,7 +93,8 @@ class InventorySlot(
                 content = stack
                 SlotInteractionResult.Change(cursor, syncCursor = true, syncSlot = true)
             } else {
-                // All items fit to the slot, clear cursor
+                // All items fit to the slot
+                stack.amount = amount
                 content = stack
                 SlotInteractionResult.Change(AIR)
             }
@@ -102,14 +103,14 @@ class InventorySlot(
             if (this.isFull()) {
                 // Stack already full, deny this interaction
                 SlotInteractionResult.Deny
-            } else if (content.amount + item.amount <= maxStackSize) {
+            } else if (content.amount + amount <= maxStackSize) {
                 // There are enough place for all items
-                content.amount += item.amount
+                content.amount += amount
                 SlotInteractionResult.Accept
             } else {
                 // We can place some items
                 val cursor = item.clone()
-                cursor.amount = cursor.amount - maxStackSize + content.amount
+                cursor.amount -= maxStackSize - content.amount
 
                 content.amount = maxStackSize
                 SlotInteractionResult.Change(cursor, syncCursor = true, syncSlot = true)
