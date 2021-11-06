@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack
 import ru.endlesscode.rpginventory.internal.InstantTaskScheduler
 import ru.endlesscode.rpginventory.slot.*
 import ru.endlesscode.rpginventory.test.TestInventoryClickEvent
+import ru.endlesscode.rpginventory.test.TestInventoryView
 import ru.endlesscode.rpginventory.test.mockItemFactory
 import ru.endlesscode.rpginventory.util.AIR
 
@@ -26,7 +27,7 @@ class CustomInventoryTest : FeatureSpec({
                 texture = ItemStack(Material.BLACK_STAINED_GLASS_PANE),
                 type = Slot.Type.STORAGE,
                 contentValidator = ItemValidator.any,
-                maxStackSize = 1,
+                maxStackSize = 4,
             )
         )
     )
@@ -40,7 +41,8 @@ class CustomInventoryTest : FeatureSpec({
     }
 
     feature("inventory interaction handling") {
-        val event = TestInventoryClickEvent()
+        val inventoryView = TestInventoryView()
+        val event = TestInventoryClickEvent(inventoryView)
 
         fun takeContent(content: ItemStack = AIR): TakeSlotContent {
             slot.content = content
@@ -88,6 +90,17 @@ class CustomInventoryTest : FeatureSpec({
             inventory.handleInteraction(interaction)
 
             slot.content shouldBe item
+        }
+
+        scenario("place more than max stack size to empty slot") {
+            val item = ItemStack(Material.STICK, slot.maxStackSize + 1)
+            val interaction = placeContent(item)
+            inventory.handleInteraction(interaction)
+
+            assertSoftly {
+                slot.content shouldBe ItemStack(Material.STICK, slot.maxStackSize)
+                event.cursor shouldBe ItemStack(Material.STICK, 1)
+            }
         }
     }
 })

@@ -64,25 +64,39 @@ class InventorySlot(
     /** Returns [content] if it isn't empty or [texture] otherwise. */
     fun getContentOrTexture(): ItemStack = if (isEmpty()) texture else content
 
-    /** Returns the slot content or [AIR] if slot content can't be taken. */
-    fun takeItem(): ItemStack {
-        if (this.isEmpty()) return AIR
+    /** Takes item from this slot and returns result of this interaction. */
+    fun takeItem(): SlotInteractionResult {
+        if (this.isEmpty()) return SlotInteractionResult.Cancel
 
-        return content.also {
+        return SlotInteractionResult.Success(content, syncSlot = texture.isNotEmpty()).also {
             content = AIR
         }
     }
 
-    /**
-     * Places the given [item] to this slot and returns [ItemStack] that should be taken from the slot,
-     * or [AIR] if none item should be taken.
-     */
-    fun placeItem(item: ItemStack): ItemStack {
-        if (item.isEmpty()) return AIR
+    /** Places the given [item] to this slot and returns result of this interaction. */
+    fun placeItem(item: ItemStack): SlotInteractionResult {
+        if (item.isEmpty()) return SlotInteractionResult.Cancel
 
-        return content.also {
-            content = item.clone()
+        // Slot is empty, so we don't need to return slot content
+        if (this.isEmpty()) {
+            val stack = item.clone()
+
+            // More than a single stack! Keep extra items in cursor.
+            return if (item.amount > maxStackSize) {
+                val cursor = item.clone()
+                stack.amount = maxStackSize
+                cursor.amount = item.amount - maxStackSize
+
+                content = stack
+                SlotInteractionResult.Success(cursor, syncCursor = true, syncSlot = true)
+            } else {
+                content = stack
+                SlotInteractionResult.Success(AIR)
+            }
         }
+
+        // TODO
+        return SlotInteractionResult.Cancel
     }
 
     override fun toString(): String {
