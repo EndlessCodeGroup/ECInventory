@@ -532,8 +532,16 @@ class CustomInventory internal constructor(
     }
 
     private fun takeSlotContent(interaction: TakeSlotContent) {
-        if (interaction.slot.isEmpty()) {
+        val slot = interaction.slot
+        val takenItem = slot.takeItem()
+        if (takenItem.isEmpty()) {
             interaction.cancel()
+            return
+        } else {
+            interaction.setResultCursor(takenItem)
+            // Synchronize slot with view after the event happen
+            // if slot has texture item it will be placed to the inventory view.
+            scheduler.runTask { syncSlotWithView(slot) }
         }
     }
 

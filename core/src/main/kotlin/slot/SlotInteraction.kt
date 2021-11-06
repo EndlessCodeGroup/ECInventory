@@ -10,6 +10,11 @@ internal sealed interface SlotInteraction {
     fun cancel() {
         event.isCancelled = true
     }
+
+    /** Set item that will be placed to cursor after the event. */
+    fun setResultCursor(cursor: ItemStack) {
+        event.currentItem = cursor
+    }
 }
 
 internal data class TakeSlotContent(
@@ -22,8 +27,4 @@ internal data class PlaceSlotContent(
     override val slot: InventorySlot,
 ) : SlotInteraction {
     val item: ItemStack = checkNotNull(event.cursor) { "Cursor item shouldn't be null" }
-
-    fun setResultCursor(cursor: ItemStack) {
-        event.currentItem = cursor
-    }
 }
