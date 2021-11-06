@@ -1,9 +1,6 @@
 package ru.endlesscode.rpginventory.test
 
-import org.bukkit.event.inventory.ClickType
-import org.bukkit.event.inventory.InventoryAction
-import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryType
+import org.bukkit.event.inventory.*
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.rpginventory.util.AIR
@@ -24,3 +21,11 @@ class TestInventoryClickEvent(
         currentItem = stack
     }
 }
+
+class TestInventoryDragEvent(
+    view: InventoryView = TestInventoryView(),
+    oldCursor: ItemStack,
+    newCursor: ItemStack? = null,
+    rightClick: Boolean = false,
+    slots: Map<Int, ItemStack> = mapOf(0 to oldCursor),
+) : InventoryDragEvent(view, newCursor, oldCursor, rightClick, slots)

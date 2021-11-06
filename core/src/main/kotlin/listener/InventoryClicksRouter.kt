@@ -3,11 +3,8 @@ package ru.endlesscode.rpginventory.listener
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.inventory.*
 import org.bukkit.event.inventory.InventoryAction.*
-import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryCloseEvent
-import org.bukkit.event.inventory.InventoryDragEvent
-import org.bukkit.event.inventory.InventoryEvent
 import ru.endlesscode.rpginventory.CustomInventory
 import ru.endlesscode.rpginventory.slot.InventorySlot
 import ru.endlesscode.rpginventory.slot.PlaceSlotContent
@@ -27,9 +24,31 @@ internal class InventoryClicksRouter : Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     fun onDrag(event: InventoryDragEvent) {
-        event.customInventory ?: return
-        // TODO: Handle drag event later
-        event.isCancelled = true
+        val inventory = event.customInventory ?: return
+
+        val slots = event.rawSlots
+        val position = slots.first()
+        if (slots.size > 1) {
+            // Disallow drag inside CustomInventory
+            if (slots.any { it in inventory }) event.isCancelled = true
+        } else if (position in inventory) {
+            // User slightly moved mouse, consider it was a click
+            val slot = inventory.getSlotAt(position)
+            if (slot == null) {
+                event.isCancelled = true
+                return
+            }
+
+            val interaction = event.toPlaceInteraction(slot)
+            inventory.handleInteraction(interaction)
+        }
+    }
+
+    private operator fun CustomInventory.contains(position: Int) = position < viewSize
+
+    private fun InventoryDragEvent.toPlaceInteraction(slot: InventorySlot): PlaceSlotContent {
+        val amount = if (type == DragType.SINGLE) 1 else oldCursor.amount
+        return PlaceSlotContent(this, slot, oldCursor, amount)
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
