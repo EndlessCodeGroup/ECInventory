@@ -83,14 +83,6 @@ class CustomInventoryTest : FeatureSpec({
             }
         }
 
-        scenario("swap slot content with cursor") {
-            val item = ItemStack(Material.BLAZE_ROD)
-            val interaction = placeContent(item)
-            inventory.handleInteraction(interaction)
-
-            slot.content shouldBe item
-        }
-
         scenario("place more than max stack size to empty slot") {
             val item = ItemStack(Material.STICK, slot.maxStackSize + 1)
             val interaction = placeContent(item)
@@ -130,6 +122,27 @@ class CustomInventoryTest : FeatureSpec({
             assertSoftly {
                 slot.content shouldBe ItemStack(Material.STICK, slot.maxStackSize)
                 event.cursor shouldBe ItemStack(Material.STICK, 1)
+            }
+        }
+
+        scenario("replace item in slot") {
+            val newItem = ItemStack(Material.BLAZE_ROD)
+            val currentItem = ItemStack(Material.STICK)
+            val interaction = placeContent(newItem, current = currentItem)
+            inventory.handleInteraction(interaction)
+
+            slot.content shouldBe newItem
+        }
+
+        scenario("try to replace item with item not fitting to slot") {
+            val largeStack = ItemStack(Material.STICK, slot.maxStackSize + 1)
+            val currentItem = ItemStack(Material.BLAZE_ROD)
+            val interaction = placeContent(largeStack, current = currentItem)
+            inventory.handleInteraction(interaction)
+
+            assertSoftly {
+                slot.content shouldBe currentItem
+                event.isCancelled.shouldBeTrue()
             }
         }
     }
