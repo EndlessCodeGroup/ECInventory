@@ -11,6 +11,5 @@ internal sealed interface SlotInteractionResult {
     data class Change(
         val currentItemReplacement: ItemStack? = null,
         val cursorReplacement: ItemStack? = null,
-        val syncSlot: Boolean = false,
     ) : SlotInteractionResult
 }

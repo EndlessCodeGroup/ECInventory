@@ -484,7 +484,10 @@ class CustomInventory internal constructor(
     }
 
     internal fun syncSlotWithView(slot: InventorySlot) {
-        view?.setItem(slot.position, slot.getContentOrTexture())
+        // Do sync on the next tick for the case if it was called from click event
+        scheduler.runTask {
+            view?.setItem(slot.position, slot.getContentOrTexture())
+        }
     }
 
     private fun setSlots(slots: List<InventorySlot>, items: Array<out ItemStack>) {
@@ -540,7 +543,6 @@ class CustomInventory internal constructor(
             if (result.cursorReplacement != null) {
                 scheduler.runTask { interaction.syncCursor(result.cursorReplacement) }
             }
-            if (result.syncSlot) scheduler.runTask { syncSlotWithView(slot) }
         }
     }
 

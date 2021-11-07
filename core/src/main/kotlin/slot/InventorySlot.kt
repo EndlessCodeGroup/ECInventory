@@ -51,7 +51,7 @@ class InventorySlot(
             }
 
             // We need to sync this change with the inventory's view if it is open
-            //holder.syncSlotWithView(this)
+            holder.syncSlotWithView(this)
         }
 
     init {
