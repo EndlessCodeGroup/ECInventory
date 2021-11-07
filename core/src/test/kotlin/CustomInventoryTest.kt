@@ -3,7 +3,6 @@ package ru.endlesscode.rpginventory
 import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.FeatureSpec
-import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
 import io.mockk.spyk
 import io.mockk.verify
@@ -46,6 +45,28 @@ class CustomInventoryTest : FeatureSpec({
         mockItemFactory()
     }
 
+    lateinit var initSlotContent: ItemStack
+    var initEventCursor: ItemStack? = null
+    var initEventCurrentItem: ItemStack? = null
+
+    fun assertState(
+        content: ItemStack = initSlotContent,
+        cursor: ItemStack? = initEventCursor,
+        currentItem: ItemStack? = initEventCurrentItem,
+        isCancelled: Boolean = false,
+        syncSlot: Boolean = false,
+    ) {
+        assertSoftly {
+            withClue("Unexpected content") { slot.content shouldBe content }
+            withClue("Unexpected currentItem") { event.currentItem shouldBe currentItem }
+            withClue("Unexpected cursor") { event.cursor shouldBe cursor }
+            withClue("Event should${if (isCancelled) "n't" else ""} be cancelled") {
+                event.isCancelled shouldBe isCancelled
+            }
+            verify(exactly = if (syncSlot) 1 else 0) { inventory.syncSlotWithView(slot) }
+        }
+    }
+
     feature("take item") {
 
         fun takeContent(
@@ -54,6 +75,12 @@ class CustomInventoryTest : FeatureSpec({
         ): TakeSlotContent {
             event = TestInventoryClickEvent(inventoryView, action)
             slot.content = content
+            event.currentItem = slot.getContentOrTexture()
+
+            initSlotContent = content
+            initEventCursor = AIR
+            initEventCurrentItem = event.currentItem
+
             return TakeSlotContent.fromClick(event, slot)
         }
 
@@ -61,28 +88,28 @@ class CustomInventoryTest : FeatureSpec({
             val interaction = takeContent()
             inventory.handleInteraction(interaction)
 
-            event.isCancelled.shouldBeTrue()
+            assertState(isCancelled = true)
         }
 
         scenario("take item from slot") {
             val interaction = takeContent(ItemStack(Material.BLAZE_ROD))
             inventory.handleInteraction(interaction)
 
-            verify { inventory.syncSlotWithView(slot) }
+            assertState(
+                content = AIR,
+                syncSlot = true,
+            )
         }
 
         scenario("take half items from slot") {
             val interaction = takeContent(ItemStack(Material.BLAZE_ROD, 3), action = PICKUP_HALF)
             inventory.handleInteraction(interaction)
 
-            slot.content shouldBe ItemStack(Material.BLAZE_ROD, 1)
+            assertState(content = ItemStack(Material.BLAZE_ROD, 1))
         }
     }
 
     feature("place item") {
-
-        var initEventCursor: ItemStack? = null
-        var initEventCurrentItem: ItemStack? = null
 
         fun placeContent(
             cursor: ItemStack = ItemStack(Material.STICK),
@@ -94,26 +121,11 @@ class CustomInventoryTest : FeatureSpec({
             event.cursor = cursor
             event.currentItem = slot.getContentOrTexture()
 
+            initSlotContent = current
             initEventCursor = cursor
             initEventCurrentItem = current
 
             return PlaceSlotContent.fromClick(event, slot)
-        }
-
-        fun assertState(
-            content: ItemStack,
-            cursor: ItemStack? = initEventCursor,
-            currentItem: ItemStack? = initEventCurrentItem,
-            isCancelled: Boolean = false,
-        ) {
-            assertSoftly {
-                withClue("Unexpected content") { slot.content shouldBe content }
-                withClue("Unexpected currentItem") { event.currentItem shouldBe currentItem }
-                withClue("Unexpected cursor") { event.cursor shouldBe cursor }
-                withClue("Event should${if (isCancelled) "n't" else ""} be cancelled") {
-                    event.isCancelled shouldBe isCancelled
-                }
-            }
         }
 
         scenario("place item to empty slot") {
@@ -140,6 +152,7 @@ class CustomInventoryTest : FeatureSpec({
             assertState(
                 content = ItemStack(Material.STICK, slot.maxStackSize),
                 cursor = ItemStack(Material.STICK, 1),
+                syncSlot = true,
             )
         }
 
@@ -149,10 +162,7 @@ class CustomInventoryTest : FeatureSpec({
             val interaction = placeContent(cursor, current = current)
             inventory.handleInteraction(interaction)
 
-            assertState(
-                content = current,
-                isCancelled = true,
-            )
+            assertState(isCancelled = true)
         }
 
         scenario("place single similar item") {
@@ -182,6 +192,7 @@ class CustomInventoryTest : FeatureSpec({
             assertState(
                 content = ItemStack(Material.STICK, slot.maxStackSize),
                 cursor = ItemStack(Material.STICK, 1),
+                syncSlot = true,
             )
         }
 
@@ -199,10 +210,7 @@ class CustomInventoryTest : FeatureSpec({
             val interaction = placeContent(largeStack, current = currentItem)
             inventory.handleInteraction(interaction)
 
-            assertState(
-                content = currentItem,
-                isCancelled = true,
-            )
+            assertState(isCancelled = true)
         }
     }
 })
