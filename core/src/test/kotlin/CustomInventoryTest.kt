@@ -213,4 +213,49 @@ class CustomInventoryTest : FeatureSpec({
             assertState(isCancelled = true)
         }
     }
+
+    feature("swap with hotbar") {
+
+        fun hotbarSwap(
+            content: ItemStack = AIR,
+            hotbarItem: ItemStack = AIR,
+        ) {
+            event = TestInventoryClickEvent(inventoryView, HOTBAR_SWAP)
+            slot.content = content
+            event.currentItem = slot.getContentOrTexture()
+
+            initSlotContent = content
+            initEventCursor = AIR
+            initEventCurrentItem = event.currentItem
+
+            val interaction = HotbarSwapSlotContent(event, slot, hotbarItem)
+            inventory.handleInteraction(interaction)
+        }
+
+        scenario("swap empty slot with empty hotbar") {
+            hotbarSwap(content = AIR, hotbarItem = AIR)
+
+            assertState(isCancelled = true)
+        }
+
+        scenario("swap slot with empty hotbar") {
+            hotbarSwap(content = ItemStack(Material.STICK))
+
+            assertState(content = AIR, syncSlot = true)
+        }
+
+        scenario("swap empty slot with hotbar") {
+            val hotbarItem = ItemStack(Material.STICK, 2)
+            hotbarSwap(hotbarItem = hotbarItem)
+
+            assertState(content = hotbarItem, currentItem = AIR)
+        }
+
+        scenario("swap slot with item not fitting to slot") {
+            val hotbarItem = ItemStack(Material.STICK, slot.maxStackSize + 1)
+            hotbarSwap(hotbarItem = hotbarItem)
+
+            assertState(isCancelled = true)
+        }
+    }
 })

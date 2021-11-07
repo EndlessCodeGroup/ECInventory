@@ -68,8 +68,15 @@ class InventorySlot(
     /** Returns [content] if it isn't empty or [texture] otherwise. */
     fun getContentOrTexture(): ItemStack = if (isEmpty()) texture else content
 
+    /** Swap content with the given [item]. */
+    fun swapItem(item: ItemStack): SlotInteractionResult = when {
+        item.isEmpty() && this.isEmpty() || item.amount > maxStackSize -> Deny
+        item.isEmpty() -> takeItem()
+        else -> placeItem(item)
+    }
+
     /** Takes item from this slot and returns result of this interaction. */
-    fun takeItem(amount: Int): SlotInteractionResult {
+    fun takeItem(amount: Int = content.amount): SlotInteractionResult {
         if (this.isEmpty()) return Deny
 
         return if (amount < content.amount) {
@@ -83,7 +90,7 @@ class InventorySlot(
     }
 
     /** Places the given [item] to this slot and returns result of this interaction. */
-    fun placeItem(item: ItemStack, amount: Int): SlotInteractionResult {
+    fun placeItem(item: ItemStack, amount: Int = item.amount): SlotInteractionResult {
         if (item.isEmpty()) return Deny
 
         // Slot is empty, so we don't need to return slot content

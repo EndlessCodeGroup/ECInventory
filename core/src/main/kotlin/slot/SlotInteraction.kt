@@ -1,10 +1,12 @@
 package ru.endlesscode.rpginventory.slot
 
+import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryAction.*
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.rpginventory.slot.SlotInteractionResult.*
+import ru.endlesscode.rpginventory.util.orEmpty
 
 internal sealed interface SlotInteraction {
     val event: InventoryInteractEvent
@@ -68,6 +70,24 @@ internal data class PlaceSlotContent(
                 else -> item.amount
             }
             return PlaceSlotContent(event, slot, item, amount)
+        }
+    }
+}
+
+internal data class HotbarSwapSlotContent(
+    override val event: InventoryClickEvent,
+    override val slot: InventorySlot,
+    val hotbarItem: ItemStack,
+) : SlotInteraction {
+
+    companion object {
+        fun fromClick(event: InventoryClickEvent, slot: InventorySlot): HotbarSwapSlotContent {
+            val item = if (event.click == ClickType.SWAP_OFFHAND) {
+                event.view.player.inventory.itemInOffHand
+            } else {
+                event.view.bottomInventory.getItem(event.hotbarButton).orEmpty()
+            }
+            return HotbarSwapSlotContent(event, slot, item)
         }
     }
 }
