@@ -6,11 +6,9 @@ import org.bukkit.event.Listener
 import org.bukkit.event.inventory.*
 import org.bukkit.event.inventory.InventoryAction.*
 import ru.endlesscode.rpginventory.CustomInventory
-import ru.endlesscode.rpginventory.slot.InventorySlot
-import ru.endlesscode.rpginventory.slot.PlaceSlotContent
-import ru.endlesscode.rpginventory.slot.SlotInteraction
-import ru.endlesscode.rpginventory.slot.TakeSlotContent
+import ru.endlesscode.rpginventory.slot.*
 
+/** Converts [InventoryInteractEvent] to [SlotInteraction] and passes it to inventory. */
 internal class InventoryClicksRouter : Listener {
 
     private val InventoryEvent.customInventory: CustomInventory?
@@ -77,17 +75,15 @@ internal class InventoryClicksRouter : Listener {
         }
     }
 
-    /*
-     * TODO:
-     *  - Swap with hotbar/shield
-     */
     private fun InventoryClickEvent.inventorySlotInteraction(slot: InventorySlot): SlotInteraction? = when (action) {
         PICKUP_ALL, PICKUP_SOME, PICKUP_HALF, PICKUP_ONE,
         DROP_ALL_SLOT, DROP_ONE_SLOT,
         MOVE_TO_OTHER_INVENTORY -> TakeSlotContent.fromClick(this, slot)
         PLACE_ALL, PLACE_SOME, PLACE_ONE, SWAP_WITH_CURSOR -> PlaceSlotContent.fromClick(this, slot)
-        HOTBAR_SWAP -> TODO()
         HOTBAR_MOVE_AND_READD,
+        HOTBAR_SWAP -> HotbarSwapSlotContent.fromClick(this, slot)
+
+        // These events don't affect inventory, ignore them
         CLONE_STACK,
         DROP_ALL_CURSOR, DROP_ONE_CURSOR,
         NOTHING -> null
@@ -105,6 +101,7 @@ internal class InventoryClicksRouter : Listener {
      */
     private fun InventoryClickEvent.vanillaSlotInteraction(): SlotInteraction? = when (action) {
         MOVE_TO_OTHER_INVENTORY -> TODO()
+
         COLLECT_TO_CURSOR -> {
             // Cancel this event if any item in inventory can be collected to cursor
             isCancelled = view.topInventory.contents.any { it.isSimilar(cursor) }

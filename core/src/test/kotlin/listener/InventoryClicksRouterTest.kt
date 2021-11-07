@@ -6,17 +6,18 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import org.bukkit.Material
+import org.bukkit.event.inventory.ClickType
+import org.bukkit.event.inventory.ClickType.SWAP_OFFHAND
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryAction.COLLECT_TO_CURSOR
+import org.bukkit.event.inventory.InventoryAction.HOTBAR_SWAP
 import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.rpginventory.CustomInventory
-import ru.endlesscode.rpginventory.slot.InventorySlot
-import ru.endlesscode.rpginventory.slot.PlaceSlotContent
-import ru.endlesscode.rpginventory.slot.SlotInteraction
-import ru.endlesscode.rpginventory.slot.TakeSlotContent
+import ru.endlesscode.rpginventory.slot.*
 import ru.endlesscode.rpginventory.test.*
+import ru.endlesscode.rpginventory.util.AIR
 
 class InventoryClicksRouterTest : FeatureSpec({
 
@@ -52,7 +53,10 @@ class InventoryClicksRouterTest : FeatureSpec({
         fun clickEvent(
             action: InventoryAction = InventoryAction.NOTHING,
             slot: Int = 0,
-        ) = TestInventoryClickEvent(inventoryView, action, slot).also { interactEvent = it }
+            click: ClickType = ClickType.LEFT,
+            hotbarKey: Int = -1,
+        ) = TestInventoryClickEvent(inventoryView, action, slot, click = click, hotbarKey = hotbarKey)
+            .also { interactEvent = it }
 
         scenario("click outside") {
             val event = clickEvent(slot = InventoryView.OUTSIDE)
@@ -118,6 +122,26 @@ class InventoryClicksRouterTest : FeatureSpec({
             router.onClick(event)
 
             verifyInteraction(interaction = null, eventCancelled = true)
+        }
+
+        scenario("swap with hotbar slot") {
+            clickedSlot = mockk { every { content } returns AIR }
+            val hotbarItem = ItemStack(Material.STICK)
+            inventoryView.bottomInventory.setItem(0, hotbarItem)
+            val event = clickEvent(HOTBAR_SWAP, hotbarKey = 0)
+            router.onClick(event)
+
+            verifyInteraction(interaction = HotbarSwapSlotContent(event, clickedSlot!!, hotbarItem))
+        }
+
+        scenario("swap with offhand slot") {
+            clickedSlot = mockk { every { content } returns AIR }
+            val offhandItem = ItemStack(Material.STICK)
+            inventoryView.offhandItem = offhandItem
+            val event = clickEvent(HOTBAR_SWAP, click = SWAP_OFFHAND)
+            router.onClick(event)
+
+            verifyInteraction(interaction = HotbarSwapSlotContent(event, clickedSlot!!, offhandItem))
         }
     }
 
