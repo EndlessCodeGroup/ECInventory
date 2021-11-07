@@ -57,7 +57,7 @@ internal class InventoryClicksRouter : Listener {
     }
 
     /** Converts this event to [SlotInteraction] or returns `null` if the event shouldn't be handled. */
-    private fun InventoryClickEvent.toInteraction(inventory: CustomInventory): SlotInteraction? {
+    private fun InventoryClickEvent.toInteraction(inventory: CustomInventory): InventoryInteraction? {
         val isCustomInventoryInteraction = clickedInventory?.holder == inventory
 
         return if (isCustomInventoryInteraction) {
@@ -95,12 +95,12 @@ internal class InventoryClicksRouter : Listener {
         }
     }
 
-    /*
-     * TODO:
-     *  - Shift + click
-     */
-    private fun InventoryClickEvent.vanillaSlotInteraction(): SlotInteraction? = when (action) {
-        MOVE_TO_OTHER_INVENTORY -> TODO()
+    private fun InventoryClickEvent.vanillaSlotInteraction(): InventoryInteraction? = when (action) {
+        MOVE_TO_OTHER_INVENTORY -> {
+            // Will handle this event ourselves
+            isCancelled = true
+            AddItemToInventory.fromClick(this)
+        }
 
         COLLECT_TO_CURSOR -> {
             // Cancel this event if any item in inventory can be collected to cursor

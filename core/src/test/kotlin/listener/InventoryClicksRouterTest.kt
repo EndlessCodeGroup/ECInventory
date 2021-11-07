@@ -9,8 +9,7 @@ import org.bukkit.Material
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.ClickType.SWAP_OFFHAND
 import org.bukkit.event.inventory.InventoryAction
-import org.bukkit.event.inventory.InventoryAction.COLLECT_TO_CURSOR
-import org.bukkit.event.inventory.InventoryAction.HOTBAR_SWAP
+import org.bukkit.event.inventory.InventoryAction.*
 import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
@@ -25,7 +24,7 @@ class InventoryClicksRouterTest : FeatureSpec({
     val router = InventoryClicksRouter()
 
     var clickedSlot: InventorySlot? = null
-    var appliedInteraction: SlotInteraction? = null
+    var appliedInteraction: InventoryInteraction? = null
     val inventory = mockk<CustomInventory>(relaxUnitFun = true) {
         every { viewSize } returns 54
         every { getSlotAt(any()) } answers { clickedSlot }
@@ -40,7 +39,7 @@ class InventoryClicksRouterTest : FeatureSpec({
     }
 
     fun verifyInteraction(
-        interaction: SlotInteraction?,
+        interaction: InventoryInteraction?,
         eventCancelled: Boolean = false,
     ) {
         assertSoftly {
@@ -55,8 +54,11 @@ class InventoryClicksRouterTest : FeatureSpec({
             slot: Int = 0,
             click: ClickType = ClickType.LEFT,
             hotbarKey: Int = -1,
-        ) = TestInventoryClickEvent(inventoryView, action, slot, click = click, hotbarKey = hotbarKey)
-            .also { interactEvent = it }
+            current: ItemStack = AIR,
+        ) = TestInventoryClickEvent(inventoryView, action, slot, click = click, hotbarKey = hotbarKey).also { event ->
+            event.currentItem = current
+            interactEvent = event
+        }
 
         scenario("click outside") {
             val event = clickEvent(slot = InventoryView.OUTSIDE)
@@ -131,7 +133,7 @@ class InventoryClicksRouterTest : FeatureSpec({
             val event = clickEvent(HOTBAR_SWAP, hotbarKey = 0)
             router.onClick(event)
 
-            verifyInteraction(interaction = HotbarSwapSlotContent(event, clickedSlot!!, hotbarItem))
+            verifyInteraction(HotbarSwapSlotContent(event, clickedSlot!!, hotbarItem))
         }
 
         scenario("swap with offhand slot") {
@@ -141,7 +143,22 @@ class InventoryClicksRouterTest : FeatureSpec({
             val event = clickEvent(HOTBAR_SWAP, click = SWAP_OFFHAND)
             router.onClick(event)
 
-            verifyInteraction(interaction = HotbarSwapSlotContent(event, clickedSlot!!, offhandItem))
+            verifyInteraction(HotbarSwapSlotContent(event, clickedSlot!!, offhandItem))
+        }
+
+        scenario("move empty item to inventory") {
+            val event = clickEvent(MOVE_TO_OTHER_INVENTORY, slot = inventory.viewSize + 1)
+            router.onClick(event)
+
+            verifyInteraction(interaction = null, eventCancelled = true)
+        }
+
+        scenario("move item to inventory") {
+            val item = ItemStack(Material.STICK)
+            val event = clickEvent(MOVE_TO_OTHER_INVENTORY, current = item, slot = inventory.viewSize + 1)
+            router.onClick(event)
+
+            verifyInteraction(AddItemToInventory(event, item), eventCancelled = true)
         }
     }
 

@@ -519,7 +519,14 @@ class CustomInventory internal constructor(
         }
     }
 
-    internal fun handleInteraction(interaction: SlotInteraction) {
+    internal fun handleInteraction(interaction: InventoryInteraction) {
+        when (interaction) {
+            is SlotInteraction -> handleSlotInteraction(interaction)
+            is AddItemToInventory -> TODO()
+        }
+    }
+
+    private fun handleSlotInteraction(interaction: SlotInteraction) {
         val slot = interaction.slot
         val result = when (interaction) {
             is TakeSlotContent -> slot.takeItem(interaction.amount)

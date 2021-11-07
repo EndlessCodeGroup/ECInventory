@@ -6,10 +6,14 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.rpginventory.slot.SlotInteractionResult.*
+import ru.endlesscode.rpginventory.util.isNullOrEmpty
 import ru.endlesscode.rpginventory.util.orEmpty
 
-internal sealed interface SlotInteraction {
+internal sealed interface InventoryInteraction {
     val event: InventoryInteractEvent
+}
+
+internal sealed interface SlotInteraction : InventoryInteraction {
     val slot: InventorySlot
 
     /** Applies result of interaction to the [event]. */
@@ -88,6 +92,20 @@ internal data class HotbarSwapSlotContent(
                 event.view.bottomInventory.getItem(event.hotbarButton).orEmpty()
             }
             return HotbarSwapSlotContent(event, slot, item)
+        }
+    }
+}
+
+internal data class AddItemToInventory(
+    override val event: InventoryInteractEvent,
+    val item: ItemStack,
+) : InventoryInteraction {
+
+    companion object {
+        fun fromClick(event: InventoryClickEvent): AddItemToInventory? {
+            val item = event.currentItem
+            if (item.isNullOrEmpty()) return null
+            return AddItemToInventory(event, item)
         }
     }
 }
