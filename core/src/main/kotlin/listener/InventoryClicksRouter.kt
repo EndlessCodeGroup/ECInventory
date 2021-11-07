@@ -70,9 +70,31 @@ internal class InventoryClicksRouter : Listener {
                 isCancelled = true
                 null
             } else {
-                createSlotInteraction(clickedSlot)
+                inventorySlotInteraction(clickedSlot)
             }
         } else {
+            vanillaSlotInteraction()
+        }
+    }
+
+    /*
+     * TODO:
+     *  - Swap with hotbar/shield
+     */
+    private fun InventoryClickEvent.inventorySlotInteraction(slot: InventorySlot): SlotInteraction? = when (action) {
+        PICKUP_ALL, PICKUP_SOME, PICKUP_HALF, PICKUP_ONE,
+        DROP_ALL_SLOT, DROP_ONE_SLOT,
+        MOVE_TO_OTHER_INVENTORY -> TakeSlotContent.fromClick(this, slot)
+        PLACE_ALL, PLACE_SOME, PLACE_ONE, SWAP_WITH_CURSOR -> PlaceSlotContent.fromClick(this, slot)
+        HOTBAR_SWAP -> TODO()
+        HOTBAR_MOVE_AND_READD,
+        CLONE_STACK,
+        DROP_ALL_CURSOR, DROP_ONE_CURSOR,
+        NOTHING -> null
+
+        // Unsupported actions for inventory slots
+        COLLECT_TO_CURSOR, UNKNOWN -> {
+            isCancelled = true
             null
         }
     }
@@ -80,18 +102,15 @@ internal class InventoryClicksRouter : Listener {
     /*
      * TODO:
      *  - Shift + click
-     *  - Swap with hotbar/shield
      */
-    private fun InventoryClickEvent.createSlotInteraction(slot: InventorySlot): SlotInteraction? = when (action) {
-        PICKUP_ALL, PICKUP_SOME, PICKUP_HALF, PICKUP_ONE,
-        DROP_ALL_SLOT, DROP_ONE_SLOT,
-        MOVE_TO_OTHER_INVENTORY,
-        COLLECT_TO_CURSOR -> TakeSlotContent.fromClick(this, slot)
-        PLACE_ALL, PLACE_SOME, PLACE_ONE, SWAP_WITH_CURSOR -> PlaceSlotContent.fromClick(this, slot)
-        HOTBAR_MOVE_AND_READD -> TODO()
-        HOTBAR_SWAP -> TODO()
-        CLONE_STACK,
-        DROP_ALL_CURSOR, DROP_ONE_CURSOR,
-        NOTHING, UNKNOWN -> null
+    private fun InventoryClickEvent.vanillaSlotInteraction(): SlotInteraction? = when (action) {
+        MOVE_TO_OTHER_INVENTORY -> TODO()
+        COLLECT_TO_CURSOR -> {
+            // Cancel this event if any item in inventory can be collected to cursor
+            isCancelled = view.topInventory.contents.any { it.isSimilar(cursor) }
+            null
+        }
+
+        else -> null
     }
 }

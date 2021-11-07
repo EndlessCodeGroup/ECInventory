@@ -7,6 +7,7 @@ import io.mockk.every
 import io.mockk.mockk
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction
+import org.bukkit.event.inventory.InventoryAction.COLLECT_TO_CURSOR
 import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
@@ -29,7 +30,7 @@ class InventoryClicksRouterTest : FeatureSpec({
         every { getSlotAt(any()) } answers { clickedSlot }
         every { handleInteraction(any()) } answers { appliedInteraction = firstArg() }
     }
-    val inventoryView = TestInventoryView(topInventory = Inventory(inventory))
+    val inventoryView = TestInventoryView(Inventory(inventory))
 
     lateinit var interactEvent: InventoryInteractEvent
 
@@ -92,6 +93,31 @@ class InventoryClicksRouterTest : FeatureSpec({
             router.onClick(event)
 
             verifyInteraction(PlaceSlotContent.fromClick(event, clickedSlot!!))
+        }
+
+        scenario("collect items similar to inventory items") {
+            every { inventoryView.topInventory.contents } returns arrayOf(ItemStack(Material.STICK, 2))
+            inventoryView.cursor = ItemStack(Material.STICK)
+            val event = clickEvent(COLLECT_TO_CURSOR, slot = inventory.viewSize + 1)
+            router.onClick(event)
+
+            verifyInteraction(interaction = null, eventCancelled = true)
+        }
+
+        scenario("collect items not similar to inventory items") {
+            every { inventoryView.topInventory.contents } returns arrayOf(ItemStack(Material.BLAZE_ROD, 2))
+            inventoryView.cursor = ItemStack(Material.STICK)
+            val event = clickEvent(COLLECT_TO_CURSOR, slot = inventory.viewSize + 1)
+            router.onClick(event)
+
+            verifyInteraction(interaction = null)
+        }
+
+        scenario("collect items inside inventory") {
+            val event = clickEvent(COLLECT_TO_CURSOR)
+            router.onClick(event)
+
+            verifyInteraction(interaction = null, eventCancelled = true)
         }
     }
 
