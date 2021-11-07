@@ -128,14 +128,12 @@ class InventorySlot(
                 content.amount = maxStackSize
                 Change(cursorReplacement = cursor, syncSlot = true)
             }
+        } else if (item.amount <= maxStackSize) {
+            // Item is not similar and the slot already contain another item, so we can swap content and cursor
+            content = item.clone()
+            Accept
         } else {
-            // Item is not similar and slot already contain another item, so we can swap content and cursor
-            if (item.amount <= maxStackSize) {
-                content = item.clone()
-                Accept
-            } else {
-                Deny
-            }
+            Deny
         }
     }
 
