@@ -5,7 +5,6 @@ import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.spyk
-import io.mockk.verify
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryAction.*
@@ -17,7 +16,7 @@ import ru.endlesscode.rpginventory.test.TestInventoryView
 import ru.endlesscode.rpginventory.test.mockItemFactory
 import ru.endlesscode.rpginventory.util.AIR
 
-class CustomInventoryTest : FeatureSpec({
+class SlotInteractionsTest : FeatureSpec({
 
     val inventoryLayout = InventoryLayoutImpl(
         name = "test",
@@ -54,7 +53,6 @@ class CustomInventoryTest : FeatureSpec({
         cursor: ItemStack? = initEventCursor,
         currentItem: ItemStack? = initEventCurrentItem,
         isCancelled: Boolean = false,
-        syncSlot: Boolean = false,
     ) {
         assertSoftly {
             withClue("Unexpected content") { slot.content shouldBe content }
@@ -63,7 +61,6 @@ class CustomInventoryTest : FeatureSpec({
             withClue("Event should${if (isCancelled) "n't" else ""} be cancelled") {
                 event.isCancelled shouldBe isCancelled
             }
-            verify(exactly = if (syncSlot) 1 else 0) { inventory.syncSlotWithView(slot) }
         }
     }
 
@@ -95,10 +92,7 @@ class CustomInventoryTest : FeatureSpec({
             val interaction = takeContent(ItemStack(Material.BLAZE_ROD))
             inventory.handleInteraction(interaction)
 
-            assertState(
-                content = AIR,
-                syncSlot = true,
-            )
+            assertState(content = AIR)
         }
 
         scenario("take half items from slot") {
@@ -152,7 +146,6 @@ class CustomInventoryTest : FeatureSpec({
             assertState(
                 content = ItemStack(Material.STICK, slot.maxStackSize),
                 cursor = ItemStack(Material.STICK, 1),
-                syncSlot = true,
             )
         }
 
@@ -192,7 +185,6 @@ class CustomInventoryTest : FeatureSpec({
             assertState(
                 content = ItemStack(Material.STICK, slot.maxStackSize),
                 cursor = ItemStack(Material.STICK, 1),
-                syncSlot = true,
             )
         }
 
@@ -241,7 +233,7 @@ class CustomInventoryTest : FeatureSpec({
         scenario("swap slot with empty hotbar") {
             hotbarSwap(content = ItemStack(Material.STICK))
 
-            assertState(content = AIR, syncSlot = true)
+            assertState(content = AIR)
         }
 
         scenario("swap empty slot with hotbar") {
