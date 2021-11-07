@@ -97,9 +97,13 @@ internal data class HotbarSwapSlotContent(
 }
 
 internal data class AddItemToInventory(
-    override val event: InventoryInteractEvent,
+    override val event: InventoryClickEvent,
     val item: ItemStack,
 ) : InventoryInteraction {
+
+    fun setSlotItem(item: ItemStack) {
+        event.currentItem = item
+    }
 
     companion object {
         fun fromClick(event: InventoryClickEvent): AddItemToInventory? {
