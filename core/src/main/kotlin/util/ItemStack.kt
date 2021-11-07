@@ -20,6 +20,8 @@ package ru.endlesscode.rpginventory.util
 
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 private val air by lazy { ItemStack(Material.AIR, 0) }
 
@@ -49,4 +51,11 @@ internal fun ItemStack.isNotEmpty(): Boolean = !type.isAir
 /**
  * Returns `true` if the item stack is `null` or AIR.
  */
-internal fun ItemStack?.isNullOrEmpty(): Boolean = this == null || type.isAir
+@OptIn(ExperimentalContracts::class)
+internal fun ItemStack?.isNullOrEmpty(): Boolean {
+    contract {
+        returns(false) implies (this@isNullOrEmpty != null)
+    }
+
+    return this == null || type.isAir
+}
