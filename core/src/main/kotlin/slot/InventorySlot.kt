@@ -43,11 +43,25 @@ class InventorySlot(
     override val texture: ItemStack = prototype.texture
         get() = field.clone()
 
+    /**
+     * Max stack size can be placed to slot.
+     * @see maxStackSize
+     */
+    val slotMaxStackSize: Int = prototype.maxStackSize
+
+    /**
+     * Returns max stack size can be placed to the slot.
+     * If slot is not empty may return max stack size of content item if it is lesser than slot's max stack size.
+     * @see slotMaxStackSize
+     */
+    override val maxStackSize: Int
+        get() = if (isEmpty()) slotMaxStackSize else minOf(slotMaxStackSize, content.maxStackSize)
+
     var content: ItemStack = AIR
         set(value) {
             field = value
-            if (value.isNotEmpty() && maxStackSize > 0 && value.amount > maxStackSize) {
-                value.amount = maxStackSize
+            if (value.isNotEmpty() && slotMaxStackSize > 0 && value.amount > slotMaxStackSize) {
+                value.amount = slotMaxStackSize
             }
 
             // We need to sync this change with the inventory's view if it is open
@@ -63,7 +77,7 @@ class InventorySlot(
     fun isEmpty(): Boolean = content.isEmpty()
 
     /** Returns `true` if slot contains maximal possible amount of items. */
-    fun isFull(): Boolean = !isEmpty() && content.amount == maxStackSize
+    fun isFull(): Boolean = !isEmpty() && content.amount >= maxStackSize
 
     /** Returns [content] if it isn't empty or [texture] otherwise. */
     fun getContentOrTexture(): ItemStack = if (isEmpty()) texture else content
@@ -83,7 +97,7 @@ class InventorySlot(
             content.amount -= amount
             Accept
         } else {
-            Change(content, syncSlot = texture.isNotEmpty()).also {
+            Change(currentItemReplacement = content).also {
                 content = AIR
             }
         }
@@ -104,12 +118,12 @@ class InventorySlot(
                 cursor.amount = item.amount - maxStackSize
 
                 content = stack
-                Change(currentItemReplacement = AIR, cursorReplacement = cursor, syncSlot = true)
+                Change(currentItemReplacement = AIR, cursorReplacement = cursor)
             } else {
                 // All items fit to the slot
                 stack.amount = amount
                 content = stack
-                Change(AIR)
+                Change(currentItemReplacement = AIR)
             }
         } else if (item.isSimilar(content)) {
             // Item is similar to content, so we can try to append it to content
@@ -126,7 +140,7 @@ class InventorySlot(
                 cursor.amount -= maxStackSize - content.amount
 
                 content.amount = maxStackSize
-                Change(cursorReplacement = cursor, syncSlot = true)
+                Change(cursorReplacement = cursor)
             }
         } else if (item.amount <= maxStackSize) {
             // Item is not similar and the slot already contain another item, so we can swap content and cursor
@@ -142,8 +156,8 @@ class InventorySlot(
     }
 
     private fun updateHolderMaxStackSize() {
-        if (holder.maxStackSize < maxStackSize) {
-            holder.maxStackSize = maxStackSize
+        if (holder.maxStackSize < slotMaxStackSize) {
+            holder.maxStackSize = slotMaxStackSize
         }
     }
 }

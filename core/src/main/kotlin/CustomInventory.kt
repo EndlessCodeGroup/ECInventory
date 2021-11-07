@@ -16,7 +16,6 @@ import ru.endlesscode.rpginventory.internal.TaskScheduler
 import ru.endlesscode.rpginventory.slot.*
 import ru.endlesscode.rpginventory.slot.SlotInteractionResult.Change
 import ru.endlesscode.rpginventory.util.*
-import kotlin.math.min
 
 /**
  * Provides utilities for working with RPG inventory, as with Bukkit inventory.
@@ -167,7 +166,7 @@ class CustomInventory internal constructor(
     }
 
     /** Returns the first empty Slot or `null` if there are no empty slots. */
-    fun firstEmptySlot(): InventorySlot? = getStorageSlots().firstOrNull { it.isEmpty() }
+    fun findEmptySlot(): InventorySlot? = getStorageSlots().find { it.isEmpty() }
 
     override fun getSize(): Int = slots.size
 
@@ -184,7 +183,7 @@ class CustomInventory internal constructor(
         getSlot(index).content = item.orEmpty()
     }
 
-    /**
+    /*
      * It was copied from CraftBukkit implementation.
      *
      * Also was made some optimizations:
@@ -200,13 +199,13 @@ class CustomInventory internal constructor(
          *  - Create a 'firstPartial' with a 'fromIndex'
          */
 
-        var freeSlot = firstEmptySlot()
+        var freeSlot = findEmptySlot()
         for (i in items.indices) {
             val item = items[i]
 
             while (true) {
                 // Do we already have a stack of it?
-                val nonFullSlot = nonFullSlots.getOrElse(item.type) { firstPartial(item) }
+                val nonFullSlot = nonFullSlots.getOrElse(item.type) { findPartial(item) }
 
                 // Drat! no partial stack
                 if (nonFullSlot == null) {
@@ -219,20 +218,21 @@ class CustomInventory internal constructor(
                     }
 
                     // More than a single stack!
-                    if (item.amount > freeSlot.maxStackSize) {
+                    val maxStackSize = freeSlot.maxStackSize
+                    if (item.amount > maxStackSize) {
                         val stack = item.clone()
-                        stack.amount = freeSlot.maxStackSize
+                        stack.amount = maxStackSize
                         freeSlot.content = stack
-                        item.amount -= freeSlot.maxStackSize
+                        item.amount -= maxStackSize
 
                         // Look for new free slot
-                        freeSlot = firstEmptySlot()
+                        freeSlot = findEmptySlot()
                     } else {
                         // Just store it and look for new free slot
                         freeSlot.content = item
                         // Remember that there are the non-full slot
                         nonFullSlots[item.type] = freeSlot
-                        freeSlot = firstEmptySlot()
+                        freeSlot = findEmptySlot()
                         break
                     }
                 } else {
@@ -241,7 +241,7 @@ class CustomInventory internal constructor(
 
                     val amount = item.amount
                     val partialAmount = partialItem.amount
-                    val maxAmount = min(partialItem.maxStackSize, nonFullSlot.maxStackSize)
+                    val maxAmount = nonFullSlot.maxStackSize
 
                     // Check if it fully fits
                     if (amount + partialAmount <= maxAmount) {
@@ -265,11 +265,11 @@ class CustomInventory internal constructor(
         return leftover
     }
 
-    /**
+    /*
      * It was copied from CraftBukkit implementation.
      *
      * Also was made some optimizations:
-     *  - Cache `first` result per [Material]
+     *  - Cache `first` result per Material
      */
     override fun removeItem(vararg items: ItemStack): HashMap<Int, ItemStack> {
         val leftover = hashMapOf<Int, ItemStack>()
@@ -280,7 +280,7 @@ class CustomInventory internal constructor(
             var toDelete = item.amount
 
             while (true) {
-                val itemSlot = itemsSlots.getOrElse(item.type) { first(item, false) }
+                val itemSlot = itemsSlots.getOrElse(item.type) { find(item, false) }
 
                 // Drat! we don't have this type in the inventory
                 if (itemSlot == null) {
@@ -426,12 +426,12 @@ class CustomInventory internal constructor(
     }
 
     override fun first(item: ItemStack): Int {
-        val slot = first(item, true) ?: return -1
+        val slot = find(item, true) ?: return -1
         return getIndexOfSlot(slot)
     }
 
     override fun firstEmpty(): Int {
-        val slot = firstEmptySlot() ?: return -1
+        val slot = findEmptySlot() ?: return -1
         return getIndexOfSlot(slot)
     }
 
@@ -506,26 +506,30 @@ class CustomInventory internal constructor(
         return contents
     }
 
-    private fun first(item: ItemStack, withAmount: Boolean): InventorySlot? {
-        return getStorageSlots().firstOrNull { slot ->
+    private fun find(item: ItemStack, withAmount: Boolean): InventorySlot? {
+        return getStorageSlots().find { slot ->
             if (withAmount) item == slot.content
             else item.isSimilar(slot.content)
         }
     }
 
-    private fun firstPartial(item: ItemStack?): InventorySlot? {
+    private fun findPartial(item: ItemStack?): InventorySlot? {
         if (item == null) return null
 
-        return getStorageSlots().firstOrNull { slot ->
+        return getStorageSlots().find { slot ->
             val slotItem = slot.content
-            slotItem.amount < slotItem.maxStackSize && slotItem.amount < slot.maxStackSize && slotItem.isSimilar(item)
+            !slot.isFull() && slotItem.isSimilar(item)
         }
     }
 
     internal fun handleInteraction(interaction: InventoryInteraction) {
         when (interaction) {
             is SlotInteraction -> handleSlotInteraction(interaction)
-            is AddItemToInventory -> TODO()
+
+            is AddItemToInventory -> {
+                val itemLeft = addItem(interaction.item).values.firstOrNull()
+                interaction.setSlotItem(itemLeft.orEmpty())
+            }
         }
     }
 
