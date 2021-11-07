@@ -2,11 +2,11 @@ package ru.endlesscode.rpginventory.slot
 
 import org.bukkit.inventory.ItemStack
 
-sealed interface SlotInteractionResult {
-
-    object Deny : SlotInteractionResult
+/** Result of [SlotInteraction]. */
+internal sealed interface SlotInteractionResult {
 
     object Accept : SlotInteractionResult
+    object Deny : SlotInteractionResult
 
     data class Change(
         val currentItemReplacement: ItemStack? = null,
