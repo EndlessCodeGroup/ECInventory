@@ -20,6 +20,7 @@ package ru.endlesscode.rpginventory.slot
 
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.rpginventory.CustomInventory
+import ru.endlesscode.rpginventory.slot.SlotInteractionResult.*
 import ru.endlesscode.rpginventory.util.AIR
 import ru.endlesscode.rpginventory.util.isEmpty
 import ru.endlesscode.rpginventory.util.isNotEmpty
@@ -69,13 +70,13 @@ class InventorySlot(
 
     /** Takes item from this slot and returns result of this interaction. */
     fun takeItem(amount: Int): SlotInteractionResult {
-        if (this.isEmpty()) return SlotInteractionResult.Deny
+        if (this.isEmpty()) return Deny
 
         return if (amount < content.amount) {
             content.amount -= amount
-            SlotInteractionResult.Accept
+            Accept
         } else {
-            SlotInteractionResult.Change(content, syncSlot = texture.isNotEmpty()).also {
+            Change(content, syncSlot = texture.isNotEmpty()).also {
                 content = AIR
             }
         }
@@ -83,7 +84,7 @@ class InventorySlot(
 
     /** Places the given [item] to this slot and returns result of this interaction. */
     fun placeItem(item: ItemStack, amount: Int): SlotInteractionResult {
-        if (item.isEmpty()) return SlotInteractionResult.Deny
+        if (item.isEmpty()) return Deny
 
         // Slot is empty, so we don't need to return slot content
         return if (this.isEmpty()) {
@@ -96,37 +97,37 @@ class InventorySlot(
                 cursor.amount = item.amount - maxStackSize
 
                 content = stack
-                SlotInteractionResult.Change(currentItemReplacement = AIR, cursorReplacement = cursor, syncSlot = true)
+                Change(currentItemReplacement = AIR, cursorReplacement = cursor, syncSlot = true)
             } else {
                 // All items fit to the slot
                 stack.amount = amount
                 content = stack
-                SlotInteractionResult.Change(AIR)
+                Change(AIR)
             }
         } else if (item.isSimilar(content)) {
             // Item is similar to content, so we can try to append it to content
             if (this.isFull()) {
                 // Stack already full, deny this interaction
-                SlotInteractionResult.Deny
+                Deny
             } else if (content.amount + amount <= maxStackSize) {
                 // There are enough place for all items
                 content.amount += amount
-                SlotInteractionResult.Accept
+                Accept
             } else {
                 // We can place some items
                 val cursor = item.clone()
                 cursor.amount -= maxStackSize - content.amount
 
                 content.amount = maxStackSize
-                SlotInteractionResult.Change(cursorReplacement = cursor, syncSlot = true)
+                Change(cursorReplacement = cursor, syncSlot = true)
             }
         } else {
             // Item is not similar and slot already contain another item, so we can swap content and cursor
             if (item.amount <= maxStackSize) {
                 content = item.clone()
-                SlotInteractionResult.Accept
+                Accept
             } else {
-                SlotInteractionResult.Deny
+                Deny
             }
         }
     }
