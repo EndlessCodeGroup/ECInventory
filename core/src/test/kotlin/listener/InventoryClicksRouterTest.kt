@@ -99,13 +99,53 @@ class InventoryClicksRouterTest : FeatureSpec({
 
         fun dragEvent(
             cursor: ItemStack = ItemStack(Material.STICK),
-            slots: Map<Int, ItemStack> = mapOf(0 to cursor)
-        ) = TestInventoryDragEvent(inventoryView, cursor, slots = slots).also { interactEvent = it }
+            rightClick: Boolean = false,
+            slots: Map<Int, ItemStack> = mapOf(0 to cursor),
+        ) = TestInventoryDragEvent(inventoryView, cursor, rightClick = rightClick, slots = slots)
+            .also { interactEvent = it }
 
         scenario("click non-functional inventory slot") {
             router.onDrag(dragEvent())
 
             verifyInteraction(interaction = null, eventCancelled = true)
+        }
+
+        scenario("drag in inventory") {
+            val slots = mapOf(
+                0 to ItemStack(Material.STICK),
+                inventory.viewSize to ItemStack(Material.STICK),
+            )
+            router.onDrag(dragEvent(slots = slots))
+
+            verifyInteraction(interaction = null, eventCancelled = true)
+        }
+
+        scenario("drag outside of inventory") {
+            val slots = mapOf(
+                inventory.viewSize to ItemStack(Material.STICK),
+                inventory.viewSize + 1 to ItemStack(Material.STICK),
+            )
+            router.onDrag(dragEvent(slots = slots))
+
+            verifyInteraction(interaction = null)
+        }
+
+        scenario("place all items") {
+            clickedSlot = mockk()
+            val item = ItemStack(Material.STICK, 2)
+            val event = dragEvent(item)
+            router.onDrag(event)
+
+            verifyInteraction(PlaceSlotContent(event, clickedSlot!!, item, amount = 2))
+        }
+
+        scenario("place one item") {
+            clickedSlot = mockk()
+            val item = ItemStack(Material.STICK, 2)
+            val event = dragEvent(item, rightClick = true)
+            router.onDrag(event)
+
+            verifyInteraction(PlaceSlotContent(event, clickedSlot!!, item, amount = 1))
         }
     }
 })
