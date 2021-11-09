@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
+    id("com.diffplug.spotless")
 }
 
 description = rootProject.description
@@ -25,6 +26,16 @@ tasks.test {
     useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed")
+    }
+}
+
+spotless {
+    ratchetFrom("origin/develop")
+
+    kotlin {
+        indentWithSpaces()
+        endWithNewline()
+        licenseHeaderFile(rootProject.file("spotless.license.kt"))
     }
 }
 
