@@ -30,7 +30,7 @@ class MainConfiguration(
     internal companion object {
         val SERIALIZER = ConfigurationSerializer<MainConfiguration>(
             fileName = "main",
-            description = "ECInventory configuration"
+            description = "ECInventory configuration",
         ) { config ->
             mapOf(
                 "enabled" to config.enabled,

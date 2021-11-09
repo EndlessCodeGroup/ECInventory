@@ -27,6 +27,7 @@ import ru.endlesscode.inventory.CustomInventory
 import ru.endlesscode.inventory.internal.DI
 
 private val rootCommand get() = CommandAPICommand("inventories").withAliases("inv")
+
 // TODO: This is temporary solution for debug purpose here should be normal SQL storage
 private val inventories = mutableMapOf<String, CustomInventory>()
 

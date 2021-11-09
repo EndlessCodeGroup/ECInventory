@@ -23,7 +23,7 @@ import java.util.*
 
 /** Map where you can get elements by theirs index. */
 internal class IndexedMap<K : Comparable<K>, V> private constructor(
-    private val content: SortedMap<K, V>
+    private val content: SortedMap<K, V>,
 ) : SortedMap<K, V> by content {
 
     private var indexedKeys: MutableList<K> = content.keys.toMutableList()

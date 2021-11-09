@@ -91,7 +91,7 @@ class InventoryInteractionsTest : FeatureSpec({
             val item = ItemStack(Material.STICK, 2)
             addItemToInventory(item)
 
-            assertSlots(current = AIR,1 to item)
+            assertSlots(current = AIR, 1 to item)
         }
 
         scenario("add item to two slots") {
@@ -102,7 +102,7 @@ class InventoryInteractionsTest : FeatureSpec({
             assertSlots(
                 current = AIR,
                 1 to ItemStack(Material.STICK, 4),
-                42 to ItemStack(Material.STICK, 2)
+                42 to ItemStack(Material.STICK, 2),
             )
         }
 

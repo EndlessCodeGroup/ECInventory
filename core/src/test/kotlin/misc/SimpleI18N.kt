@@ -26,5 +26,4 @@ class SimpleI18N internal constructor(workDir: File) : I18N(workDir, "test") {
     override fun stripColor(message: String): String = message
 
     override fun translateCodes(message: String): String = message
-
 }

@@ -20,13 +20,9 @@
 package ru.endlesscode.inventory.configuration
 
 class ConfigurationException : RuntimeException {
-
     internal constructor(message: String, cause: Throwable) : super(message, cause)
-
     internal constructor(cause: Throwable) : super(cause)
-
 }
 
 internal fun configError(cause: Throwable): Nothing = throw ConfigurationException(cause)
-
 internal fun configError(message: String, cause: Throwable): Nothing = throw ConfigurationException(message, cause)

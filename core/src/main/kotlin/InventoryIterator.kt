@@ -26,7 +26,7 @@ import org.bukkit.inventory.ItemStack
  */
 class InventoryIterator internal constructor(
     private val inventory: CustomInventory,
-    private var nextIndex: Int = 0
+    private var nextIndex: Int = 0,
 ) : MutableListIterator<ItemStack> {
 
     private var lastDirection = Direction.NOT_MOVED

@@ -87,5 +87,4 @@ abstract class I18N protected constructor(workDir: Path, langCode: String) {
     abstract fun stripColor(message: String): String
 
     abstract fun translateCodes(message: String): String
-
 }
