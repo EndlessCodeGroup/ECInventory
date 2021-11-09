@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2021 EndlessCode Group and contributors
+ * Copyright (c) $YEAR EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,19 +17,3 @@
  * along with ECInventory. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.inventory
-
-import org.bukkit.inventory.ItemStack
-import ru.endlesscode.inventory.slot.Slot
-import java.util.*
-
-internal data class InventoryLayoutImpl(
-    override val name: String,
-    override val emptySlotTexture: ItemStack,
-    override val slotsMap: SortedMap<Int, Slot>,
-) : InventoryLayout {
-
-    init {
-        require(slotsMap.isNotEmpty()) { "Slots map shouldn't be empty." }
-    }
-}
