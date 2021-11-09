@@ -96,5 +96,4 @@ class I18NTest : FileTestBase() {
         // Then
         message shouldBe "Args: Text, 1"
     }
-
 }

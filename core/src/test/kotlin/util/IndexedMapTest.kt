@@ -81,7 +81,7 @@ class IndexedMapTest {
             mapOf(
                 6 to "Six",
                 3 to "Three[x2]",
-                100 to "One hundred"
+                100 to "One hundred",
             )
         )
 
@@ -106,7 +106,7 @@ class IndexedMapTest {
         val existingMap = mapOf(
             3 to "Three",
             4 to "Four",
-            0 to "Zero"
+            0 to "Zero",
         )
         val indexedMap = existingMap.asIndexedMap()
 
@@ -122,7 +122,7 @@ class IndexedMapTest {
         val existingMap = mapOf(
             3 to "Three",
             4 to "Four",
-            0 to "Zero"
+            0 to "Zero",
         )
         val indexedMap = existingMap.asIndexedMap()
         indexedMap.clear()

@@ -49,7 +49,7 @@ class ConfigurationCollectorTest : FileTestBase() {
             "first" to "Nulla semper facilisis urna non fermentum.",
             "second" to "Morbi at lorem vitae odio molestie scelerisque.",
             "third" to "Vivamus non neque nec purus auctor hendrerit.",
-            "fourth" to "Integer nec auctor ipsum, porttitor dictum sapien."
+            "fourth" to "Integer nec auctor ipsum, porttitor dictum sapien.",
         )
     }
 
