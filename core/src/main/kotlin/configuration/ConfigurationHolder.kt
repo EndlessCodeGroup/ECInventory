@@ -16,11 +16,11 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.configuration
+package ru.endlesscode.inventory.configuration
 
 import kotlinx.serialization.hocon.Hocon
-import ru.endlesscode.rpginventory.internal.DI
-import ru.endlesscode.rpginventory.misc.makeSureDirectoryExists
+import ru.endlesscode.inventory.internal.DI
+import ru.endlesscode.inventory.misc.makeSureDirectoryExists
 import java.nio.file.Path
 import kotlin.io.path.createFile
 import kotlin.io.path.notExists

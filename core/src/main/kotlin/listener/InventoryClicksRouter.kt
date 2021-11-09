@@ -1,12 +1,12 @@
-package ru.endlesscode.rpginventory.listener
+package ru.endlesscode.inventory.listener
 
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.*
 import org.bukkit.event.inventory.InventoryAction.*
-import ru.endlesscode.rpginventory.CustomInventory
-import ru.endlesscode.rpginventory.slot.*
+import ru.endlesscode.inventory.CustomInventory
+import ru.endlesscode.inventory.slot.*
 
 /** Converts [InventoryInteractEvent] to [SlotInteraction] and passes it to inventory. */
 internal class InventoryClicksRouter : Listener {

@@ -16,16 +16,16 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.configuration
+package ru.endlesscode.inventory.configuration
 
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.shouldBe
-import ru.endlesscode.rpginventory.FileTestBase
-import ru.endlesscode.rpginventory.configuration.data.DataConfig
-import ru.endlesscode.rpginventory.configuration.data.InventoryConfig
-import ru.endlesscode.rpginventory.configuration.data.SlotConfig
-import ru.endlesscode.rpginventory.misc.copyTo
-import ru.endlesscode.rpginventory.slot.Slot
+import ru.endlesscode.inventory.FileTestBase
+import ru.endlesscode.inventory.configuration.data.DataConfig
+import ru.endlesscode.inventory.configuration.data.InventoryConfig
+import ru.endlesscode.inventory.configuration.data.SlotConfig
+import ru.endlesscode.inventory.misc.copyTo
+import ru.endlesscode.inventory.slot.Slot
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import kotlin.test.Test
@@ -80,7 +80,7 @@ class ConfigurationCollectorTest : FileTestBase() {
             ),
             inventories = mapOf(
                 "default" to InventoryConfig(
-                    name = "RPGInventory",
+                    name = "ECInventory",
                     emptySlotTexture = null,
                     slots = mapOf(
                         "24" to "left-ring",

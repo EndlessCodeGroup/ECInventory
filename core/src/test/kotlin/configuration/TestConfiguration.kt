@@ -16,7 +16,7 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.configuration
+package ru.endlesscode.inventory.configuration
 
 import kotlinx.serialization.Serializable
 

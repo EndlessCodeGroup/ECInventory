@@ -1,4 +1,4 @@
-package ru.endlesscode.rpginventory
+package ru.endlesscode.inventory
 
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -11,11 +11,11 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.internal.DI
-import ru.endlesscode.rpginventory.internal.TaskScheduler
-import ru.endlesscode.rpginventory.slot.*
-import ru.endlesscode.rpginventory.slot.SlotInteractionResult.Change
-import ru.endlesscode.rpginventory.util.*
+import ru.endlesscode.inventory.internal.DI
+import ru.endlesscode.inventory.internal.TaskScheduler
+import ru.endlesscode.inventory.slot.*
+import ru.endlesscode.inventory.slot.SlotInteractionResult.Change
+import ru.endlesscode.inventory.util.*
 
 /**
  * Provides utilities for working with RPG inventory, as with Bukkit inventory.
@@ -31,7 +31,7 @@ class CustomInventory internal constructor(
     /** Returns inventory layout name. */
     val name: String get() = layout.name
 
-    /** Temporary [Inventory], used to show RPGInventory to player. */
+    /** Temporary [Inventory], used to show [CustomInventory] to player. */
     private var view: Inventory? = null
 
     private val internalSlotsMap: IndexedMap<Int, Slot> = layout.slotsMap.asIndexedMap()

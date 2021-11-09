@@ -16,10 +16,10 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory
+package ru.endlesscode.inventory
 
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.slot.Slot
+import ru.endlesscode.inventory.slot.Slot
 import java.util.*
 
 /**

@@ -15,7 +15,7 @@ bukkit {
 
     meta {
         name.set(rootProject.name)
-        main.set("ru.endlesscode.rpginventory.RPGInventoryPlugin")
+        main.set("ru.endlesscode.inventory.ECInventoryPlugin")
         authors.set(listOf("osipxd", "Dereku", "EndlessCode Group"))
     }
 

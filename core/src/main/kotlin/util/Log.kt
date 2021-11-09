@@ -1,4 +1,4 @@
-package ru.endlesscode.rpginventory.util
+package ru.endlesscode.inventory.util
 
 import java.util.logging.Level
 import java.util.logging.Logger

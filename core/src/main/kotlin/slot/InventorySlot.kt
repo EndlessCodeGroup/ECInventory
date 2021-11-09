@@ -16,14 +16,14 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.slot
+package ru.endlesscode.inventory.slot
 
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.CustomInventory
-import ru.endlesscode.rpginventory.slot.SlotInteractionResult.*
-import ru.endlesscode.rpginventory.util.AIR
-import ru.endlesscode.rpginventory.util.isEmpty
-import ru.endlesscode.rpginventory.util.isNotEmpty
+import ru.endlesscode.inventory.CustomInventory
+import ru.endlesscode.inventory.slot.SlotInteractionResult.*
+import ru.endlesscode.inventory.util.AIR
+import ru.endlesscode.inventory.util.isEmpty
+import ru.endlesscode.inventory.util.isNotEmpty
 
 /**
  * Represents slot in the inventory, that has own behavior.

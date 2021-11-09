@@ -1,16 +1,16 @@
-package ru.endlesscode.rpginventory.internal
+package ru.endlesscode.inventory.internal
 
 import kotlinx.serialization.hocon.Hocon
 import org.bukkit.plugin.Plugin
+import ru.endlesscode.inventory.InventoryLayout
+import ru.endlesscode.inventory.configuration.ConfigurationHolder
+import ru.endlesscode.inventory.configuration.MainConfiguration
+import ru.endlesscode.inventory.configuration.data.DataHolder
+import ru.endlesscode.inventory.misc.I18N
+import ru.endlesscode.inventory.misc.I18NBukkit
+import ru.endlesscode.inventory.slot.Slot
 import ru.endlesscode.mimic.bukkit.load
 import ru.endlesscode.mimic.items.BukkitItemsRegistry
-import ru.endlesscode.rpginventory.InventoryLayout
-import ru.endlesscode.rpginventory.configuration.ConfigurationHolder
-import ru.endlesscode.rpginventory.configuration.MainConfiguration
-import ru.endlesscode.rpginventory.configuration.data.DataHolder
-import ru.endlesscode.rpginventory.misc.I18N
-import ru.endlesscode.rpginventory.misc.I18NBukkit
-import ru.endlesscode.rpginventory.slot.Slot
 
 internal object DI {
 

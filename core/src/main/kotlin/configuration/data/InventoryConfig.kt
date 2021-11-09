@@ -1,4 +1,4 @@
-package ru.endlesscode.rpginventory.configuration.data
+package ru.endlesscode.inventory.configuration.data
 
 import kotlinx.serialization.Serializable
 

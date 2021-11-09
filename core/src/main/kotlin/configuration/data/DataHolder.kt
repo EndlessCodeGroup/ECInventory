@@ -1,18 +1,18 @@
-package ru.endlesscode.rpginventory.configuration.data
+package ru.endlesscode.inventory.configuration.data
 
 import kotlinx.serialization.hocon.Hocon
+import ru.endlesscode.inventory.InventoryLayout
+import ru.endlesscode.inventory.InventoryLayout.Companion.MAX_SLOT_ID
+import ru.endlesscode.inventory.InventoryLayoutImpl
+import ru.endlesscode.inventory.configuration.ConfigurationCollector
+import ru.endlesscode.inventory.internal.DI
+import ru.endlesscode.inventory.slot.ItemValidator
+import ru.endlesscode.inventory.slot.Slot
+import ru.endlesscode.inventory.slot.SlotImpl
+import ru.endlesscode.inventory.util.Log
+import ru.endlesscode.inventory.util.MAX_STACK_SIZE
+import ru.endlesscode.inventory.util.orEmpty
 import ru.endlesscode.mimic.items.BukkitItemsRegistry
-import ru.endlesscode.rpginventory.InventoryLayout
-import ru.endlesscode.rpginventory.InventoryLayout.Companion.MAX_SLOT_ID
-import ru.endlesscode.rpginventory.InventoryLayoutImpl
-import ru.endlesscode.rpginventory.configuration.ConfigurationCollector
-import ru.endlesscode.rpginventory.internal.DI
-import ru.endlesscode.rpginventory.slot.ItemValidator
-import ru.endlesscode.rpginventory.slot.Slot
-import ru.endlesscode.rpginventory.slot.SlotImpl
-import ru.endlesscode.rpginventory.util.Log
-import ru.endlesscode.rpginventory.util.MAX_STACK_SIZE
-import ru.endlesscode.rpginventory.util.orEmpty
 import java.nio.file.Path
 
 internal class DataHolder(

@@ -16,6 +16,6 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.misc
+package ru.endlesscode.inventory.misc
 
 class I18NException internal constructor(message: String, cause: Throwable) : RuntimeException(message, cause)

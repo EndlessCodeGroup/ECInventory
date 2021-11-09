@@ -16,7 +16,7 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.configuration
+package ru.endlesscode.inventory.configuration
 
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
@@ -24,9 +24,9 @@ import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.serializer
-import ru.endlesscode.rpginventory.internal.DI
-import ru.endlesscode.rpginventory.misc.makeSureDirectoryExists
-import ru.endlesscode.rpginventory.misc.useFileTree
+import ru.endlesscode.inventory.internal.DI
+import ru.endlesscode.inventory.misc.makeSureDirectoryExists
+import ru.endlesscode.inventory.misc.useFileTree
 import java.io.IOException
 import java.nio.file.Path
 import kotlin.io.path.extension

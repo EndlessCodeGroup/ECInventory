@@ -16,7 +16,7 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.configuration
+package ru.endlesscode.inventory.configuration
 
 import kotlinx.serialization.Serializable
 
@@ -29,7 +29,7 @@ class MainConfiguration(
     internal companion object {
         val SERIALIZER = ConfigurationSerializer<MainConfiguration>(
             fileName = "main",
-            description = "RPGInventory3 configuration"
+            description = "ECInventory configuration"
         ) { config ->
             mapOf(
                 "enabled" to config.enabled,

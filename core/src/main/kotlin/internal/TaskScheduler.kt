@@ -1,4 +1,4 @@
-package ru.endlesscode.rpginventory.internal
+package ru.endlesscode.inventory.internal
 
 import org.bukkit.plugin.Plugin
 

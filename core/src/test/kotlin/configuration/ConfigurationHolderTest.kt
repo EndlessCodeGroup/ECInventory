@@ -16,13 +16,13 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.configuration
+package ru.endlesscode.inventory.configuration
 
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.paths.shouldExist
 import io.kotest.matchers.shouldBe
-import ru.endlesscode.rpginventory.FileTestBase
+import ru.endlesscode.inventory.FileTestBase
 import kotlin.test.Test
 
 class ConfigurationHolderTest : FileTestBase() {

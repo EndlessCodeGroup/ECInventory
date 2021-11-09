@@ -16,17 +16,17 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory
+package ru.endlesscode.inventory
 
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin
-import ru.endlesscode.rpginventory.internal.DI
-import ru.endlesscode.rpginventory.listener.InventoryClicksRouter
-import ru.endlesscode.rpginventory.misc.registerCommand
-import ru.endlesscode.rpginventory.util.Log
+import ru.endlesscode.inventory.internal.DI
+import ru.endlesscode.inventory.listener.InventoryClicksRouter
+import ru.endlesscode.inventory.misc.registerCommand
+import ru.endlesscode.inventory.util.Log
 
 /** This class is entry point to the plugin. */
-class RPGInventoryPlugin : JavaPlugin() {
+class ECInventoryPlugin : JavaPlugin() {
 
     init {
         Log.init(logger)
@@ -74,10 +74,10 @@ class RPGInventoryPlugin : JavaPlugin() {
     }
 
     @Deprecated(
-        message = "Use RPGInventoryPlugin#getConfiguration instead of RPGInventoryPlugin#getConfig()",
+        message = "Use ECInventoryPlugin#getConfiguration instead of ECInventoryPlugin#getConfig()",
         level = DeprecationLevel.ERROR
     )
     override fun getConfig(): FileConfiguration {
-        throw UnsupportedOperationException("Use RPGInventoryPlugin#getConfiguration instead of RPGInventoryPlugin#getConfig()")
+        throw UnsupportedOperationException("Use ECInventoryPlugin#getConfiguration instead of ECInventoryPlugin#getConfig()")
     }
 }

@@ -1,4 +1,4 @@
-package ru.endlesscode.rpginventory
+package ru.endlesscode.inventory
 
 import io.kotest.core.config.AbstractProjectConfig
 import io.kotest.core.spec.IsolationMode
