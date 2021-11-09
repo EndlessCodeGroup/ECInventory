@@ -1,13 +1,13 @@
 @file:Suppress("TestFunctionName")
 
-package ru.endlesscode.rpginventory.test
+package ru.endlesscode.inventory.test
 
 import io.mockk.every
 import io.mockk.mockk
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
-import ru.endlesscode.rpginventory.CustomInventory
-import ru.endlesscode.rpginventory.util.AIR
+import ru.endlesscode.inventory.CustomInventory
+import ru.endlesscode.inventory.util.AIR
 
 fun Inventory(inv: CustomInventory) = Inventory(inv.viewSize, inv)
 

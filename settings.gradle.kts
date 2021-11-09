@@ -1,5 +1,5 @@
 enableFeaturePreview("VERSION_CATALOGS")
 
-rootProject.name = "RPGInventory"
+rootProject.name = "inventory"
 
 include(":core")

@@ -16,12 +16,12 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory
+package ru.endlesscode.inventory
 
 import io.kotest.matchers.collections.shouldContainAll
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
-import ru.endlesscode.rpginventory.misc.listFileTree
+import ru.endlesscode.inventory.misc.listFileTree
 import java.nio.file.Path
 import kotlin.io.path.*
 import kotlin.test.AfterTest

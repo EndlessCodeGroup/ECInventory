@@ -1,4 +1,4 @@
-package ru.endlesscode.rpginventory
+package ru.endlesscode.inventory
 
 import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.withClue
@@ -9,12 +9,12 @@ import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryAction.*
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.internal.InstantTaskScheduler
-import ru.endlesscode.rpginventory.slot.*
-import ru.endlesscode.rpginventory.test.TestInventoryClickEvent
-import ru.endlesscode.rpginventory.test.TestInventoryView
-import ru.endlesscode.rpginventory.test.mockItemFactory
-import ru.endlesscode.rpginventory.util.AIR
+import ru.endlesscode.inventory.internal.InstantTaskScheduler
+import ru.endlesscode.inventory.slot.*
+import ru.endlesscode.inventory.test.TestInventoryClickEvent
+import ru.endlesscode.inventory.test.TestInventoryView
+import ru.endlesscode.inventory.test.mockItemFactory
+import ru.endlesscode.inventory.util.AIR
 
 class SlotInteractionsTest : FeatureSpec({
 

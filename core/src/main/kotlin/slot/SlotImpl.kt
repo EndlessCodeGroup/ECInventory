@@ -1,7 +1,7 @@
-package ru.endlesscode.rpginventory.slot
+package ru.endlesscode.inventory.slot
 
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.util.MAX_STACK_SIZE
+import ru.endlesscode.inventory.util.MAX_STACK_SIZE
 
 internal data class SlotImpl(
     override val id: String,

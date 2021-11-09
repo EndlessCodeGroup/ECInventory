@@ -16,14 +16,14 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.misc
+package ru.endlesscode.inventory.misc
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.throwable.shouldHaveMessage
 import io.mockk.spyk
 import io.mockk.verify
-import ru.endlesscode.rpginventory.FileTestBase
+import ru.endlesscode.inventory.FileTestBase
 import kotlin.io.path.createFile
 import kotlin.test.Test
 

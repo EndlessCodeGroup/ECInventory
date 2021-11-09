@@ -1,9 +1,9 @@
-package ru.endlesscode.rpginventory.test
+package ru.endlesscode.inventory.test
 
 import org.bukkit.event.inventory.*
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.util.AIR
+import ru.endlesscode.inventory.util.AIR
 
 class TestInventoryClickEvent(
     view: InventoryView = TestInventoryView(),

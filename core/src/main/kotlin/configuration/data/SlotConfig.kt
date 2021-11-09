@@ -1,7 +1,7 @@
-package ru.endlesscode.rpginventory.configuration.data
+package ru.endlesscode.inventory.configuration.data
 
 import kotlinx.serialization.Serializable
-import ru.endlesscode.rpginventory.slot.Slot
+import ru.endlesscode.inventory.slot.Slot
 
 @Serializable
 internal data class SlotConfig(

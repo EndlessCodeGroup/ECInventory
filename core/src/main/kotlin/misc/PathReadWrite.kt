@@ -16,7 +16,7 @@
  * along with RPGInventory.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.misc
+package ru.endlesscode.inventory.misc
 
 import java.io.InputStream
 import java.nio.file.CopyOption

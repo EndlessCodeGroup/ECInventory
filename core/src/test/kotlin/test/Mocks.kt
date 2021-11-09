@@ -1,4 +1,4 @@
-package ru.endlesscode.rpginventory.test
+package ru.endlesscode.inventory.test
 
 import io.mockk.every
 import io.mockk.mockk

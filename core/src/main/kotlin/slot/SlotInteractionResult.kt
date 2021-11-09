@@ -1,4 +1,4 @@
-package ru.endlesscode.rpginventory.slot
+package ru.endlesscode.inventory.slot
 
 import org.bukkit.inventory.ItemStack
 

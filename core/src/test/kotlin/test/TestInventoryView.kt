@@ -1,4 +1,4 @@
-package ru.endlesscode.rpginventory.test
+package ru.endlesscode.inventory.test
 
 import io.mockk.every
 import io.mockk.mockk
@@ -8,7 +8,7 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.util.AIR
+import ru.endlesscode.inventory.util.AIR
 
 class TestInventoryView(
     private val topInventory: Inventory = Inventory(size = 54),

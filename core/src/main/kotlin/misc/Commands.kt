@@ -1,11 +1,11 @@
-package ru.endlesscode.rpginventory.misc
+package ru.endlesscode.inventory.misc
 
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.arguments.Argument
 import dev.jorel.commandapi.arguments.MultiLiteralArgument
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
-import ru.endlesscode.rpginventory.CustomInventory
-import ru.endlesscode.rpginventory.internal.DI
+import ru.endlesscode.inventory.CustomInventory
+import ru.endlesscode.inventory.internal.DI
 
 private val rootCommand get() = CommandAPICommand("inventories").withAliases("inv")
 // TODO: This is temporary solution for debug purpose here should be normal SQL storage

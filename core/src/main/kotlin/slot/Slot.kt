@@ -16,7 +16,7 @@
  * along with RPGInventory.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.slot
+package ru.endlesscode.inventory.slot
 
 import kotlinx.serialization.Serializable
 import org.bukkit.inventory.ItemStack

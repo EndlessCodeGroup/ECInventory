@@ -1,13 +1,13 @@
-package ru.endlesscode.rpginventory.slot
+package ru.endlesscode.inventory.slot
 
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryAction.*
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.slot.SlotInteractionResult.*
-import ru.endlesscode.rpginventory.util.isNullOrEmpty
-import ru.endlesscode.rpginventory.util.orEmpty
+import ru.endlesscode.inventory.slot.SlotInteractionResult.*
+import ru.endlesscode.inventory.util.isNullOrEmpty
+import ru.endlesscode.inventory.util.orEmpty
 
 internal sealed interface InventoryInteraction {
     val event: InventoryInteractEvent

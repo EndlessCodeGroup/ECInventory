@@ -1,4 +1,4 @@
-package ru.endlesscode.rpginventory
+package ru.endlesscode.inventory
 
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.inspectors.forAll
@@ -7,16 +7,16 @@ import io.mockk.spyk
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction.MOVE_TO_OTHER_INVENTORY
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.internal.InstantTaskScheduler
-import ru.endlesscode.rpginventory.slot.AddItemToInventory
-import ru.endlesscode.rpginventory.slot.ItemValidator
-import ru.endlesscode.rpginventory.slot.Slot
-import ru.endlesscode.rpginventory.slot.SlotImpl
-import ru.endlesscode.rpginventory.test.TestInventoryClickEvent
-import ru.endlesscode.rpginventory.test.TestInventoryView
-import ru.endlesscode.rpginventory.test.mockItemFactory
-import ru.endlesscode.rpginventory.util.AIR
-import ru.endlesscode.rpginventory.util.orEmpty
+import ru.endlesscode.inventory.internal.InstantTaskScheduler
+import ru.endlesscode.inventory.slot.AddItemToInventory
+import ru.endlesscode.inventory.slot.ItemValidator
+import ru.endlesscode.inventory.slot.Slot
+import ru.endlesscode.inventory.slot.SlotImpl
+import ru.endlesscode.inventory.test.TestInventoryClickEvent
+import ru.endlesscode.inventory.test.TestInventoryView
+import ru.endlesscode.inventory.test.mockItemFactory
+import ru.endlesscode.inventory.util.AIR
+import ru.endlesscode.inventory.util.orEmpty
 
 class InventoryInteractionsTest : FeatureSpec({
 

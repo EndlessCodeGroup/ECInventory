@@ -16,10 +16,10 @@
  * along with RPGInventory3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.rpginventory.misc
+package ru.endlesscode.inventory.misc
 
 import org.bukkit.ChatColor
-import ru.endlesscode.rpginventory.util.translateColorCodes
+import ru.endlesscode.inventory.util.translateColorCodes
 import java.nio.file.Path
 
 class I18NBukkit(workDir: Path, initLocale: String) : I18N(workDir, initLocale) {

@@ -1,4 +1,4 @@
-package ru.endlesscode.rpginventory.listener
+package ru.endlesscode.inventory.listener
 
 import io.kotest.assertions.assertSoftly
 import io.kotest.core.spec.style.FeatureSpec
@@ -13,10 +13,10 @@ import org.bukkit.event.inventory.InventoryAction.*
 import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.rpginventory.CustomInventory
-import ru.endlesscode.rpginventory.slot.*
-import ru.endlesscode.rpginventory.test.*
-import ru.endlesscode.rpginventory.util.AIR
+import ru.endlesscode.inventory.CustomInventory
+import ru.endlesscode.inventory.slot.*
+import ru.endlesscode.inventory.test.*
+import ru.endlesscode.inventory.util.AIR
 
 class InventoryClicksRouterTest : FeatureSpec({
 
