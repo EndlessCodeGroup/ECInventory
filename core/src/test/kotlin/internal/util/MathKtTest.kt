@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2021 EndlessCode Group and contributors
+ * Copyright (c) 2019-2021 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,11 +17,23 @@
  * along with ECInventory. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.inventory.slot
+package ru.endlesscode.inventory.internal.util
 
-import ru.endlesscode.inventory.internal.data.serialization.ConfigEnumSerializer
+import io.kotest.common.ExperimentalKotest
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.datatest.withData
+import io.kotest.matchers.shouldBe
 
-internal object SlotTypeSerializer : ConfigEnumSerializer<Slot.Type>(
-    serialName = Slot.Type::class.java.canonicalName,
-    values = enumValues(),
-)
+@OptIn(ExperimentalKotest::class)
+class MathKtTest : FunSpec({
+
+    context("round to power") {
+        withData(
+            nameFn = { (number, power, expected) -> "$number round to power $power should be $expected" },
+            Triple(0, 2, 0),
+            Triple(7, 5, 10),
+            Triple(7, 7, 7),
+            Triple(-7, 6, -12),
+        ) { (number, power, expected) -> number roundToPowerOf power shouldBe expected }
+    }
+})

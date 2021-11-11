@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2021 EndlessCode Group and contributors
+ * Copyright (c) 2019-2021 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,11 +17,13 @@
  * along with ECInventory. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.inventory.slot
+package ru.endlesscode.inventory.internal.locale
 
-import ru.endlesscode.inventory.internal.data.serialization.ConfigEnumSerializer
+import java.io.File
 
-internal object SlotTypeSerializer : ConfigEnumSerializer<Slot.Type>(
-    serialName = Slot.Type::class.java.canonicalName,
-    values = enumValues(),
-)
+internal class SimpleI18N internal constructor(workDir: File) : I18N(workDir, "test") {
+
+    override fun stripColor(message: String): String = message
+
+    override fun translateCodes(message: String): String = message
+}

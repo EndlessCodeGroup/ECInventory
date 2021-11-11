@@ -25,10 +25,14 @@ import org.bukkit.inventory.ItemStack
  * Check is given item is valid.
  * Used to check if item can be placed to a slot.
  */
-fun interface ItemValidator {
-    fun isValid(item: ItemStack): Boolean
+public fun interface ItemValidator {
+    public fun isValid(item: ItemStack): Boolean
 
-    companion object {
-        val any: ItemValidator = ItemValidator { true }
+    public companion object {
+
+        /** Returns `true` for any [ItemStack]. */
+        @JvmStatic
+        @get:JvmName("any")
+        public val any: ItemValidator = ItemValidator { true }
     }
 }

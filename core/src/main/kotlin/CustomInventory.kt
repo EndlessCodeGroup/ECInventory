@@ -32,9 +32,10 @@ import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.internal.DI
 import ru.endlesscode.inventory.internal.TaskScheduler
+import ru.endlesscode.inventory.internal.listener.*
+import ru.endlesscode.inventory.internal.util.*
 import ru.endlesscode.inventory.slot.*
 import ru.endlesscode.inventory.slot.SlotInteractionResult.Change
-import ru.endlesscode.inventory.util.*
 
 /**
  * Provides utilities for working with RPG inventory, as with Bukkit inventory.
@@ -42,13 +43,13 @@ import ru.endlesscode.inventory.util.*
  * @param holder The Inventory's holder.
  * @param layout Layout of the inventory.
  */
-class CustomInventory internal constructor(
+public class CustomInventory internal constructor(
     private val layout: InventoryLayout,
     private val scheduler: TaskScheduler,
 ) : Inventory, InventoryHolder {
 
     /** Returns inventory layout name. */
-    val name: String get() = layout.name
+    public val name: String get() = layout.name
 
     /** Temporary [Inventory], used to show [CustomInventory] to player. */
     private var view: Inventory? = null
@@ -62,7 +63,7 @@ class CustomInventory internal constructor(
 
     private var maxStack = DEFAULT_MAX_STACK
 
-    constructor(layout: InventoryLayout) : this(layout, DI.scheduler)
+    public constructor(layout: InventoryLayout) : this(layout, DI.scheduler)
 
     init {
         val slots = mutableMapOf<String, InventorySlot>()
@@ -73,7 +74,7 @@ class CustomInventory internal constructor(
     }
 
     /** Returns the ItemStack found in the slot with the given [id][slotId], or `null` if there no such slot. */
-    fun getItem(slotId: String): ItemStack? = slots[slotId]?.content
+    public fun getItem(slotId: String): ItemStack? = slots[slotId]?.content
 
     /**
      * Stores the ItemStack at the slot with given id.
@@ -81,45 +82,45 @@ class CustomInventory internal constructor(
      * @param slotId The id of the slot where to put the ItemStack.
      * @param item The ItemStack to set.
      */
-    fun setItem(slotId: String, item: ItemStack?) {
+    public fun setItem(slotId: String, item: ItemStack?) {
         slots[slotId]?.let { it.content = item.orEmpty() }
     }
 
     /** Returns the slot with the given [id][slotId], or `null` if there no such slot. */
-    fun getSlot(slotId: String): InventorySlot? = slots[slotId]
+    public fun getSlot(slotId: String): InventorySlot? = slots[slotId]
 
     /**
      * Returns slot by [index], or throws an exception if there no such slot.
      *
      * @throws IndexOutOfBoundsException when the inventory doesn't contain a slot for the specified index.
      */
-    fun getSlot(index: Int): InventorySlot {
+    public fun getSlot(index: Int): InventorySlot {
         val slotId = internalSlotsMap.getByIndex(index).id
         return slots.getValue(slotId)
     }
 
     /** Returns slot by theirs [position] or `null` if there no slot on given position. */
-    fun getSlotAt(position: Int): InventorySlot? {
+    public fun getSlotAt(position: Int): InventorySlot? {
         return internalSlotsMap[position]?.let {
             slots[it.id]
         }
     }
 
     /** Returns index of slot with given [id][slotId] or -1 if there no such slot. */
-    fun getIndexOfSlot(slotId: String): Int {
+    public fun getIndexOfSlot(slotId: String): Int {
         return slots[slotId]?.let {
             internalSlotsMap.getIndexOf(it.position)
         } ?: -1
     }
 
     /** Returns index of slot with given [slot] or -1 if given slot isn't in the inventory. */
-    fun getIndexOfSlot(slot: InventorySlot): Int {
+    public fun getIndexOfSlot(slot: InventorySlot): Int {
         return if (slot.holder == this) internalSlotsMap.getIndexOf(slot.position) else -1
     }
 
     /** Returns the inventory's slots with the given [type] or all slots if type is `null`. */
     @JvmOverloads
-    fun getSlots(type: Slot.Type? = null): List<InventorySlot> {
+    public fun getSlots(type: Slot.Type? = null): List<InventorySlot> {
         return if (type == null) {
             slots.values.toList()
         } else {
@@ -128,18 +129,18 @@ class CustomInventory internal constructor(
     }
 
     /** Clears out a particular slot with given [slotId]. */
-    fun clear(slotId: String) {
+    public fun clear(slotId: String) {
         setItem(slotId, null)
     }
 
     /** Returns the inventory's passive slots. */
-    fun getPassiveSlots(): List<InventorySlot> = getSlots(Slot.Type.PASSIVE)
+    public fun getPassiveSlots(): List<InventorySlot> = getSlots(Slot.Type.PASSIVE)
 
     /** Returns the inventory's storage slots. */
-    fun getStorageSlots(): List<InventorySlot> = getSlots(Slot.Type.STORAGE)
+    public fun getStorageSlots(): List<InventorySlot> = getSlots(Slot.Type.STORAGE)
 
     /** Returns the inventory's active slots. */
-    fun getActiveSlots(): List<InventorySlot> = getSlots(Slot.Type.ACTIVE)
+    public fun getActiveSlots(): List<InventorySlot> = getSlots(Slot.Type.ACTIVE)
 
     /** Constructs and returns [Inventory] that can be shown to a player. */
     override fun getInventory(): Inventory {
@@ -151,17 +152,17 @@ class CustomInventory internal constructor(
     }
 
     /** Opens this inventory for the given [player]. */
-    fun open(player: Player) {
+    public fun open(player: Player) {
         player.openInventory(holder.inventory)
     }
 
     /** This method should be called when inventory close. */
-    fun onClose() {
+    internal fun onClose() {
         this.view = null
     }
 
     /** Assigns given [slot] to the given [position], with replace of existing slot. */
-    fun assignSlot(position: Int, slot: Slot) {
+    public fun assignSlot(position: Int, slot: Slot) {
         val inventorySlot = InventorySlot(slot, this, position)
         val existingSlotId = internalSlotsMap[position]?.id
 
@@ -175,7 +176,7 @@ class CustomInventory internal constructor(
      *
      * @return removed slot, or `null` if there no slot with the given id.
      */
-    fun removeSlot(slotId: String): InventorySlot? {
+    public fun removeSlot(slotId: String): InventorySlot? {
         val removedSlot = slots.remove(slotId)
         if (removedSlot != null) {
             internalSlotsMap.remove(removedSlot.position)
@@ -185,7 +186,7 @@ class CustomInventory internal constructor(
     }
 
     /** Returns the first empty Slot or `null` if there are no empty slots. */
-    fun findEmptySlot(): InventorySlot? = getStorageSlots().find { it.isEmpty() }
+    public fun findEmptySlot(): InventorySlot? = getStorageSlots().find { it.isEmpty() }
 
     override fun getSize(): Int = slots.size
 
@@ -569,12 +570,12 @@ class CustomInventory internal constructor(
         }
     }
 
-    companion object {
+    public companion object {
         /**
          * By default, will be used stack size 64, and it will be increased when
          * will be added new slots with greater max stack size.
          * @see InventorySlot
          */
-        const val DEFAULT_MAX_STACK = 64
+        public const val DEFAULT_MAX_STACK: Int = 64
     }
 }

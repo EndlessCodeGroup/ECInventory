@@ -27,15 +27,15 @@ import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction.MOVE_TO_OTHER_INVENTORY
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.internal.InstantTaskScheduler
-import ru.endlesscode.inventory.slot.AddItemToInventory
+import ru.endlesscode.inventory.internal.listener.AddItemToInventory
+import ru.endlesscode.inventory.internal.util.AIR
+import ru.endlesscode.inventory.internal.util.orEmpty
 import ru.endlesscode.inventory.slot.ItemValidator
 import ru.endlesscode.inventory.slot.Slot
 import ru.endlesscode.inventory.slot.SlotImpl
 import ru.endlesscode.inventory.test.TestInventoryClickEvent
 import ru.endlesscode.inventory.test.TestInventoryView
 import ru.endlesscode.inventory.test.mockItemFactory
-import ru.endlesscode.inventory.util.AIR
-import ru.endlesscode.inventory.util.orEmpty
 
 class InventoryInteractionsTest : FeatureSpec({
 

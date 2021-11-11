@@ -22,7 +22,7 @@ package ru.endlesscode.inventory.test
 import org.bukkit.event.inventory.*
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.inventory.util.AIR
+import ru.endlesscode.inventory.internal.util.AIR
 
 class TestInventoryClickEvent(
     view: InventoryView = TestInventoryView(),

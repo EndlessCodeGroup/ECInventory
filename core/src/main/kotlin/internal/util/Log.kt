@@ -17,28 +17,32 @@
  * along with ECInventory. If not, see <http://www.gnu.org/licenses/>.
  */
 
-@file:Suppress("TestFunctionName")
+package ru.endlesscode.inventory.internal.util
 
-package ru.endlesscode.inventory.test
+import java.util.logging.Level
+import java.util.logging.Logger
 
-import io.mockk.every
-import io.mockk.mockk
-import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.InventoryHolder
-import ru.endlesscode.inventory.CustomInventory
-import ru.endlesscode.inventory.internal.util.AIR
+internal object Log {
 
-fun Inventory(inv: CustomInventory) = Inventory(inv.viewSize, inv)
+    private var logger: Logger? = null
 
-fun Inventory(
-    size: Int,
-    holder: InventoryHolder? = null,
-): Inventory {
-    val contents = Array(size) { AIR }
-    return mockk(relaxUnitFun = true) {
-        every { getSize() } returns size
-        every { getHolder() } answers { holder ?: InventoryHolder { this@mockk } }
-        every { getItem(any()) } answers { contents[firstArg()] }
-        every { setItem(any(), any()) } answers { contents[firstArg()] = secondArg() }
+    /** Initializes Log with the given [logger]. */
+    fun init(logger: Logger) {
+        Log.logger = logger
+    }
+
+    /** Writes info message to log. */
+    fun i(message: String) {
+        logger?.info(message)
+    }
+
+    /** Writes warning message to log. */
+    fun w(vararg messages: String) {
+        messages.forEach { logger?.warning(it) }
+    }
+
+    /** Writes error message to log. */
+    fun e(message: String, throwable: Throwable) {
+        logger?.log(Level.SEVERE, message, throwable)
     }
 }

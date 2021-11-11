@@ -29,11 +29,16 @@ import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryAction.*
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.internal.InstantTaskScheduler
-import ru.endlesscode.inventory.slot.*
+import ru.endlesscode.inventory.internal.listener.HotbarSwapSlotContent
+import ru.endlesscode.inventory.internal.listener.PlaceSlotContent
+import ru.endlesscode.inventory.internal.listener.TakeSlotContent
+import ru.endlesscode.inventory.internal.util.AIR
+import ru.endlesscode.inventory.slot.ItemValidator
+import ru.endlesscode.inventory.slot.Slot
+import ru.endlesscode.inventory.slot.SlotImpl
 import ru.endlesscode.inventory.test.TestInventoryClickEvent
 import ru.endlesscode.inventory.test.TestInventoryView
 import ru.endlesscode.inventory.test.mockItemFactory
-import ru.endlesscode.inventory.util.AIR
 
 class SlotInteractionsTest : FeatureSpec({
 

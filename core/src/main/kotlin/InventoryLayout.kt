@@ -30,12 +30,16 @@ import java.util.*
  * @property emptySlotTexture The item that will be used to fill unassigned slots.
  * @property slotsMap The map of the slots. Sorted by key.
  */
-interface InventoryLayout {
-    val name: String
-    val emptySlotTexture: ItemStack
-    val slotsMap: SortedMap<Int, Slot>
+public interface InventoryLayout {
+    public val name: String
+    public val emptySlotTexture: ItemStack
+    public val slotsMap: SortedMap<Int, Slot>
 
-    companion object {
-        const val MAX_SLOT_ID = 53
+    public companion object {
+        /**
+         * Maximal possible slot position in inventory.
+         * Calculated as 54 (number of slots in large chest) - 1 (indices starts at 0)
+         */
+        public const val MAX_SLOT_POSITION: Int = 53
     }
 }

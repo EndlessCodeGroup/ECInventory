@@ -25,6 +25,10 @@ bukkit {
     }
 }
 
+kotlin {
+    explicitApi()
+}
+
 dependencies {
     compileOnly(spigotApi)
     compileOnly(libs.hocon)

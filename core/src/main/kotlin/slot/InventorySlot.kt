@@ -21,10 +21,10 @@ package ru.endlesscode.inventory.slot
 
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.CustomInventory
+import ru.endlesscode.inventory.internal.util.AIR
+import ru.endlesscode.inventory.internal.util.isEmpty
+import ru.endlesscode.inventory.internal.util.isNotEmpty
 import ru.endlesscode.inventory.slot.SlotInteractionResult.*
-import ru.endlesscode.inventory.util.AIR
-import ru.endlesscode.inventory.util.isEmpty
-import ru.endlesscode.inventory.util.isNotEmpty
 
 /**
  * Represents slot in the inventory, that has own behavior.
@@ -35,10 +35,10 @@ import ru.endlesscode.inventory.util.isNotEmpty
  * @property position Position of the slot in vanilla inventory.
  * @property content The item stored in the slot. Or air if the slot is empty.
  */
-class InventorySlot(
+public class InventorySlot(
     prototype: Slot,
-    val holder: CustomInventory,
-    val position: Int,
+    public val holder: CustomInventory,
+    public val position: Int,
 ) : Slot by prototype {
 
     override val texture: ItemStack = prototype.texture
@@ -48,7 +48,7 @@ class InventorySlot(
      * Max stack size can be placed to slot.
      * @see maxStackSize
      */
-    val slotMaxStackSize: Int = prototype.maxStackSize
+    public val slotMaxStackSize: Int = prototype.maxStackSize
 
     /**
      * Returns max stack size can be placed to the slot.
@@ -58,7 +58,7 @@ class InventorySlot(
     override val maxStackSize: Int
         get() = if (isEmpty()) slotMaxStackSize else minOf(slotMaxStackSize, content.maxStackSize)
 
-    var content: ItemStack = AIR
+    public var content: ItemStack = AIR
         set(value) {
             field = value
             if (value.isNotEmpty() && slotMaxStackSize > 0 && value.amount > slotMaxStackSize) {
@@ -75,13 +75,13 @@ class InventorySlot(
     }
 
     /** Returns `true` if slot's content is empty. */
-    fun isEmpty(): Boolean = content.isEmpty()
+    public fun isEmpty(): Boolean = content.isEmpty()
 
     /** Returns `true` if slot contains maximal possible amount of items. */
-    fun isFull(): Boolean = !isEmpty() && content.amount >= maxStackSize
+    public fun isFull(): Boolean = !isEmpty() && content.amount >= maxStackSize
 
     /** Returns [content] if it isn't empty or [texture] otherwise. */
-    fun getContentOrTexture(): ItemStack = if (isEmpty()) texture else content
+    public fun getContentOrTexture(): ItemStack = if (isEmpty()) texture else content
 
     /** Swap content with the given [item]. */
     internal fun swapItem(item: ItemStack): SlotInteractionResult = when {

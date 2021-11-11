@@ -22,11 +22,11 @@ package ru.endlesscode.inventory.internal
 import kotlinx.serialization.hocon.Hocon
 import org.bukkit.plugin.Plugin
 import ru.endlesscode.inventory.InventoryLayout
-import ru.endlesscode.inventory.configuration.ConfigurationHolder
-import ru.endlesscode.inventory.configuration.MainConfiguration
-import ru.endlesscode.inventory.configuration.data.DataHolder
-import ru.endlesscode.inventory.misc.I18N
-import ru.endlesscode.inventory.misc.I18NBukkit
+import ru.endlesscode.inventory.internal.config.ConfigurationHolder
+import ru.endlesscode.inventory.internal.data.DataHolder
+import ru.endlesscode.inventory.internal.data.MainConfigurationImpl
+import ru.endlesscode.inventory.internal.locale.I18N
+import ru.endlesscode.inventory.internal.locale.I18NBukkit
 import ru.endlesscode.inventory.slot.Slot
 import ru.endlesscode.mimic.bukkit.load
 import ru.endlesscode.mimic.items.BukkitItemsRegistry
@@ -43,11 +43,11 @@ internal object DI {
 
     val hocon: Hocon by lazy { Hocon { useConfigNamingConvention = true } }
 
-    private val configHolder by lazy { ConfigurationHolder(dataPath, MainConfiguration.SERIALIZER) }
+    private val configHolder by lazy { ConfigurationHolder(dataPath, MainConfigurationImpl.SERIALIZER) }
     private val dataHolder by lazy { DataHolder(itemsRegistry, dataPath) }
 
     val locale: I18N by lazy { I18NBukkit(dataPath, config.locale) }
-    val config: MainConfiguration get() = configHolder.config
+    val config: MainConfigurationImpl get() = configHolder.config
     val slots: Map<String, Slot> get() = dataHolder.slots
     val inventories: Map<String, InventoryLayout> get() = dataHolder.inventories
 

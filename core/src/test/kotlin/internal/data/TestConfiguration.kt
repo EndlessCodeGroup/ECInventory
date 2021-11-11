@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2021 EndlessCode Group and contributors
+ * Copyright (c) 2019-2021 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,11 +17,23 @@
  * along with ECInventory. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.inventory.slot
+package ru.endlesscode.inventory.internal.data
 
-import ru.endlesscode.inventory.internal.data.serialization.ConfigEnumSerializer
+import kotlinx.serialization.Serializable
+import ru.endlesscode.inventory.internal.config.ConfigurationSerializer
 
-internal object SlotTypeSerializer : ConfigEnumSerializer<Slot.Type>(
-    serialName = Slot.Type::class.java.canonicalName,
-    values = enumValues(),
-)
+@Serializable
+internal data class TestConfiguration(
+    var aString: String = "Lorem ipsum dolor sit amet.",
+    var anInt: Int = 5,
+) {
+
+    companion object {
+        val SERIALIZER = ConfigurationSerializer<TestConfiguration>(fileName = "test") { config ->
+            mapOf(
+                "a-string" to config.aString,
+                "an-int" to config.anInt,
+            )
+        }
+    }
+}

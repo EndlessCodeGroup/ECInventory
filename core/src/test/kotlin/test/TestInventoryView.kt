@@ -27,7 +27,7 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.inventory.util.AIR
+import ru.endlesscode.inventory.internal.util.AIR
 
 class TestInventoryView(
     private val topInventory: Inventory = Inventory(size = 54),

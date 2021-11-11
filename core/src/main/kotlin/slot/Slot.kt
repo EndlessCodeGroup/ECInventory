@@ -31,16 +31,16 @@ import org.bukkit.inventory.ItemStack
  * @property type Slot type.
  * @property maxStackSize The maximum stack size for an ItemStack in this slot.
  */
-interface Slot {
-    val id: String
-    val name: String
-    val texture: ItemStack
-    val type: Type
-    val contentValidator: ItemValidator
-    val maxStackSize: Int
+public interface Slot {
+    public val id: String
+    public val name: String
+    public val texture: ItemStack
+    public val type: Type
+    public val contentValidator: ItemValidator
+    public val maxStackSize: Int
 
     @Serializable(with = SlotTypeSerializer::class)
-    enum class Type {
+    public enum class Type {
         /**
          * Indicates that the slot should be counted on stats counting.
          * @see RPGInventory.getPassiveSlots

@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2021 EndlessCode Group and contributors
+ * Copyright (c) 2019-2021 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,11 +17,10 @@
  * along with ECInventory. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.inventory.slot
+package ru.endlesscode.inventory.internal.util
 
-import ru.endlesscode.inventory.internal.data.serialization.ConfigEnumSerializer
+import org.bukkit.ChatColor
 
-internal object SlotTypeSerializer : ConfigEnumSerializer<Slot.Type>(
-    serialName = Slot.Type::class.java.canonicalName,
-    values = enumValues(),
-)
+internal fun String.translateColorCodes(colorCode: Char = '&'): String {
+    return ChatColor.translateAlternateColorCodes(colorCode, this)
+}

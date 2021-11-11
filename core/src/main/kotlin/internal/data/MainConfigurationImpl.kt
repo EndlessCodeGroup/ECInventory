@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2021 EndlessCode Group and contributors
+ * Copyright (c) 2019-2021 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,23 +17,27 @@
  * along with ECInventory. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.inventory.slot
+package ru.endlesscode.inventory.internal.data
 
-import org.bukkit.inventory.ItemStack
-import ru.endlesscode.inventory.internal.util.MAX_STACK_SIZE
+import kotlinx.serialization.Serializable
+import ru.endlesscode.inventory.MainConfiguration
+import ru.endlesscode.inventory.internal.config.ConfigurationSerializer
 
-internal data class SlotImpl(
-    override val id: String,
-    override val name: String,
-    override val texture: ItemStack,
-    override val type: Slot.Type,
-    override val contentValidator: ItemValidator,
-    override val maxStackSize: Int,
-) : Slot {
+@Serializable
+internal class MainConfigurationImpl(
+    override var enabled: Boolean = true,
+    override var locale: String = "en",
+) : MainConfiguration {
 
-    init {
-        require(maxStackSize in 1..MAX_STACK_SIZE) {
-            "Can't create slot '$id'. Max stack size should be in range 1..$MAX_STACK_SIZE, bit it was $maxStackSize."
+    internal companion object {
+        val SERIALIZER = ConfigurationSerializer<MainConfigurationImpl>(
+            fileName = "main",
+            description = "ECInventory configuration",
+        ) { config ->
+            mapOf(
+                "enabled" to config.enabled,
+                "locale" to config.locale,
+            )
         }
     }
 }
