@@ -25,6 +25,8 @@ import ru.endlesscode.inventory.InventoryLayout
 import ru.endlesscode.inventory.internal.config.ConfigurationHolder
 import ru.endlesscode.inventory.internal.data.DataHolder
 import ru.endlesscode.inventory.internal.data.MainConfigurationImpl
+import ru.endlesscode.inventory.internal.data.sql.Database
+import ru.endlesscode.inventory.internal.data.sql.SqliteDatabaseConfig
 import ru.endlesscode.inventory.internal.locale.I18N
 import ru.endlesscode.inventory.internal.locale.I18NBukkit
 import ru.endlesscode.inventory.slot.Slot
@@ -42,6 +44,7 @@ internal object DI {
     private val itemsRegistry: BukkitItemsRegistry by lazy { checkNotNull(servicesManager.load()) }
 
     val hocon: Hocon by lazy { Hocon { useConfigNamingConvention = true } }
+    val database: Database by lazy { Database(SqliteDatabaseConfig(dataPath)) }
 
     private val configHolder by lazy { ConfigurationHolder(dataPath, MainConfigurationImpl.SERIALIZER) }
     private val dataHolder by lazy { DataHolder(itemsRegistry, dataPath) }
