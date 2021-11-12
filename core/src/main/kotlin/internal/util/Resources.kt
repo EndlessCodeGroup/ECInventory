@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2019-2021 EndlessCode Group and contributors
+ * Copyright (c) 2021 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -20,27 +20,18 @@
 package ru.endlesscode.inventory.internal.util
 
 import java.io.InputStream
-import java.nio.file.CopyOption
-import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.io.path.createDirectories
-import kotlin.io.path.isRegularFile
-import kotlin.io.path.moveTo
-import kotlin.streams.asSequence
-import kotlin.streams.toList
 
-internal fun Path.makeSureDirectoryExists() {
-    if (this.isRegularFile()) {
-        val tmp = parent.resolve("$fileName.niceJoke.${System.currentTimeMillis() % 10000}")
-        this.moveTo(tmp)
+internal fun Path.loadFromResource(resource: String) {
+    val validResourcePath = if (resource.startsWith("/")) resource else "/$resource"
+    useResourceStream(validResourcePath) {
+        it.copyTo(this)
     }
-
-    this.createDirectories()
 }
 
-internal fun InputStream.copyTo(target: Path, vararg options: CopyOption): Long {
-    return Files.copy(this, target, *options)
+internal fun <T> useResourceStream(path: String, block: (InputStream) -> T): T {
+    return object {}.javaClass.getResourceAsStream(path).use { stream ->
+        requireNotNull(stream) { "Resource file \"$path\" not exists" }
+        block(stream)
+    }
 }
-
-internal fun Path.listFileTree(): List<Path> = Files.walk(this).use { it.toList() }
-internal fun <T> Path.useFileTree(block: (Sequence<Path>) -> T): T = Files.walk(this).use { block(it.asSequence()) }
