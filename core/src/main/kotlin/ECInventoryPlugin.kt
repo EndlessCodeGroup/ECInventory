@@ -56,6 +56,7 @@ public class ECInventoryPlugin : JavaPlugin() {
                 return@makeSure false
             }
             Log.i("Loaded ${DI.inventories.size} inventories and ${DI.slots.size} slots")
+            DI.database.init()
             true
         }
     }
