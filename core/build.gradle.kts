@@ -34,6 +34,8 @@ dependencies {
     compileOnly(libs.hocon)
     compileOnly(libs.mimic)
     compileOnly(libs.commandapi)
+    compileOnly(libs.mysql)
+    compileOnly(libs.hikaricp)
 
     testImplementation(spigotApi)
     testImplementation(libs.hocon)
