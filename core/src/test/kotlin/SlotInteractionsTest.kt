@@ -39,11 +39,13 @@ import ru.endlesscode.inventory.slot.SlotImpl
 import ru.endlesscode.inventory.test.TestInventoryClickEvent
 import ru.endlesscode.inventory.test.TestInventoryView
 import ru.endlesscode.inventory.test.mockItemFactory
+import java.util.*
 
 class SlotInteractionsTest : FeatureSpec({
 
     val inventoryLayout = InventoryLayoutImpl(
-        name = "test",
+        id = "test",
+        name = "Test",
         emptySlotTexture = AIR,
         slotsMap = sortedMapOf(
             1 to SlotImpl(
@@ -58,7 +60,7 @@ class SlotInteractionsTest : FeatureSpec({
     )
 
     // SUT
-    val inventory = spyk(CustomInventory(inventoryLayout, InstantTaskScheduler()))
+    val inventory = spyk(CustomInventory(UUID.randomUUID(), inventoryLayout, InstantTaskScheduler()))
     val slot = inventory.getSlot(0)
 
     val inventoryView = TestInventoryView()

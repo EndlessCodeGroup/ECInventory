@@ -26,11 +26,13 @@ import java.util.*
 /**
  * Layout of an inventory.
  *
+ * @property id Layout ID. Can be considered as an inventory type.
  * @property name Name of an inventory.
  * @property emptySlotTexture The item that will be used to fill unassigned slots.
  * @property slotsMap The map of the slots. Sorted by key.
  */
 public interface InventoryLayout {
+    public val id: String
     public val name: String
     public val emptySlotTexture: ItemStack
     public val slotsMap: SortedMap<Int, Slot>
