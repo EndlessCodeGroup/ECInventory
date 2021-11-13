@@ -36,20 +36,26 @@ import ru.endlesscode.inventory.internal.listener.*
 import ru.endlesscode.inventory.internal.util.*
 import ru.endlesscode.inventory.slot.*
 import ru.endlesscode.inventory.slot.SlotInteractionResult.Change
+import java.util.*
 
 /**
  * Provides utilities for working with RPG inventory, as with Bukkit inventory.
  *
+ * @property id Unique ID of the inventory.
  * @param holder The Inventory's holder.
  * @param layout Layout of the inventory.
  */
 public class CustomInventory internal constructor(
+    public val id: UUID,
     private val layout: InventoryLayout,
-    private val scheduler: TaskScheduler,
+    private val scheduler: TaskScheduler = DI.scheduler,
 ) : Inventory, InventoryHolder {
 
     /** Returns inventory layout name. */
     public val name: String get() = layout.name
+
+    /** Returns inventory layout ID. It can be considered as an inventory type. */
+    public val type: String get() = layout.id
 
     /** Temporary [Inventory], used to show [CustomInventory] to player. */
     private var view: Inventory? = null
@@ -63,7 +69,11 @@ public class CustomInventory internal constructor(
 
     private var maxStack = DEFAULT_MAX_STACK
 
-    public constructor(layout: InventoryLayout) : this(layout, DI.scheduler)
+    public constructor(layout: InventoryLayout) : this(
+        id = UUID.randomUUID(),
+        layout = layout,
+        scheduler = DI.scheduler,
+    )
 
     init {
         val slots = mutableMapOf<String, InventorySlot>()

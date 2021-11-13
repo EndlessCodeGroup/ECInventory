@@ -24,6 +24,7 @@ import ru.endlesscode.inventory.slot.Slot
 import java.util.*
 
 internal data class InventoryLayoutImpl(
+    override val id: String,
     override val name: String,
     override val emptySlotTexture: ItemStack,
     override val slotsMap: SortedMap<Int, Slot>,
