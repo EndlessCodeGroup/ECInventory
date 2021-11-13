@@ -19,9 +19,20 @@
 
 package ru.endlesscode.inventory.internal.data.sql
 
+import java.sql.Connection
 import java.sql.PreparedStatement
+import java.sql.ResultSet
 import javax.sql.DataSource
 
-internal fun DataSource.withStatement(sql: String, block: PreparedStatement.() -> Unit) {
-    connection.use { it.prepareStatement(sql).use(block) }
+internal inline fun <T> DataSource.statement(sql: String, block: PreparedStatement.() -> T): T {
+    return connection.use { it.statement(sql, block) }
+}
+
+internal inline fun <T> Connection.statement(sql: String, block: PreparedStatement.() -> T): T {
+    return prepareStatement(sql).use(block)
+}
+
+internal fun ResultSet.asSequence(): Sequence<ResultSet> = sequence {
+    while (next()) yield(this@asSequence)
+    close()
 }
