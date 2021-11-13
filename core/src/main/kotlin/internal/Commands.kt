@@ -24,6 +24,7 @@ import dev.jorel.commandapi.arguments.Argument
 import dev.jorel.commandapi.arguments.MultiLiteralArgument
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import ru.endlesscode.inventory.CustomInventory
+import ru.endlesscode.inventory.internal.di.DI
 
 private val rootCommand get() = CommandAPICommand("inventories").withAliases("inv")
 
@@ -41,8 +42,8 @@ private fun subcommandOpen(): CommandAPICommand =
         .withArguments(inventoryArgument())
         .executesPlayer(PlayerCommandExecutor { sender, (idArg) ->
             val id = idArg as String
-            val inventory = inventories.getOrPut(id) { CustomInventory(DI.inventories.getValue(id)) }
+            val inventory = inventories.getOrPut(id) { CustomInventory(DI.data.inventories.getValue(id)) }
             inventory.open(sender)
         })
 
-private fun inventoryArgument(): Argument = MultiLiteralArgument(*DI.inventories.keys.toTypedArray())
+private fun inventoryArgument(): Argument = MultiLiteralArgument(*DI.data.inventories.keys.toTypedArray())

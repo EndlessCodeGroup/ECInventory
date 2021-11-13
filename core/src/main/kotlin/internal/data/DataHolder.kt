@@ -23,8 +23,8 @@ import kotlinx.serialization.hocon.Hocon
 import ru.endlesscode.inventory.InventoryLayout
 import ru.endlesscode.inventory.InventoryLayout.Companion.MAX_SLOT_POSITION
 import ru.endlesscode.inventory.InventoryLayoutImpl
-import ru.endlesscode.inventory.internal.DI
 import ru.endlesscode.inventory.internal.config.ConfigurationCollector
+import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.util.Log
 import ru.endlesscode.inventory.internal.util.MAX_STACK_SIZE
 import ru.endlesscode.inventory.internal.util.orEmpty
@@ -40,8 +40,8 @@ internal class DataHolder(
 ) {
 
     constructor(
-        itemsRegistry: BukkitItemsRegistry,
         pluginDataDir: Path,
+        itemsRegistry: BukkitItemsRegistry = DI.itemsRegistry,
         hocon: Hocon = DI.hocon,
     ) : this(itemsRegistry, ConfigurationCollector(pluginDataDir.resolve("data"), hocon))
 
@@ -116,6 +116,7 @@ internal class DataHolder(
         }
 
         return InventoryLayoutImpl(
+            id = id,
             name = config.name,
             emptySlotTexture = emptySlotTexture.orEmpty(),
             slotsMap = slotMap.toSortedMap(),

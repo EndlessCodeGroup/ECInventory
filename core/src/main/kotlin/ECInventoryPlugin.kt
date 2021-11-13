@@ -20,13 +20,16 @@
 package ru.endlesscode.inventory
 
 import org.bukkit.plugin.java.JavaPlugin
-import ru.endlesscode.inventory.internal.DI
+import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.listener.InventoryClicksRouter
 import ru.endlesscode.inventory.internal.registerCommand
 import ru.endlesscode.inventory.internal.util.Log
 
 /** This class is entry point to the plugin. */
 public class ECInventoryPlugin : JavaPlugin() {
+
+    private val config: MainConfiguration
+        get() = DI.data.config
 
     init {
         Log.init(logger)
@@ -45,18 +48,19 @@ public class ECInventoryPlugin : JavaPlugin() {
     }
 
     private fun loadParts(): Boolean {
-        if (!DI.config.enabled) {
+        if (!config.enabled) {
             Log.i("Plugin is disabled in internal.config.")
             return false
         }
 
         return makeSure {
-            if (DI.inventories.isEmpty()) {
+            val data = DI.data
+            if (data.inventories.isEmpty()) {
                 Log.i("Inventory configs not found, add it to 'data' folder")
                 return@makeSure false
             }
-            Log.i("Loaded ${DI.inventories.size} inventories and ${DI.slots.size} slots")
-            DI.database.init()
+            Log.i("Loaded ${data.inventories.size} inventories and ${data.slots.size} slots")
+            data.database.init()
             true
         }
     }

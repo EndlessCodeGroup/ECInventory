@@ -25,7 +25,7 @@ import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.serializer
-import ru.endlesscode.inventory.internal.DI
+import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.util.makeSureDirectoryExists
 import ru.endlesscode.inventory.internal.util.useFileTree
 import java.io.IOException

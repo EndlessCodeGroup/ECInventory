@@ -20,7 +20,7 @@
 package ru.endlesscode.inventory.internal.config
 
 import kotlinx.serialization.hocon.Hocon
-import ru.endlesscode.inventory.internal.DI
+import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.util.makeSureDirectoryExists
 import java.nio.file.Path
 import kotlin.io.path.createFile
