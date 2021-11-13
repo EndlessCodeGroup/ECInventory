@@ -32,7 +32,7 @@ internal class Database(config: DatabaseConfig) {
             .split(";")
             .asSequence()
             .filter(String::isNotBlank)
-            .forEach { query -> dataSource.withStatement(query) { execute() } }
+            .forEach { query -> dataSource.statement(query) { execute() } }
         Log.i("Database initialized.")
     }
 
