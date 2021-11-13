@@ -30,8 +30,8 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.inventory.internal.DI
 import ru.endlesscode.inventory.internal.TaskScheduler
+import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.listener.*
 import ru.endlesscode.inventory.internal.util.*
 import ru.endlesscode.inventory.slot.*
