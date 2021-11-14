@@ -23,13 +23,9 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.arguments.Argument
 import dev.jorel.commandapi.arguments.MultiLiteralArgument
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
-import ru.endlesscode.inventory.CustomInventory
 import ru.endlesscode.inventory.internal.di.DI
 
 private val rootCommand get() = CommandAPICommand("inventories").withAliases("inv")
-
-// TODO: This is temporary solution for debug purpose here should be normal SQL storage
-private val inventories = mutableMapOf<String, CustomInventory>()
 
 internal fun registerCommand() {
     rootCommand
@@ -40,9 +36,9 @@ internal fun registerCommand() {
 private fun subcommandOpen(): CommandAPICommand =
     CommandAPICommand("open")
         .withArguments(inventoryArgument())
-        .executesPlayer(PlayerCommandExecutor { sender, (idArg) ->
-            val id = idArg as String
-            val inventory = inventories.getOrPut(id) { CustomInventory(DI.data.inventories.getValue(id)) }
+        .executesPlayer(PlayerCommandExecutor { sender, args ->
+            val type = args.first() as String
+            val inventory = DI.data.inventoriesRepository.getInventory(sender, type)
             inventory.open(sender)
         })
 
