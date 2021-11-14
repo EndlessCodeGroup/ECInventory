@@ -22,6 +22,7 @@ package ru.endlesscode.inventory
 import org.bukkit.plugin.java.JavaPlugin
 import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.listener.InventoryClicksRouter
+import ru.endlesscode.inventory.internal.listener.PlayerInventoriesLoader
 import ru.endlesscode.inventory.internal.registerCommand
 import ru.endlesscode.inventory.internal.util.Log
 
@@ -45,6 +46,7 @@ public class ECInventoryPlugin : JavaPlugin() {
         registerCommand()
 
         server.pluginManager.registerEvents(InventoryClicksRouter(), this)
+        server.pluginManager.registerEvents(PlayerInventoriesLoader(), this)
     }
 
     private fun loadParts(): Boolean {

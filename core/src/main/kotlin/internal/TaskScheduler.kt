@@ -22,7 +22,8 @@ package ru.endlesscode.inventory.internal
 import org.bukkit.plugin.Plugin
 
 internal interface TaskScheduler {
-    fun runTask(task: () -> Unit)
+    fun runOnMain(task: TaskScheduler.() -> Unit)
+    fun runAsync(task: TaskScheduler.() -> Unit)
 }
 
 internal class PluginTaskScheduler(private val plugin: Plugin) : TaskScheduler {
@@ -30,7 +31,11 @@ internal class PluginTaskScheduler(private val plugin: Plugin) : TaskScheduler {
     private val scheduler
         get() = plugin.server.scheduler
 
-    override fun runTask(task: () -> Unit) {
-        scheduler.runTask(plugin, task)
+    override fun runOnMain(task: TaskScheduler.() -> Unit) {
+        scheduler.runTask(plugin, Runnable { task() })
+    }
+
+    override fun runAsync(task: TaskScheduler.() -> Unit) {
+        scheduler.runTaskAsynchronously(plugin, Runnable { task() })
     }
 }
