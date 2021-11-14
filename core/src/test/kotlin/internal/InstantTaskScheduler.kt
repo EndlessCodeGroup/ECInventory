@@ -19,6 +19,7 @@
 
 package ru.endlesscode.inventory.internal
 
-class InstantTaskScheduler : TaskScheduler {
-    override fun runTask(task: () -> Unit) = task()
+internal class InstantTaskScheduler : TaskScheduler {
+    override fun runOnMain(task: TaskScheduler.() -> Unit) = task()
+    override fun runAsync(task: TaskScheduler.() -> Unit) = task()
 }

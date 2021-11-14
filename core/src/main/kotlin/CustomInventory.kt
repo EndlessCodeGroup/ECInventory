@@ -515,7 +515,7 @@ public class CustomInventory internal constructor(
 
     internal fun syncSlotWithView(slot: InventorySlot) {
         // Do sync on the next tick for the case if it was called from click event
-        scheduler.runTask {
+        scheduler.runOnMain {
             view?.setItem(slot.position, slot.getContentOrTexture())
         }
     }
@@ -575,7 +575,7 @@ public class CustomInventory internal constructor(
 
         if (result is Change) {
             if (result.cursorReplacement != null) {
-                scheduler.runTask { interaction.syncCursor(result.cursorReplacement) }
+                scheduler.runOnMain { interaction.syncCursor(result.cursorReplacement) }
             }
         }
     }
