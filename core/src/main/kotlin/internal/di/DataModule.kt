@@ -23,6 +23,7 @@ import ru.endlesscode.inventory.InventoryLayout
 import ru.endlesscode.inventory.internal.config.ConfigurationHolder
 import ru.endlesscode.inventory.internal.data.DataHolder
 import ru.endlesscode.inventory.internal.data.MainConfigurationImpl
+import ru.endlesscode.inventory.internal.data.repository.InventoriesRepository
 import ru.endlesscode.inventory.internal.data.sql.Database
 import ru.endlesscode.inventory.internal.data.sql.SqliteDatabaseConfig
 import ru.endlesscode.inventory.internal.locale.I18N
@@ -41,6 +42,8 @@ internal class DataModule(private val dataPath: Path) {
     val dataHolder by lazy { DataHolder(dataPath) }
     val slots: Map<String, Slot> get() = dataHolder.slots
     val inventories: Map<String, InventoryLayout> get() = dataHolder.inventories
+
+    val inventoriesRepository: InventoriesRepository by lazy { InventoriesRepository() }
 
     fun reload() {
         configHolder.reload()
