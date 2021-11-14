@@ -27,6 +27,8 @@ internal class Database(config: DatabaseConfig) {
 
     private val dataSource: DataSource = config.createDataSource()
 
+    val inventoryDao: InventoryDao by lazy { InventoryDao(dataSource) }
+
     fun init() {
         useResourceStream("/database/$VERSION.sql") { it.bufferedReader().readText() }
             .split(";")
@@ -39,5 +41,8 @@ internal class Database(config: DatabaseConfig) {
     companion object {
         /** Current database version. */
         const val VERSION = 1
+
+        /** Prefix used for all tables. */
+        const val TABLE_PREFIX = "ecinv_"
     }
 }
