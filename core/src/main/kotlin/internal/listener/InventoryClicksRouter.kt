@@ -123,7 +123,10 @@ internal class InventoryClicksRouter : Listener {
 
         COLLECT_TO_CURSOR -> {
             // Cancel this event if any item in inventory can be collected to cursor
-            isCancelled = view.topInventory.contents.any { it.isSimilar(cursor) }
+            isCancelled = view.topInventory.contents
+                .asSequence()
+                .filterNotNull()
+                .any { it.isSimilar(cursor) }
             null
         }
 
