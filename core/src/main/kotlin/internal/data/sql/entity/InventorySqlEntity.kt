@@ -19,8 +19,10 @@
 
 package ru.endlesscode.inventory.internal.data.sql.entity
 
+import org.bukkit.configuration.file.YamlConfiguration
 import ru.endlesscode.inventory.CustomInventory
 import ru.endlesscode.inventory.InventoryLayout
+import ru.endlesscode.inventory.slot.InventorySlot
 import java.util.*
 
 internal class InventorySqlEntity(
@@ -29,8 +31,19 @@ internal class InventorySqlEntity(
     val content: String = "",
 )
 
-// FIXME: Add content serialization
-internal fun CustomInventory.toSqlEntity(): InventorySqlEntity = InventorySqlEntity(id, type)
+internal fun CustomInventory.toSqlEntity(): InventorySqlEntity {
+    val yaml = YamlConfiguration()
+    getSlots()
+        .asSequence()
+        .filterNot(InventorySlot::isEmpty)
+        .forEach { slot -> yaml[slot.id] = slot.content }
+    return InventorySqlEntity(id, type, yaml.saveToString())
+}
 
-// FIXME: Add content deserialization
-internal fun InventorySqlEntity.toDomain(layout: InventoryLayout): CustomInventory = CustomInventory(id, layout)
+internal fun InventorySqlEntity.toDomain(layout: InventoryLayout): CustomInventory {
+    val yaml = YamlConfiguration.loadConfiguration(content.reader())
+    val inventory = CustomInventory(id, layout)
+    yaml.getKeys(false)
+        .forEach { id -> inventory.setItem(id, yaml.getItemStack(id)) }
+    return inventory
+}
