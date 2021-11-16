@@ -25,10 +25,14 @@ import org.bukkit.event.Listener
 import org.bukkit.event.inventory.*
 import org.bukkit.event.inventory.InventoryAction.*
 import ru.endlesscode.inventory.CustomInventory
+import ru.endlesscode.inventory.internal.DI
+import ru.endlesscode.inventory.internal.TaskScheduler
 import ru.endlesscode.inventory.slot.InventorySlot
 
 /** Converts [InventoryInteractEvent] to [SlotInteraction] and passes it to inventory. */
-internal class InventoryClicksRouter : Listener {
+internal class InventoryClicksRouter(
+    private val scheduler: TaskScheduler = DI.scheduler,
+) : Listener {
 
     private val InventoryEvent.customInventory: CustomInventory?
         get() = inventory.holder as? CustomInventory
@@ -73,6 +77,13 @@ internal class InventoryClicksRouter : Listener {
         val inventory = event.customInventory ?: return
         val interaction = event.toInteraction(inventory) ?: return
         inventory.handleInteraction(interaction)
+
+        // We should manually sync offhand slot after SWAP_OFFHAND event
+        // Issue: https://hub.spigotmc.org/jira/browse/SPIGOT-6145
+        if (event.click == ClickType.SWAP_OFFHAND) {
+            val playerInventory = event.whoClicked.inventory
+            scheduler.runTask { playerInventory.setItemInOffHand(playerInventory.itemInOffHand) }
+        }
     }
 
     /** Converts this event to [SlotInteraction] or returns `null` if the event shouldn't be handled. */
