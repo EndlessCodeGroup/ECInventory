@@ -26,6 +26,7 @@ import io.mockk.every
 import io.mockk.mockk
 import org.bukkit.Material
 import org.bukkit.event.inventory.ClickType
+import org.bukkit.event.inventory.ClickType.LEFT
 import org.bukkit.event.inventory.ClickType.SWAP_OFFHAND
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryAction.*
@@ -33,6 +34,7 @@ import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.CustomInventory
+import ru.endlesscode.inventory.internal.InstantTaskScheduler
 import ru.endlesscode.inventory.internal.util.AIR
 import ru.endlesscode.inventory.slot.InventorySlot
 import ru.endlesscode.inventory.test.*
@@ -40,7 +42,7 @@ import ru.endlesscode.inventory.test.*
 class InventoryClicksRouterTest : FeatureSpec({
 
     // SUT
-    val router = InventoryClicksRouter()
+    val router = InventoryClicksRouter(InstantTaskScheduler())
 
     var clickedSlot: InventorySlot? = null
     var appliedInteraction: InventoryInteraction? = null
@@ -69,9 +71,9 @@ class InventoryClicksRouterTest : FeatureSpec({
 
     feature("inventory click event") {
         fun clickEvent(
-            action: InventoryAction = InventoryAction.NOTHING,
+            action: InventoryAction = NOTHING,
             slot: Int = 0,
-            click: ClickType = ClickType.LEFT,
+            click: ClickType = LEFT,
             hotbarKey: Int = -1,
             current: ItemStack = AIR,
         ) = TestInventoryClickEvent(inventoryView, action, slot, click = click, hotbarKey = hotbarKey).also { event ->
@@ -87,7 +89,7 @@ class InventoryClicksRouterTest : FeatureSpec({
         }
 
         scenario("click non-functional inventory slot") {
-            val event = clickEvent(InventoryAction.PICKUP_ALL)
+            val event = clickEvent(PICKUP_ALL)
             router.onClick(event)
 
             verifyInteraction(interaction = null, eventCancelled = true)
@@ -95,7 +97,7 @@ class InventoryClicksRouterTest : FeatureSpec({
 
         scenario("do nothing with slot") {
             clickedSlot = mockk()
-            val event = clickEvent(InventoryAction.NOTHING)
+            val event = clickEvent(NOTHING)
             router.onClick(event)
 
             verifyInteraction(interaction = null)
@@ -105,7 +107,7 @@ class InventoryClicksRouterTest : FeatureSpec({
             clickedSlot = mockk {
                 every { content } returns ItemStack(Material.STICK)
             }
-            val event = clickEvent(InventoryAction.PICKUP_ALL)
+            val event = clickEvent(PICKUP_ALL)
             router.onClick(event)
 
             verifyInteraction(TakeSlotContent.fromClick(event, clickedSlot!!))
@@ -113,7 +115,7 @@ class InventoryClicksRouterTest : FeatureSpec({
 
         scenario("place item to slot") {
             clickedSlot = mockk()
-            val event = clickEvent(InventoryAction.PLACE_ALL)
+            val event = clickEvent(PLACE_ALL)
             event.cursor = ItemStack(Material.STICK)
             router.onClick(event)
 
