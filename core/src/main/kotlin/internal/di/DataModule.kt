@@ -25,14 +25,14 @@ import ru.endlesscode.inventory.internal.data.DataHolder
 import ru.endlesscode.inventory.internal.data.MainConfigurationImpl
 import ru.endlesscode.inventory.internal.data.repository.InventoriesRepository
 import ru.endlesscode.inventory.internal.data.sql.Database
-import ru.endlesscode.inventory.internal.data.sql.SqliteDatabaseConfig
+import ru.endlesscode.inventory.internal.data.sql.SqliteDataSourceProvider
 import ru.endlesscode.inventory.internal.locale.I18N
 import ru.endlesscode.inventory.internal.locale.I18NBukkit
 import ru.endlesscode.inventory.slot.Slot
 import java.nio.file.Path
 
-internal class DataModule(private val dataPath: Path) {
-    val database: Database by lazy { Database(SqliteDatabaseConfig(dataPath)) }
+internal class DataModule(val dataPath: Path) {
+    val database: Database by lazy { Database(SqliteDataSourceProvider(dataPath)) }
 
     val locale: I18N by lazy { I18NBukkit(dataPath, config.locale) }
 

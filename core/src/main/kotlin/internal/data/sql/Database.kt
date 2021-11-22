@@ -23,7 +23,7 @@ import ru.endlesscode.inventory.internal.util.Log
 import ru.endlesscode.inventory.internal.util.useResourceStream
 import javax.sql.DataSource
 
-internal class Database(config: DatabaseConfig) {
+internal class Database(config: DataSourceProvider) {
 
     private val dataSource: DataSource = config.createDataSource()
 

@@ -21,20 +21,45 @@ package ru.endlesscode.inventory.internal.data.sql
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import ru.endlesscode.inventory.internal.di.DI
 import java.nio.file.Path
 import javax.sql.DataSource
 
-internal sealed class DatabaseConfig {
-    abstract fun createDataSource(): DataSource
+internal sealed interface DataSourceProvider {
+    fun createDataSource(): DataSource
 }
 
-internal class SqliteDatabaseConfig(private val dataPath: Path) : DatabaseConfig() {
+internal class SqliteDataSourceProvider(
+    private val dataPath: Path = DI.data.dataPath,
+) : DataSourceProvider {
 
     override fun createDataSource(): DataSource {
         val config = HikariConfig().apply {
-            poolName = "ECInventoryPool"
+            poolName = POOL_NAME
             jdbcUrl = "jdbc:sqlite:$dataPath/db.sqlite"
         }
         return HikariDataSource(config)
     }
 }
+
+internal class MysqlDataSourceProvider(
+    private val host: String,
+    private val port: Int,
+    private val username: String,
+    private val password: String,
+    private val database: String,
+) : DataSourceProvider {
+
+    override fun createDataSource(): DataSource {
+
+        val config = HikariConfig().apply {
+            poolName = POOL_NAME
+            jdbcUrl = "jdbc:mysql://$host:$port/$database"
+            username = this@MysqlDataSourceProvider.username
+            password = this@MysqlDataSourceProvider.password
+        }
+        return HikariDataSource(config)
+    }
+}
+
+private const val POOL_NAME = "ECInventory Pool"
