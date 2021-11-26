@@ -19,13 +19,15 @@
 
 package ru.endlesscode.inventory.internal.data.sql
 
+import ru.endlesscode.inventory.DatabaseConfig
+import ru.endlesscode.inventory.internal.data.createDataSource
 import ru.endlesscode.inventory.internal.util.Log
 import ru.endlesscode.inventory.internal.util.useResourceStream
 import javax.sql.DataSource
 
-internal class Database(config: DataSourceProvider) {
+internal class Database(config: DatabaseConfig) {
 
-    private val dataSource: DataSource = config.createDataSource()
+    private var dataSource: DataSource = config.createDataSource()
 
     val inventoryDao: InventoryDao by lazy { InventoryDao(dataSource) }
 
@@ -36,6 +38,11 @@ internal class Database(config: DataSourceProvider) {
             .filter(String::isNotBlank)
             .forEach { query -> dataSource.statement(query) { execute() } }
         Log.i("Database initialized.")
+    }
+
+    fun updateConfig(config: DatabaseConfig) {
+        dataSource = config.createDataSource()
+        inventoryDao.updateDataSource(dataSource)
     }
 
     companion object {
