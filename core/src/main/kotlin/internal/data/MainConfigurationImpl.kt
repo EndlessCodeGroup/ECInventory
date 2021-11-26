@@ -27,6 +27,7 @@ import ru.endlesscode.inventory.internal.config.ConfigurationSerializer
 internal class MainConfigurationImpl(
     override var enabled: Boolean = true,
     override var locale: String = "en",
+    override val database: DatabaseConfigImpl = DatabaseConfigImpl(),
 ) : MainConfiguration {
 
     internal companion object {
@@ -37,6 +38,14 @@ internal class MainConfigurationImpl(
             mapOf(
                 "enabled" to config.enabled,
                 "locale" to config.locale,
+                "database" to mapOf(
+                    "type" to config.database.type.name.lowercase(),
+                    "host" to config.database.host,
+                    "port" to config.database.port,
+                    "name" to config.database.name,
+                    "username" to config.database.username,
+                    "password" to config.database.password,
+                )
             )
         }
     }
