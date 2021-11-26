@@ -29,9 +29,21 @@ internal class Database(config: DatabaseConfig) {
 
     private var dataSource: DataSource = config.createDataSource()
 
+    private val mainTableDao: MainTableDao by lazy { MainTableDao(dataSource) }
     val inventoryDao: InventoryDao by lazy { InventoryDao(dataSource) }
 
     fun init() {
+        val databaseVersion = mainTableDao.getVersion()
+        if (databaseVersion != -1) {
+            // TODO: Add migrations later
+            check(databaseVersion == VERSION) { "Wrong database version. Try to drop tables and reload the plugin." }
+            Log.i("Database version: $VERSION")
+        } else {
+            createTables()
+        }
+    }
+
+    private fun createTables() {
         useResourceStream("/database/$VERSION.sql") { it.bufferedReader().readText() }
             .split(";")
             .asSequence()
@@ -42,6 +54,7 @@ internal class Database(config: DatabaseConfig) {
 
     fun updateConfig(config: DatabaseConfig) {
         dataSource = config.createDataSource()
+        mainTableDao.updateDataSource(dataSource)
         inventoryDao.updateDataSource(dataSource)
     }
 
