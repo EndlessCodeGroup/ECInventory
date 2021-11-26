@@ -23,4 +23,20 @@ package ru.endlesscode.inventory
 public interface MainConfiguration {
     public val enabled: Boolean
     public val locale: String
+    public val database: DatabaseConfig
+}
+
+public interface DatabaseConfig {
+    public val type: SqlDriverType
+    public val host: String
+    public val port: Int
+    public val name: String
+    public val username: String
+    public val password: String
+}
+
+/** Supported SQL drivers. */
+public enum class SqlDriverType {
+    SQLITE,
+    MYSQL,
 }

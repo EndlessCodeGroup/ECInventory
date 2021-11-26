@@ -45,16 +45,16 @@ internal class SqliteDataSourceProvider(
 internal class MysqlDataSourceProvider(
     private val host: String,
     private val port: Int,
-    private val username: String,
-    private val password: String,
-    private val database: String,
+    private val databaseName: String,
+    private val username: String?,
+    private val password: String?,
 ) : DataSourceProvider {
 
     override fun createDataSource(): DataSource {
 
         val config = HikariConfig().apply {
             poolName = POOL_NAME
-            jdbcUrl = "jdbc:mysql://$host:$port/$database"
+            jdbcUrl = "jdbc:mysql://$host:$port/$databaseName"
             username = this@MysqlDataSourceProvider.username
             password = this@MysqlDataSourceProvider.password
         }
