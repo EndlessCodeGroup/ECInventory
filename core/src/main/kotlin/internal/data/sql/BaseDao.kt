@@ -25,7 +25,7 @@ import java.sql.SQLException
 import javax.sql.DataSource
 
 /** Provides DSL for DAOs. */
-internal abstract class BaseDao(private val dataSource: DataSource) {
+internal abstract class BaseDao(private var dataSource: DataSource) {
 
     /** Performs multiple statements as one transaction. */
     protected inline fun <T> transaction(crossinline block: Connection.() -> T): T {
@@ -47,5 +47,9 @@ internal abstract class BaseDao(private val dataSource: DataSource) {
 
     protected inline fun <T> statement(sql: String, crossinline block: PreparedStatement.() -> T): T {
         return dataSource.statement(sql.trimIndent(), block)
+    }
+
+    fun updateDataSource(dataSource: DataSource) {
+        this.dataSource = dataSource
     }
 }
