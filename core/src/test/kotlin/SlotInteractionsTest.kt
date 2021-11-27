@@ -115,7 +115,7 @@ class SlotInteractionsTest : FeatureSpec({
         }
 
         scenario("take item from slot") {
-            val interaction = takeContent(ItemStack(Material.BLAZE_ROD))
+            val interaction = takeContent(ItemStack(Material.BLAZE_ROD, 2))
             inventory.handleInteraction(interaction)
 
             assertState(content = AIR)

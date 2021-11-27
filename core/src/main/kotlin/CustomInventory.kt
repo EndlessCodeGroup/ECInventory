@@ -566,7 +566,7 @@ public class CustomInventory internal constructor(
     private fun handleSlotInteraction(interaction: SlotInteraction) {
         val slot = interaction.slot
         val result = when (interaction) {
-            is TakeSlotContent -> slot.takeItem(interaction.amount)
+            is TakeSlotContent -> slot.takeItemInteraction(interaction.amount)
             is PlaceSlotContent -> slot.placeItem(interaction.item, interaction.amount)
             is HotbarSwapSlotContent -> slot.swapItem(interaction.hotbarItem)
         }
