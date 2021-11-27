@@ -70,7 +70,7 @@ class InventoryClicksRouterTest : FeatureSpec({
     }
 
     feature("inventory click event") {
-        fun clickEvent(
+        fun performClick(
             action: InventoryAction = NOTHING,
             slot: Int = 0,
             click: ClickType = LEFT,
@@ -79,26 +79,22 @@ class InventoryClicksRouterTest : FeatureSpec({
         ) = TestInventoryClickEvent(inventoryView, action, slot, click = click, hotbarKey = hotbarKey).also { event ->
             event.currentItem = current
             interactEvent = event
+            router.onClick(event)
         }
 
         scenario("click outside") {
-            val event = clickEvent(slot = InventoryView.OUTSIDE)
-            router.onClick(event)
-
+            performClick(slot = InventoryView.OUTSIDE)
             verifyInteraction(interaction = null)
         }
 
         scenario("click non-functional inventory slot") {
-            val event = clickEvent(PICKUP_ALL)
-            router.onClick(event)
-
+            performClick(PICKUP_ALL)
             verifyInteraction(interaction = null, eventCancelled = true)
         }
 
         scenario("do nothing with slot") {
             clickedSlot = mockk()
-            val event = clickEvent(NOTHING)
-            router.onClick(event)
+            performClick(NOTHING)
 
             verifyInteraction(interaction = null)
         }
@@ -107,17 +103,15 @@ class InventoryClicksRouterTest : FeatureSpec({
             clickedSlot = mockk {
                 every { content } returns ItemStack(Material.STICK)
             }
-            val event = clickEvent(PICKUP_ALL)
-            router.onClick(event)
+            val event = performClick(PICKUP_ALL)
 
             verifyInteraction(TakeSlotContent.fromClick(event, clickedSlot!!))
         }
 
         scenario("place item to slot") {
             clickedSlot = mockk()
-            val event = clickEvent(PLACE_ALL)
-            event.cursor = ItemStack(Material.STICK)
-            router.onClick(event)
+            inventoryView.cursor = ItemStack(Material.STICK)
+            val event = performClick(PLACE_ALL)
 
             verifyInteraction(PlaceSlotContent.fromClick(event, clickedSlot!!))
         }
@@ -125,8 +119,7 @@ class InventoryClicksRouterTest : FeatureSpec({
         scenario("collect items similar to inventory items") {
             every { inventoryView.topInventory.contents } returns arrayOf(ItemStack(Material.STICK, 2))
             inventoryView.cursor = ItemStack(Material.STICK)
-            val event = clickEvent(COLLECT_TO_CURSOR, slot = inventory.viewSize + 1)
-            router.onClick(event)
+            performClick(COLLECT_TO_CURSOR, slot = inventory.viewSize + 1)
 
             verifyInteraction(interaction = null, eventCancelled = true)
         }
@@ -134,16 +127,13 @@ class InventoryClicksRouterTest : FeatureSpec({
         scenario("collect items not similar to inventory items") {
             every { inventoryView.topInventory.contents } returns arrayOf(ItemStack(Material.BLAZE_ROD, 2))
             inventoryView.cursor = ItemStack(Material.STICK)
-            val event = clickEvent(COLLECT_TO_CURSOR, slot = inventory.viewSize + 1)
-            router.onClick(event)
+            performClick(COLLECT_TO_CURSOR, slot = inventory.viewSize + 1)
 
             verifyInteraction(interaction = null)
         }
 
         scenario("collect items inside inventory") {
-            val event = clickEvent(COLLECT_TO_CURSOR)
-            router.onClick(event)
-
+            performClick(COLLECT_TO_CURSOR)
             verifyInteraction(interaction = null, eventCancelled = true)
         }
 
@@ -151,33 +141,28 @@ class InventoryClicksRouterTest : FeatureSpec({
             clickedSlot = mockk { every { content } returns AIR }
             val hotbarItem = ItemStack(Material.STICK)
             inventoryView.bottomInventory.setItem(0, hotbarItem)
-            val event = clickEvent(HOTBAR_SWAP, hotbarKey = 0)
-            router.onClick(event)
+            val event = performClick(HOTBAR_SWAP, hotbarKey = 0)
 
-            verifyInteraction(HotbarSwapSlotContent(event, clickedSlot!!, hotbarItem))
+            verifyInteraction(SwapSlotContent(event, clickedSlot!!, hotbarItem))
         }
 
         scenario("swap with offhand slot") {
             clickedSlot = mockk { every { content } returns AIR }
             val offhandItem = ItemStack(Material.STICK)
             inventoryView.offhandItem = offhandItem
-            val event = clickEvent(HOTBAR_SWAP, click = SWAP_OFFHAND)
-            router.onClick(event)
+            val event = performClick(HOTBAR_SWAP, click = SWAP_OFFHAND)
 
-            verifyInteraction(HotbarSwapSlotContent(event, clickedSlot!!, offhandItem))
+            verifyInteraction(SwapSlotContent(event, clickedSlot!!, offhandItem))
         }
 
         scenario("move empty item to inventory") {
-            val event = clickEvent(MOVE_TO_OTHER_INVENTORY, slot = inventory.viewSize + 1)
-            router.onClick(event)
-
+            performClick(MOVE_TO_OTHER_INVENTORY, slot = inventory.viewSize + 1)
             verifyInteraction(interaction = null, eventCancelled = true)
         }
 
         scenario("move item to inventory") {
             val item = ItemStack(Material.STICK)
-            val event = clickEvent(MOVE_TO_OTHER_INVENTORY, current = item, slot = inventory.viewSize + 1)
-            router.onClick(event)
+            val event = performClick(MOVE_TO_OTHER_INVENTORY, current = item, slot = inventory.viewSize + 1)
 
             verifyInteraction(AddItemToInventory(event, item), eventCancelled = true)
         }
@@ -185,35 +170,38 @@ class InventoryClicksRouterTest : FeatureSpec({
 
     feature("inventory drag event") {
 
-        fun dragEvent(
+        fun performDrag(
             cursor: ItemStack = ItemStack(Material.STICK),
             rightClick: Boolean = false,
             slots: Map<Int, ItemStack> = mapOf(0 to cursor),
-        ) = TestInventoryDragEvent(inventoryView, cursor, rightClick = rightClick, slots = slots)
-            .also { interactEvent = it }
+        ) = TestInventoryDragEvent(inventoryView, cursor, rightClick = rightClick, slots = slots).also { event ->
+            interactEvent = event
+            router.onDrag(event)
+        }
 
         scenario("click non-functional inventory slot") {
-            router.onDrag(dragEvent())
-
+            performDrag()
             verifyInteraction(interaction = null, eventCancelled = true)
         }
 
         scenario("drag in inventory") {
-            val slots = mapOf(
-                0 to ItemStack(Material.STICK),
-                inventory.viewSize to ItemStack(Material.STICK),
+            performDrag(
+                slots = mapOf(
+                    0 to ItemStack(Material.STICK),
+                    inventory.viewSize to ItemStack(Material.STICK),
+                ),
             )
-            router.onDrag(dragEvent(slots = slots))
 
             verifyInteraction(interaction = null, eventCancelled = true)
         }
 
         scenario("drag outside of inventory") {
-            val slots = mapOf(
-                inventory.viewSize to ItemStack(Material.STICK),
-                inventory.viewSize + 1 to ItemStack(Material.STICK),
+            performDrag(
+                slots = mapOf(
+                    inventory.viewSize to ItemStack(Material.STICK),
+                    inventory.viewSize + 1 to ItemStack(Material.STICK),
+                ),
             )
-            router.onDrag(dragEvent(slots = slots))
 
             verifyInteraction(interaction = null)
         }
@@ -221,8 +209,7 @@ class InventoryClicksRouterTest : FeatureSpec({
         scenario("place all items") {
             clickedSlot = mockk()
             val item = ItemStack(Material.STICK, 2)
-            val event = dragEvent(item)
-            router.onDrag(event)
+            val event = performDrag(item)
 
             verifyInteraction(PlaceSlotContent(event, clickedSlot!!, item, amount = 2))
         }
@@ -230,8 +217,7 @@ class InventoryClicksRouterTest : FeatureSpec({
         scenario("place one item") {
             clickedSlot = mockk()
             val item = ItemStack(Material.STICK, 2)
-            val event = dragEvent(item, rightClick = true)
-            router.onDrag(event)
+            val event = performDrag(item, rightClick = true)
 
             verifyInteraction(PlaceSlotContent(event, clickedSlot!!, item, amount = 1))
         }
