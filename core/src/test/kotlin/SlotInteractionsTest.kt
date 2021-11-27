@@ -29,8 +29,8 @@ import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryAction.*
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.internal.InstantTaskScheduler
-import ru.endlesscode.inventory.internal.listener.HotbarSwapSlotContent
 import ru.endlesscode.inventory.internal.listener.PlaceSlotContent
+import ru.endlesscode.inventory.internal.listener.SwapSlotContent
 import ru.endlesscode.inventory.internal.listener.TakeSlotContent
 import ru.endlesscode.inventory.internal.util.AIR
 import ru.endlesscode.inventory.slot.ItemValidator
@@ -234,9 +234,9 @@ class SlotInteractionsTest : FeatureSpec({
 
     feature("swap with hotbar") {
 
-        fun hotbarSwap(
+        fun swapContent(
             content: ItemStack = AIR,
-            hotbarItem: ItemStack = AIR,
+            item: ItemStack = AIR,
         ) {
             event = TestInventoryClickEvent(inventoryView, HOTBAR_SWAP)
             slot.content = content
@@ -246,32 +246,31 @@ class SlotInteractionsTest : FeatureSpec({
             initEventCursor = AIR
             initEventCurrentItem = event.currentItem
 
-            val interaction = HotbarSwapSlotContent(event, slot, hotbarItem)
+            val interaction = SwapSlotContent(event, slot, item)
             inventory.handleInteraction(interaction)
         }
 
-        scenario("swap empty slot with empty hotbar") {
-            hotbarSwap(content = AIR, hotbarItem = AIR)
+        scenario("swap empty slot with empty item") {
+            swapContent(content = AIR, item = AIR)
 
             assertState(isCancelled = true)
         }
 
-        scenario("swap slot with empty hotbar") {
-            hotbarSwap(content = ItemStack(Material.STICK))
+        scenario("swap slot with empty item") {
+            swapContent(content = ItemStack(Material.STICK))
 
             assertState(content = AIR)
         }
 
-        scenario("swap empty slot with hotbar") {
-            val hotbarItem = ItemStack(Material.STICK, 2)
-            hotbarSwap(hotbarItem = hotbarItem)
+        scenario("swap empty slot with item") {
+            val item = ItemStack(Material.STICK, 2)
+            swapContent(item = item)
 
-            assertState(content = hotbarItem, currentItem = AIR)
+            assertState(content = item, currentItem = AIR)
         }
 
         scenario("swap slot with item not fitting to slot") {
-            val hotbarItem = ItemStack(Material.STICK, slot.maxStackSize + 1)
-            hotbarSwap(hotbarItem = hotbarItem)
+            swapContent(item = ItemStack(Material.STICK, slot.maxStackSize + 1))
 
             assertState(isCancelled = true)
         }
