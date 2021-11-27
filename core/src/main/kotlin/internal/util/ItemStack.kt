@@ -60,3 +60,8 @@ internal fun ItemStack?.isNullOrEmpty(): Boolean {
 
     return this == null || type.isAir
 }
+
+/** Clones [ItemStack] and sets the given [amount]. */
+internal fun ItemStack.cloneWithAmount(amount: Int = this.amount): ItemStack {
+    return clone().also { it.amount = amount }
+}

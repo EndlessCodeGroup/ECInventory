@@ -22,6 +22,7 @@ package ru.endlesscode.inventory.slot
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.CustomInventory
 import ru.endlesscode.inventory.internal.util.AIR
+import ru.endlesscode.inventory.internal.util.cloneWithAmount
 import ru.endlesscode.inventory.internal.util.isEmpty
 import ru.endlesscode.inventory.internal.util.isNotEmpty
 import ru.endlesscode.inventory.slot.SlotInteractionResult.*
@@ -86,21 +87,36 @@ public class InventorySlot(
     /** Swap content with the given [item]. */
     internal fun swapItem(item: ItemStack): SlotInteractionResult = when {
         item.isEmpty() && this.isEmpty() || item.amount > maxStackSize -> Deny
-        item.isEmpty() -> takeItem()
+        item.isEmpty() -> takeItemInteraction()
         else -> placeItem(item)
     }
 
     /** Takes item from this slot and returns result of this interaction. */
-    internal fun takeItem(amount: Int = content.amount): SlotInteractionResult {
-        if (this.isEmpty()) return Deny
+    internal fun takeItemInteraction(amount: Int = content.amount): SlotInteractionResult {
+        val expectedCursor = getContentOrTexture().cloneWithAmount(amount)
+        val actualCursor = takeItem(amount)
+        return when {
+            actualCursor.isEmpty() -> Deny
+            expectedCursor == actualCursor -> Accept
+            else -> Change(currentItemReplacement = actualCursor)
+        }
+    }
 
+    /** Takes the given [amount] of items from the slot and returns the taken [ItemStack]. */
+    public fun takeItem(amount: Int = content.amount): ItemStack {
+        if (this.isEmpty()) return AIR
+
+        // Take part of items from the slot
         return if (amount < content.amount) {
+            val takenItems = content.clone()
+            takenItems.amount = amount
             content.amount -= amount
-            Accept
+            takenItems
         } else {
-            Change(currentItemReplacement = content).also {
-                content = AIR
-            }
+            // Take all items from the slot
+            val takenItems = content
+            content = AIR
+            takenItems
         }
     }
 
