@@ -204,7 +204,7 @@ class SlotInteractionsTest : FeatureSpec({
         }
     }
 
-    feature("swap with hotbar") {
+    feature("swap item") {
 
         fun swapContent(
             content: ItemStack = AIR,
@@ -241,6 +241,22 @@ class SlotInteractionsTest : FeatureSpec({
 
         scenario("swap slot with item not fitting to slot") {
             swapContent(item = ItemStack(Material.STICK, slot.maxStackSize + 1))
+            assertState(isCancelled = true)
+        }
+
+        scenario("swap slot content with cursor") {
+            val cursor = ItemStack(Material.BLAZE_ROD, 3)
+            swapContent(content = ItemStack(Material.STICK, 2), item = cursor)
+
+            assertState(content = cursor)
+        }
+
+        scenario("swap slot content with item not fitting to slot") {
+            swapContent(
+                content = ItemStack(Material.BLAZE_ROD),
+                item = ItemStack(Material.STICK, slot.maxStackSize + 1)
+            )
+
             assertState(isCancelled = true)
         }
     }

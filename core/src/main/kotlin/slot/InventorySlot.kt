@@ -85,10 +85,30 @@ public class InventorySlot(
     public fun getContentOrTexture(): ItemStack = if (isEmpty()) texture else content
 
     /** Swap content with the given [item]. */
-    internal fun swapItem(item: ItemStack): SlotInteractionResult = when {
+    internal fun swapItemInteraction(item: ItemStack): SlotInteractionResult = when {
         item.isEmpty() && this.isEmpty() || item.amount > maxStackSize -> Deny
         item.isEmpty() -> takeItemInteraction()
-        else -> placeItem(item)
+        this.isEmpty() -> placeItem(item)
+
+        else -> {
+            swapItem(item)
+            Accept
+        }
+    }
+
+    /** Swaps slot content with the given [item] and returns item taken from the slot. */
+    public fun swapItem(item: ItemStack): ItemStack {
+        return when {
+            item.isEmpty() && this.isEmpty() || item.amount > maxStackSize -> item
+            item.isEmpty() -> takeItem()
+            this.isEmpty() -> placeItem(item)
+
+            else -> {
+                val takenItem = content
+                content = item.cloneWithAmount()
+                takenItem
+            }
+        }
     }
 
     /** Takes item from this slot and returns result of this interaction. */
