@@ -95,7 +95,7 @@ class SlotInteractionsTest : FeatureSpec({
         fun takeContent(
             content: ItemStack = AIR,
             action: InventoryAction = PICKUP_ALL,
-        ): TakeSlotContent {
+        ) {
             event = TestInventoryClickEvent(inventoryView, action)
             slot.content = content
             event.currentItem = slot.getContentOrTexture()
@@ -104,27 +104,22 @@ class SlotInteractionsTest : FeatureSpec({
             initEventCursor = AIR
             initEventCurrentItem = event.currentItem
 
-            return TakeSlotContent.fromClick(event, slot)
+            val interaction = TakeSlotContent.fromClick(event, slot)
+            inventory.handleInteraction(interaction)
         }
 
         scenario("take item from empty slot") {
-            val interaction = takeContent()
-            inventory.handleInteraction(interaction)
-
+            takeContent()
             assertState(isCancelled = true)
         }
 
         scenario("take item from slot") {
-            val interaction = takeContent(ItemStack(Material.BLAZE_ROD, 2))
-            inventory.handleInteraction(interaction)
-
+            takeContent(ItemStack(Material.BLAZE_ROD, 2))
             assertState(content = AIR)
         }
 
         scenario("take half items from slot") {
-            val interaction = takeContent(ItemStack(Material.BLAZE_ROD, 3), action = PICKUP_HALF)
-            inventory.handleInteraction(interaction)
-
+            takeContent(ItemStack(Material.BLAZE_ROD, 3), action = PICKUP_HALF)
             assertState(content = ItemStack(Material.BLAZE_ROD, 1))
         }
     }
@@ -135,7 +130,7 @@ class SlotInteractionsTest : FeatureSpec({
             cursor: ItemStack = ItemStack(Material.STICK),
             current: ItemStack = AIR,
             action: InventoryAction = SWAP_WITH_CURSOR,
-        ): PlaceSlotContent {
+        ) {
             event = TestInventoryClickEvent(inventoryView, action)
             slot.content = current
             event.cursor = cursor
@@ -145,29 +140,27 @@ class SlotInteractionsTest : FeatureSpec({
             initEventCursor = cursor
             initEventCurrentItem = current
 
-            return PlaceSlotContent.fromClick(event, slot)
+            val interaction = PlaceSlotContent.fromClick(event, slot)
+            inventory.handleInteraction(interaction)
         }
 
         scenario("place item to empty slot") {
             val cursor = ItemStack(Material.STICK)
-            val interaction = placeContent(cursor)
-            inventory.handleInteraction(interaction)
+            placeContent(cursor)
 
             assertState(content = cursor)
         }
 
         scenario("place single item") {
             val cursor = ItemStack(Material.STICK, slot.maxStackSize + 1)
-            val interaction = placeContent(cursor, action = PLACE_ONE)
-            inventory.handleInteraction(interaction)
+            placeContent(cursor, action = PLACE_ONE)
 
             assertState(content = ItemStack(Material.STICK, 1))
         }
 
         scenario("place more than max stack size to empty slot") {
             val cursor = ItemStack(Material.STICK, slot.maxStackSize + 1)
-            val interaction = placeContent(cursor)
-            inventory.handleInteraction(interaction)
+            placeContent(cursor)
 
             assertState(
                 content = ItemStack(Material.STICK, slot.maxStackSize),
@@ -178,8 +171,7 @@ class SlotInteractionsTest : FeatureSpec({
         scenario("place similar item to full slot") {
             val cursor = ItemStack(Material.STICK)
             val current = ItemStack(Material.STICK, slot.maxStackSize)
-            val interaction = placeContent(cursor, current = current)
-            inventory.handleInteraction(interaction)
+            placeContent(cursor, current = current)
 
             assertState(isCancelled = true)
         }
@@ -187,8 +179,7 @@ class SlotInteractionsTest : FeatureSpec({
         scenario("place single similar item") {
             val cursor = ItemStack(Material.STICK, slot.maxStackSize)
             val current = ItemStack(Material.STICK)
-            val interaction = placeContent(cursor, current, action = PLACE_ONE)
-            inventory.handleInteraction(interaction)
+            placeContent(cursor, current, action = PLACE_ONE)
 
             assertState(content = ItemStack(Material.STICK, 2))
         }
@@ -196,8 +187,7 @@ class SlotInteractionsTest : FeatureSpec({
         scenario("place similar item to slot") {
             val cursor = ItemStack(Material.STICK)
             val current = ItemStack(Material.STICK, slot.maxStackSize - 1)
-            val interaction = placeContent(cursor, current)
-            inventory.handleInteraction(interaction)
+            placeContent(cursor, current)
 
             assertState(content = ItemStack(Material.STICK, slot.maxStackSize))
         }
@@ -205,30 +195,12 @@ class SlotInteractionsTest : FeatureSpec({
         scenario("place similar item to slot with overflow") {
             val cursor = ItemStack(Material.STICK, 2)
             val current = ItemStack(Material.STICK, slot.maxStackSize - 1)
-            val interaction = placeContent(cursor, current)
-            inventory.handleInteraction(interaction)
+            placeContent(cursor, current)
 
             assertState(
                 content = ItemStack(Material.STICK, slot.maxStackSize),
                 cursor = ItemStack(Material.STICK, 1),
             )
-        }
-
-        scenario("replace item in slot") {
-            val cursor = ItemStack(Material.BLAZE_ROD, 3)
-            val interaction = placeContent(cursor, ItemStack(Material.STICK, 2))
-            inventory.handleInteraction(interaction)
-
-            assertState(content = cursor)
-        }
-
-        scenario("try to replace item with item not fitting to slot") {
-            val largeStack = ItemStack(Material.STICK, slot.maxStackSize + 1)
-            val currentItem = ItemStack(Material.BLAZE_ROD)
-            val interaction = placeContent(largeStack, current = currentItem)
-            inventory.handleInteraction(interaction)
-
-            assertState(isCancelled = true)
         }
     }
 
@@ -252,13 +224,11 @@ class SlotInteractionsTest : FeatureSpec({
 
         scenario("swap empty slot with empty item") {
             swapContent(content = AIR, item = AIR)
-
             assertState(isCancelled = true)
         }
 
         scenario("swap slot with empty item") {
             swapContent(content = ItemStack(Material.STICK))
-
             assertState(content = AIR)
         }
 
@@ -271,7 +241,6 @@ class SlotInteractionsTest : FeatureSpec({
 
         scenario("swap slot with item not fitting to slot") {
             swapContent(item = ItemStack(Material.STICK, slot.maxStackSize + 1))
-
             assertState(isCancelled = true)
         }
     }
