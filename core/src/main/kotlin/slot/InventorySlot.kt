@@ -21,10 +21,7 @@ package ru.endlesscode.inventory.slot
 
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.CustomInventory
-import ru.endlesscode.inventory.internal.util.AIR
-import ru.endlesscode.inventory.internal.util.cloneWithAmount
-import ru.endlesscode.inventory.internal.util.isEmpty
-import ru.endlesscode.inventory.internal.util.isNotEmpty
+import ru.endlesscode.inventory.internal.util.*
 import ru.endlesscode.inventory.slot.SlotInteractionResult.*
 
 /**
@@ -88,7 +85,7 @@ public class InventorySlot(
     internal fun swapItemInteraction(item: ItemStack): SlotInteractionResult = when {
         item.isEmpty() && this.isEmpty() || item.amount > maxStackSize -> Deny
         item.isEmpty() -> takeItemInteraction()
-        this.isEmpty() -> placeItem(item)
+        this.isEmpty() -> placeItemInteraction(item)
 
         else -> {
             swapItem(item)
@@ -141,50 +138,91 @@ public class InventorySlot(
     }
 
     /** Places the given [item] to this slot and returns result of this interaction. */
-    internal fun placeItem(item: ItemStack, amount: Int = item.amount): SlotInteractionResult {
-        if (item.isEmpty()) return Deny
+    internal fun placeItemInteraction(item: ItemStack, amount: Int = item.amount): SlotInteractionResult {
+        require(amount in 1..item.amount)
+        require(this.isEmpty() || content.isSimilar(item))
+
+        val wasEmptyWithTexture = this.isEmpty() && texture.isNotEmpty()
+        val expectedContentAmount: Int
+        val expectedCursorAmount: Int
+
+        if (this.isEmpty()) {
+            expectedContentAmount = amount.coerceAtMost(MAX_STACK_SIZE)
+            expectedCursorAmount = item.amount - expectedContentAmount
+        } else {
+            expectedContentAmount = (content.amount + amount).coerceAtMost(minOf(MAX_STACK_SIZE, item.maxStackSize))
+            expectedCursorAmount = (content.amount + item.amount) - expectedContentAmount
+        }
+
+        val expectedContent = item.cloneWithAmount(expectedContentAmount)
+        val expectedCursor = if (expectedCursorAmount == 0) {
+            getContentOrTexture()
+        } else {
+            item.cloneWithAmount(expectedCursorAmount)
+        }
+        val actualCursor = placeItem(item, amount)
+        val actualContent = content.cloneWithAmount()
+
+        return when {
+            actualCursor == item -> Deny
+            expectedContent == actualContent && expectedCursor == actualCursor -> Accept
+
+            else -> Change(
+                currentItemReplacement = AIR.takeIf { wasEmptyWithTexture },
+                cursorReplacement = actualCursor.takeIf { actualContent != expectedContent },
+            )
+        }
+    }
+
+    /**
+     * Places the given [item] to the slot and returns leftover [ItemStack] not fitting to the slot.
+     *
+     * Returns the given [item] itself if it can't be placed to the slot.
+     * The [amount] should not be lesser than `1` or grater that the number of items in the given `ItemStack`.
+     *
+     * @see swapItem
+     */
+    public fun placeItem(item: ItemStack, amount: Int = item.amount): ItemStack {
+        require(amount in 1..item.amount) { "Amount should be in range 1..${item.amount} but was $amount." }
+        if (item.isEmpty()) return item
 
         // Slot is empty, so we don't need to return slot content
         return if (this.isEmpty()) {
             val stack = item.clone()
 
-            // More than a single stack! Keep extra items in cursor.
+            // More than a single stack! Return leftover items
             if (amount > maxStackSize) {
-                val cursor = item.clone()
+                val leftover = item.clone()
                 stack.amount = maxStackSize
-                cursor.amount = item.amount - maxStackSize
+                leftover.amount = item.amount - maxStackSize
 
                 content = stack
-                Change(currentItemReplacement = AIR, cursorReplacement = cursor)
+                leftover
             } else {
                 // All items fit to the slot
                 stack.amount = amount
                 content = stack
-                Change(currentItemReplacement = AIR)
+                AIR
             }
         } else if (item.isSimilar(content)) {
             // Item is similar to content, so we can try to append it to content
             if (this.isFull()) {
-                // Stack already full, deny this interaction
-                Deny
+                // Stack already full, return item unchanged
+                item
             } else if (content.amount + amount <= maxStackSize) {
                 // There are enough place for all items
                 content.amount += amount
-                Accept
+                AIR
             } else {
                 // We can place some items
-                val cursor = item.clone()
-                cursor.amount -= maxStackSize - content.amount
+                val leftover = item.clone()
+                leftover.amount -= maxStackSize - content.amount
 
                 content.amount = maxStackSize
-                Change(cursorReplacement = cursor)
+                leftover
             }
-        } else if (item.amount <= maxStackSize) {
-            // Item is not similar and the slot already contain another item, so we can swap content and cursor
-            content = item.clone()
-            Accept
         } else {
-            Deny
+            item
         }
     }
 
