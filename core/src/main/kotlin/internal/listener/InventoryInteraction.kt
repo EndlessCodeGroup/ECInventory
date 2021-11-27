@@ -19,7 +19,7 @@
 
 package ru.endlesscode.inventory.internal.listener
 
-import org.bukkit.event.inventory.ClickType
+import org.bukkit.event.inventory.ClickType.SWAP_OFFHAND
 import org.bukkit.event.inventory.InventoryAction.*
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryInteractEvent
@@ -99,20 +99,20 @@ internal data class PlaceSlotContent(
     }
 }
 
-internal data class HotbarSwapSlotContent(
+internal data class SwapSlotContent(
     override val event: InventoryClickEvent,
     override val slot: InventorySlot,
-    val hotbarItem: ItemStack,
+    val item: ItemStack,
 ) : SlotInteraction {
 
     companion object {
-        fun fromClick(event: InventoryClickEvent, slot: InventorySlot): HotbarSwapSlotContent {
-            val item = if (event.click == ClickType.SWAP_OFFHAND) {
-                event.view.player.inventory.itemInOffHand
-            } else {
-                event.view.bottomInventory.getItem(event.hotbarButton).orEmpty()
+        fun fromClick(event: InventoryClickEvent, slot: InventorySlot): SwapSlotContent {
+            val item = when {
+                event.action == SWAP_WITH_CURSOR -> event.cursor.orEmpty()
+                event.click == SWAP_OFFHAND -> event.view.player.inventory.itemInOffHand
+                else -> event.view.bottomInventory.getItem(event.hotbarButton).orEmpty()
             }
-            return HotbarSwapSlotContent(event, slot, item)
+            return SwapSlotContent(event, slot, item)
         }
     }
 }

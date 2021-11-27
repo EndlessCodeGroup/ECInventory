@@ -137,6 +137,20 @@ class InventoryClicksRouterTest : FeatureSpec({
             verifyInteraction(interaction = null, eventCancelled = true)
         }
 
+        scenario("swap with cursor empty slot") {
+            clickedSlot = mockk { every { isEmpty() } returns true }
+            val event = performClick(SWAP_WITH_CURSOR)
+
+            verifyInteraction(PlaceSlotContent.fromClick(event, clickedSlot!!))
+        }
+
+        scenario("swap with cursor non-empty item") {
+            clickedSlot = mockk { every { isEmpty() } returns false }
+            val event = performClick(SWAP_WITH_CURSOR)
+
+            verifyInteraction(SwapSlotContent.fromClick(event, clickedSlot!!))
+        }
+
         scenario("swap with hotbar slot") {
             clickedSlot = mockk { every { content } returns AIR }
             val hotbarItem = ItemStack(Material.STICK)

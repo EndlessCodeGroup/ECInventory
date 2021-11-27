@@ -109,9 +109,15 @@ internal class InventoryClicksRouter(
         PICKUP_ALL, PICKUP_SOME, PICKUP_HALF, PICKUP_ONE,
         DROP_ALL_SLOT, DROP_ONE_SLOT,
         MOVE_TO_OTHER_INVENTORY -> TakeSlotContent.fromClick(this, slot)
-        PLACE_ALL, PLACE_SOME, PLACE_ONE, SWAP_WITH_CURSOR -> PlaceSlotContent.fromClick(this, slot)
+        PLACE_ALL, PLACE_SOME, PLACE_ONE -> PlaceSlotContent.fromClick(this, slot)
         HOTBAR_MOVE_AND_READD,
-        HOTBAR_SWAP -> HotbarSwapSlotContent.fromClick(this, slot)
+        HOTBAR_SWAP -> SwapSlotContent.fromClick(this, slot)
+
+        SWAP_WITH_CURSOR -> if (slot.isEmpty()) {
+            PlaceSlotContent.fromClick(this, slot)
+        } else {
+            SwapSlotContent.fromClick(this, slot)
+        }
 
         // These events don't affect inventory, ignore them
         CLONE_STACK,
