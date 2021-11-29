@@ -213,82 +213,30 @@ public class CustomInventory internal constructor(
         getSlot(index).content = item.orEmpty()
     }
 
-    /*
-     * It was copied from CraftBukkit implementation.
-     *
-     * Also was made some optimizations:
-     *  - Record the `firstPartial` per [Material]
-     *  - Cache `firstEmptySlot` result
-     */
     override fun addItem(vararg items: ItemStack): HashMap<Int, ItemStack> {
         val leftover = hashMapOf<Int, ItemStack>()
         val nonFullSlots = mutableMapOf<Material, InventorySlot>()
 
-        /*
-         * TODO: some optimization
-         *  - Create a 'firstPartial' with a 'fromIndex'
-         */
-
         var freeSlot = findEmptySlot()
         for (i in items.indices) {
-            val item = items[i]
+            var item = items[i]
 
-            while (true) {
-                // Do we already have a stack of it?
-                val nonFullSlot = nonFullSlots.getOrElse(item.type) { findPartial(item) }
+            while (item.isNotEmpty()) {
+                // Do we already have a stack of it? If not, use free slot
+                val nonFullSlot = nonFullSlots.remove(item.type) ?: findPartial(item)
+                val slot = nonFullSlot ?: freeSlot
 
-                // Drat! no partial stack
-                if (nonFullSlot == null) {
-                    // Find a free spot!
-
-                    if (freeSlot == null) {
-                        // No space at all!
-                        leftover[i] = item
-                        break
-                    }
-
-                    // More than a single stack!
-                    val maxStackSize = freeSlot.maxStackSize
-                    if (item.amount > maxStackSize) {
-                        val stack = item.clone()
-                        stack.amount = maxStackSize
-                        freeSlot.content = stack
-                        item.amount -= maxStackSize
-
-                        // Look for new free slot
-                        freeSlot = findEmptySlot()
-                    } else {
-                        // Just store it and look for new free slot
-                        freeSlot.content = item
-                        // Remember that there are the non-full slot
-                        nonFullSlots[item.type] = freeSlot
-                        freeSlot = findEmptySlot()
-                        break
-                    }
-                } else {
-                    // So, apparently it might only partially fit, well lets do just that
-                    val partialItem = nonFullSlot.content
-
-                    val amount = item.amount
-                    val partialAmount = partialItem.amount
-                    val maxAmount = nonFullSlot.maxStackSize
-
-                    // Check if it fully fits
-                    if (amount + partialAmount <= maxAmount) {
-                        partialItem.amount = amount + partialAmount
-                        nonFullSlot.content = partialItem
-                        // Remember that there are the non-full slot
-                        nonFullSlots[item.type] = nonFullSlot
-                        break
-                    }
-
-                    // It fits partially
-                    partialItem.amount = maxAmount
-                    // To make sure the packet is sent to the client
-                    nonFullSlot.content = partialItem
-                    nonFullSlots.remove(item.type)
-                    item.amount = amount + partialAmount - maxAmount
+                // Drat! no partial stack and no space at all!
+                if (slot == null) {
+                    leftover[i] = item
+                    break
                 }
+
+                item = slot.placeItem(item)
+                freeSlot = findEmptySlot()
+
+                // Remember that there are the non-full slot
+                if (!slot.isFull()) nonFullSlots[item.type] = slot
             }
         }
 
