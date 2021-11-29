@@ -243,12 +243,6 @@ public class CustomInventory internal constructor(
         return leftover
     }
 
-    /*
-     * It was copied from CraftBukkit implementation.
-     *
-     * Also was made some optimizations:
-     *  - Cache `first` result per Material
-     */
     override fun removeItem(vararg items: ItemStack): HashMap<Int, ItemStack> {
         val leftover = hashMapOf<Int, ItemStack>()
         val itemsSlots = mutableMapOf<Material, InventorySlot>()
@@ -257,35 +251,21 @@ public class CustomInventory internal constructor(
             val item = items[i]
             var toDelete = item.amount
 
-            while (true) {
-                val itemSlot = itemsSlots.getOrElse(item.type) { find(item, false) }
+            while (toDelete > 0) {
+                val itemSlot = itemsSlots.remove(item.type) ?: find(item)
 
                 // Drat! we don't have this type in the inventory
                 if (itemSlot == null) {
                     item.amount = toDelete
                     leftover[i] = item
                     break
-                } else {
-                    val itemStack = itemSlot.content
-                    val amount = itemStack.amount
-
-                    if (amount <= toDelete) {
-                        toDelete -= amount
-                        // Clear the slot, all used up
-                        clear(itemSlot.id)
-                        itemsSlots.remove(item.type)
-                    } else {
-                        // Split the stack and store
-                        itemStack.amount = amount - toDelete
-                        itemSlot.content = itemStack
-                        toDelete = 0
-                        // Remember that there are non-fully empty slot
-                        itemsSlots[item.type] = itemSlot
-                    }
                 }
 
-                // Bail when done
-                if (toDelete <= 0) break
+                val removedItem = itemSlot.takeItem(toDelete)
+                toDelete -= removedItem.amount
+
+                // Remember that there are non-fully empty slot
+                if (!itemSlot.isEmpty()) itemsSlots[item.type] = itemSlot
             }
         }
 
@@ -404,7 +384,7 @@ public class CustomInventory internal constructor(
     }
 
     override fun first(item: ItemStack): Int {
-        val slot = find(item, true) ?: return -1
+        val slot = find(item, withAmount = true) ?: return -1
         return getIndexOfSlot(slot)
     }
 
@@ -484,7 +464,7 @@ public class CustomInventory internal constructor(
         return contents
     }
 
-    private fun find(item: ItemStack, withAmount: Boolean): InventorySlot? {
+    private fun find(item: ItemStack, withAmount: Boolean = false): InventorySlot? {
         return getStorageSlots().find { slot ->
             if (withAmount) item == slot.content
             else item.isSimilar(slot.content)
