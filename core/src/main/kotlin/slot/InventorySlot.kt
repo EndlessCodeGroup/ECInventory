@@ -143,34 +143,15 @@ public class InventorySlot(
         require(this.isEmpty() || content.isSimilar(item))
 
         val wasEmptyWithTexture = this.isEmpty() && texture.isNotEmpty()
-        val expectedContentAmount: Int
-        val expectedCursorAmount: Int
+        val newCursor = placeItem(item, amount)
 
-        if (this.isEmpty()) {
-            expectedContentAmount = amount.coerceAtMost(MAX_STACK_SIZE)
-            expectedCursorAmount = item.amount - expectedContentAmount
-        } else {
-            expectedContentAmount = (content.amount + amount).coerceAtMost(minOf(MAX_STACK_SIZE, item.maxStackSize))
-            expectedCursorAmount = (content.amount + item.amount) - expectedContentAmount
-        }
-
-        val expectedContent = item.cloneWithAmount(expectedContentAmount)
-        val expectedCursor = if (expectedCursorAmount == 0) {
-            getContentOrTexture()
-        } else {
-            item.cloneWithAmount(expectedCursorAmount)
-        }
-        val actualCursor = placeItem(item, amount)
-        val actualContent = content.cloneWithAmount()
-
-        return when {
-            actualCursor == item -> Deny
-            expectedContent == actualContent && expectedCursor == actualCursor -> Accept
-
-            else -> Change(
+        return if (newCursor != item)
+            Change(
                 currentItemReplacement = AIR.takeIf { wasEmptyWithTexture },
-                cursorReplacement = actualCursor.takeIf { actualContent != expectedContent },
+                cursorReplacement = newCursor,
             )
+        else {
+            Deny
         }
     }
 
@@ -202,7 +183,7 @@ public class InventorySlot(
                 // All items fit to the slot
                 stack.amount = amount
                 content = stack
-                AIR
+                item - amount
             }
         } else if (item.isSimilar(content)) {
             // Item is similar to content, so we can try to append it to content
@@ -212,7 +193,7 @@ public class InventorySlot(
             } else if (content.amount + amount <= maxStackSize) {
                 // There are enough place for all items
                 content.amount += amount
-                AIR
+                item - amount
             } else {
                 // We can place some items
                 val leftover = item.clone()

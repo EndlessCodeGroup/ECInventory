@@ -65,3 +65,8 @@ internal fun ItemStack?.isNullOrEmpty(): Boolean {
 internal fun ItemStack.cloneWithAmount(amount: Int = this.amount): ItemStack {
     return clone().also { it.amount = amount }
 }
+
+/** Returns copy of the given [ItemStack] with amount decreased by the given [amount]. */
+internal operator fun ItemStack.minus(amount: Int): ItemStack {
+    return if (amount >= this.amount) AIR else cloneWithAmount(this.amount - amount)
+}

@@ -148,14 +148,14 @@ class SlotInteractionsTest : FeatureSpec({
             val cursor = ItemStack(Material.STICK)
             placeContent(cursor)
 
-            assertState(content = cursor)
+            assertState(content = cursor, cursor = AIR)
         }
 
         scenario("place single item") {
             val cursor = ItemStack(Material.STICK, slot.maxStackSize + 1)
             placeContent(cursor, action = PLACE_ONE)
 
-            assertState(content = ItemStack(Material.STICK, 1))
+            assertState(content = ItemStack(Material.STICK, 1), cursor = ItemStack(Material.STICK, slot.maxStackSize))
         }
 
         scenario("place more than max stack size to empty slot") {
@@ -177,11 +177,11 @@ class SlotInteractionsTest : FeatureSpec({
         }
 
         scenario("place single similar item") {
-            val cursor = ItemStack(Material.STICK, slot.maxStackSize)
+            val cursor = ItemStack(Material.STICK, 3)
             val current = ItemStack(Material.STICK)
             placeContent(cursor, current, action = PLACE_ONE)
 
-            assertState(content = ItemStack(Material.STICK, 2))
+            assertState(content = ItemStack(Material.STICK, 2), cursor = ItemStack(Material.STICK, 2))
         }
 
         scenario("place similar item to slot") {
@@ -189,7 +189,7 @@ class SlotInteractionsTest : FeatureSpec({
             val current = ItemStack(Material.STICK, slot.maxStackSize - 1)
             placeContent(cursor, current)
 
-            assertState(content = ItemStack(Material.STICK, slot.maxStackSize))
+            assertState(content = ItemStack(Material.STICK, slot.maxStackSize), cursor = AIR)
         }
 
         scenario("place similar item to slot with overflow") {
