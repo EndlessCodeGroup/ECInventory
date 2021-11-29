@@ -508,6 +508,47 @@ public class CustomInventory internal constructor(
         }
     }
 
+    /** Swap content with the given [item]. */
+    private fun InventorySlot.swapItemInteraction(item: ItemStack): SlotInteractionResult = when {
+        item.isEmpty() && this.isEmpty() || item.amount > maxStackSize -> SlotInteractionResult.Deny
+        item.isEmpty() -> takeItemInteraction()
+        this.isEmpty() -> placeItemInteraction(item)
+
+        else -> {
+            swapItem(item)
+            SlotInteractionResult.Accept
+        }
+    }
+
+    /** Takes item from this slot and returns result of this interaction. */
+    private fun InventorySlot.takeItemInteraction(amount: Int = content.amount): SlotInteractionResult {
+        val expectedCursor = getContentOrTexture().cloneWithAmount(amount)
+        val actualCursor = takeItem(amount)
+        return when {
+            actualCursor.isEmpty() -> SlotInteractionResult.Deny
+            expectedCursor == actualCursor -> SlotInteractionResult.Accept
+            else -> Change(currentItemReplacement = actualCursor)
+        }
+    }
+
+    /** Places the given [item] to this slot and returns result of this interaction. */
+    private fun InventorySlot.placeItemInteraction(item: ItemStack, amount: Int = item.amount): SlotInteractionResult {
+        require(amount in 1..item.amount)
+        require(this.isEmpty() || content.isSimilar(item))
+
+        val wasEmptyWithTexture = this.isEmpty() && texture.isNotEmpty()
+        val newCursor = placeItem(item, amount)
+
+        return if (newCursor != item)
+            Change(
+                currentItemReplacement = AIR.takeIf { wasEmptyWithTexture },
+                cursorReplacement = newCursor,
+            )
+        else {
+            SlotInteractionResult.Deny
+        }
+    }
+
     public companion object {
         /**
          * By default, will be used stack size 64, and it will be increased when

@@ -22,7 +22,6 @@ package ru.endlesscode.inventory.slot
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.CustomInventory
 import ru.endlesscode.inventory.internal.util.*
-import ru.endlesscode.inventory.slot.SlotInteractionResult.*
 
 /**
  * Represents slot in the inventory, that has own behavior.
@@ -81,18 +80,6 @@ public class InventorySlot(
     /** Returns [content] if it isn't empty or [texture] otherwise. */
     public fun getContentOrTexture(): ItemStack = if (isEmpty()) texture else content
 
-    /** Swap content with the given [item]. */
-    internal fun swapItemInteraction(item: ItemStack): SlotInteractionResult = when {
-        item.isEmpty() && this.isEmpty() || item.amount > maxStackSize -> Deny
-        item.isEmpty() -> takeItemInteraction()
-        this.isEmpty() -> placeItemInteraction(item)
-
-        else -> {
-            swapItem(item)
-            Accept
-        }
-    }
-
     /** Swaps slot content with the given [item] and returns item taken from the slot. */
     public fun swapItem(item: ItemStack): ItemStack {
         return when {
@@ -105,17 +92,6 @@ public class InventorySlot(
                 content = item.cloneWithAmount()
                 takenItem
             }
-        }
-    }
-
-    /** Takes item from this slot and returns result of this interaction. */
-    internal fun takeItemInteraction(amount: Int = content.amount): SlotInteractionResult {
-        val expectedCursor = getContentOrTexture().cloneWithAmount(amount)
-        val actualCursor = takeItem(amount)
-        return when {
-            actualCursor.isEmpty() -> Deny
-            expectedCursor == actualCursor -> Accept
-            else -> Change(currentItemReplacement = actualCursor)
         }
     }
 
@@ -134,24 +110,6 @@ public class InventorySlot(
             val takenItems = content
             content = AIR
             takenItems
-        }
-    }
-
-    /** Places the given [item] to this slot and returns result of this interaction. */
-    internal fun placeItemInteraction(item: ItemStack, amount: Int = item.amount): SlotInteractionResult {
-        require(amount in 1..item.amount)
-        require(this.isEmpty() || content.isSimilar(item))
-
-        val wasEmptyWithTexture = this.isEmpty() && texture.isNotEmpty()
-        val newCursor = placeItem(item, amount)
-
-        return if (newCursor != item)
-            Change(
-                currentItemReplacement = AIR.takeIf { wasEmptyWithTexture },
-                cursorReplacement = newCursor,
-            )
-        else {
-            Deny
         }
     }
 
