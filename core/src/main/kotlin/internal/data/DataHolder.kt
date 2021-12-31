@@ -81,7 +81,7 @@ internal class DataHolder(
         if (correctMaxStackSize != config.maxStackSize) {
             Log.w(
                 "$prefix max stack size should be in range 1..$MAX_STACK_SIZE, but was '${config.maxStackSize}'.",
-                "Will be used $correctMaxStackSize instead, please fix slot internal.config.",
+                "Will be used $correctMaxStackSize instead, please fix slot config.",
             )
         }
 

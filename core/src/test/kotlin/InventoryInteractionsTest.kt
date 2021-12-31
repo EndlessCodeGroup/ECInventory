@@ -30,9 +30,7 @@ import ru.endlesscode.inventory.internal.InstantTaskScheduler
 import ru.endlesscode.inventory.internal.listener.AddItemToInventory
 import ru.endlesscode.inventory.internal.util.AIR
 import ru.endlesscode.inventory.internal.util.orEmpty
-import ru.endlesscode.inventory.slot.ItemValidator
 import ru.endlesscode.inventory.slot.Slot
-import ru.endlesscode.inventory.slot.SlotImpl
 import ru.endlesscode.inventory.test.TestInventoryClickEvent
 import ru.endlesscode.inventory.test.TestInventoryView
 import ru.endlesscode.inventory.test.mockItemFactory
@@ -52,12 +50,8 @@ class InventoryInteractionsTest : FeatureSpec({
 
     val maxStackSize = 4
     var slotsCounter = 0
-    fun slot(): Slot = SlotImpl(
+    fun slot(): Slot = Slot(
         id = "slot${++slotsCounter}",
-        name = "Slot $slotsCounter",
-        texture = AIR,
-        type = Slot.Type.STORAGE,
-        contentValidator = ItemValidator.any,
         maxStackSize = maxStackSize,
     )
 

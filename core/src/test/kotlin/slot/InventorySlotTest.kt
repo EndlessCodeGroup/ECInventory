@@ -23,7 +23,6 @@ import io.kotest.assertions.assertSoftly
 import io.kotest.common.ExperimentalKotest
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.shouldBe
-import io.mockk.mockk
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.internal.util.AIR
@@ -34,16 +33,8 @@ internal class InventorySlotTest : FeatureSpec({
 
     // SUT
     val slot = InventorySlot(
-        prototype = SlotImpl(
-            id = "test-slot",
-            name = "Test Slot",
-            texture = ItemStack(Material.BLACK_STAINED_GLASS_PANE),
-            type = Slot.Type.STORAGE,
-            contentValidator = ItemValidator.any,
-            maxStackSize = 4,
-        ),
-        holder = mockk(relaxed = true),
-        position = 0,
+        texture = Material.BLACK_STAINED_GLASS_PANE,
+        maxStackSize = 4,
     )
 
     beforeSpec {
