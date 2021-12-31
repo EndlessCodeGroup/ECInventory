@@ -24,11 +24,10 @@ import org.bukkit.event.inventory.InventoryAction.*
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.inventory.ItemStack
+import ru.endlesscode.inventory.internal.listener.SlotInteractionResult.*
 import ru.endlesscode.inventory.internal.util.isNullOrEmpty
 import ru.endlesscode.inventory.internal.util.orEmpty
 import ru.endlesscode.inventory.slot.InventorySlot
-import ru.endlesscode.inventory.slot.SlotInteractionResult
-import ru.endlesscode.inventory.slot.SlotInteractionResult.*
 
 internal sealed interface InventoryInteraction {
     val event: InventoryInteractEvent
