@@ -33,9 +33,7 @@ import ru.endlesscode.inventory.internal.listener.PlaceSlotContent
 import ru.endlesscode.inventory.internal.listener.SwapSlotContent
 import ru.endlesscode.inventory.internal.listener.TakeSlotContent
 import ru.endlesscode.inventory.internal.util.AIR
-import ru.endlesscode.inventory.slot.ItemValidator
 import ru.endlesscode.inventory.slot.Slot
-import ru.endlesscode.inventory.slot.SlotImpl
 import ru.endlesscode.inventory.test.TestInventoryClickEvent
 import ru.endlesscode.inventory.test.TestInventoryView
 import ru.endlesscode.inventory.test.mockItemFactory
@@ -48,12 +46,8 @@ class SlotInteractionsTest : FeatureSpec({
         name = "Test",
         emptySlotTexture = AIR,
         slotsMap = sortedMapOf(
-            1 to SlotImpl(
-                id = "test-slot",
-                name = "Test Slot",
-                texture = ItemStack(Material.BLACK_STAINED_GLASS_PANE),
-                type = Slot.Type.STORAGE,
-                contentValidator = ItemValidator.any,
+            1 to Slot(
+                texture = Material.BLACK_STAINED_GLASS_PANE,
                 maxStackSize = 4,
             )
         )
