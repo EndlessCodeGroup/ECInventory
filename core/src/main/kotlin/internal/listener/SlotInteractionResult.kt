@@ -17,7 +17,7 @@
  * along with ECInventory. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.inventory.slot
+package ru.endlesscode.inventory.internal.listener
 
 import org.bukkit.inventory.ItemStack
 
