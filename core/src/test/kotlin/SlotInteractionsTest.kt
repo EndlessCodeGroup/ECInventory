@@ -34,6 +34,7 @@ import ru.endlesscode.inventory.internal.listener.SwapSlotContent
 import ru.endlesscode.inventory.internal.listener.TakeSlotContent
 import ru.endlesscode.inventory.internal.util.AIR
 import ru.endlesscode.inventory.slot.Slot
+import ru.endlesscode.inventory.slot.TestItemValidator
 import ru.endlesscode.inventory.test.TestInventoryClickEvent
 import ru.endlesscode.inventory.test.TestInventoryView
 import ru.endlesscode.inventory.test.mockItemFactory
@@ -41,6 +42,7 @@ import java.util.*
 
 class SlotInteractionsTest : FeatureSpec({
 
+    val slotContentValidator = TestItemValidator()
     val inventoryLayout = InventoryLayoutImpl(
         id = "test",
         name = "Test",
@@ -49,6 +51,7 @@ class SlotInteractionsTest : FeatureSpec({
             1 to Slot(
                 texture = Material.BLACK_STAINED_GLASS_PANE,
                 maxStackSize = 4,
+                contentValidator = slotContentValidator,
             )
         )
     )
@@ -249,6 +252,16 @@ class SlotInteractionsTest : FeatureSpec({
             swapContent(
                 content = ItemStack(Material.BLAZE_ROD),
                 item = ItemStack(Material.STICK, slot.maxStackSize + 1)
+            )
+
+            assertState(isCancelled = true)
+        }
+
+        scenario("swap slot content with not allowed item") {
+            slotContentValidator.predicate = { it.type != Material.STICK }
+            swapContent(
+                content = ItemStack(Material.BLAZE_ROD),
+                item = ItemStack(Material.STICK),
             )
 
             assertState(isCancelled = true)
