@@ -67,14 +67,16 @@ class ConfigurationCollectorTest : FileTestBase() {
                 "right-ring" to SlotConfig(
                     name = "Right ring",
                     texture = "ring-slot",
-                    allowedItems = listOf("minecraft:diamond_shovel", "mimic:some_texture_item"),
+                    allowedItems = listOf("minecraft:diamond_shovel", "mimic:ring_*"),
+                    deniedItems = listOf("mimic:ring_slot"),
                     type = Slot.Type.PASSIVE,
                     maxStackSize = 1,
                 ),
                 "left-ring" to SlotConfig(
                     name = "Left ring",
                     texture = "ring-slot",
-                    allowedItems = listOf("minecraft:diamond_shovel", "mimic:some_texture_item"),
+                    allowedItems = listOf("minecraft:diamond_shovel", "mimic:ring_*"),
+                    deniedItems = listOf("mimic:ring_slot"),
                     type = Slot.Type.PASSIVE,
                     maxStackSize = 1,
                 ),

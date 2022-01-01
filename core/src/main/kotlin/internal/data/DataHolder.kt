@@ -28,9 +28,9 @@ import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.util.Log
 import ru.endlesscode.inventory.internal.util.MAX_STACK_SIZE
 import ru.endlesscode.inventory.internal.util.orEmpty
-import ru.endlesscode.inventory.slot.ItemValidator
 import ru.endlesscode.inventory.slot.Slot
 import ru.endlesscode.inventory.slot.SlotImpl
+import ru.endlesscode.inventory.slot.WildcardItemValidator
 import ru.endlesscode.mimic.items.BukkitItemsRegistry
 import java.nio.file.Path
 
@@ -90,7 +90,7 @@ internal class DataHolder(
             name = config.name,
             texture = textureItem.orEmpty(),
             type = config.type,
-            contentValidator = ItemValidator.any,
+            contentValidator = WildcardItemValidator(config.allowedItems, config.deniedItems),
             maxStackSize = correctMaxStackSize,
         )
     }
