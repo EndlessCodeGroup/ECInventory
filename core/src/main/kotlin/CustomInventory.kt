@@ -493,7 +493,8 @@ public class CustomInventory internal constructor(
 
     /** Swap content with the given [item]. */
     private fun InventorySlot.swapItemInteraction(item: ItemStack): SlotInteractionResult = when {
-        item.isEmpty() && this.isEmpty() || item.amount > maxStackSize -> SlotInteractionResult.Deny
+        item.amount > maxStackSize || !canHold(item) -> SlotInteractionResult.Deny
+        item.isEmpty() && this.isEmpty() -> SlotInteractionResult.Deny
         item.isEmpty() -> takeItemInteraction()
         this.isEmpty() -> placeItemInteraction(item)
 
