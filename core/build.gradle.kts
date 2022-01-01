@@ -39,6 +39,7 @@ dependencies {
 
     testImplementation(spigotApi)
     testImplementation(libs.hocon)
+    testImplementation(libs.mimic)
 }
 
 repositories {
