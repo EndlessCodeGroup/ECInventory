@@ -27,6 +27,7 @@ internal data class SlotConfig(
     val name: String,
     val texture: String? = null,
     val type: Slot.Type = Slot.Type.STORAGE,
-    val allowedItems: List<String> = emptyList(),
+    val allowedItems: List<String> = listOf("*"),
+    val deniedItems: List<String> = emptyList(),
     val maxStackSize: Int = 1,
 )
