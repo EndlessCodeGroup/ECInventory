@@ -31,10 +31,13 @@ import ru.endlesscode.inventory.test.mockItemFactory
 @OptIn(ExperimentalKotest::class)
 internal class InventorySlotTest : FeatureSpec({
 
+    val slotContentValidator = TestItemValidator()
+
     // SUT
     val slot = InventorySlot(
         texture = Material.BLACK_STAINED_GLASS_PANE,
         maxStackSize = 4,
+        contentValidator = slotContentValidator,
     )
 
     beforeSpec {
@@ -242,6 +245,22 @@ internal class InventorySlotTest : FeatureSpec({
                 cursor = item(amount = slot.maxStackSize + 1),
             ),
         )
+    }
+
+    feature("content validator") {
+
+        // Consider blaze rod as a not valid item
+        slotContentValidator.predicate = { it.type != Material.BLAZE_ROD }
+        val notValidItem = item(Material.BLAZE_ROD)
+
+        scenario("swap content with not valid item") {
+            slot.content = item()
+            slot.swapItem(notValidItem) shouldBe notValidItem
+        }
+
+        scenario("place not valid item") {
+            slot.placeItem(notValidItem) shouldBe notValidItem
+        }
     }
 })
 
