@@ -42,13 +42,13 @@ public class InventorySlot(
         get() = field.clone()
 
     /**
-     * Max stack size can be placed to slot.
+     * Max stack size allowed in this slot.
      * @see maxStackSize
      */
     public val slotMaxStackSize: Int = prototype.maxStackSize
 
     /**
-     * Returns max stack size can be placed to the slot.
+     * Returns max stack size for an ItemStack in this slot.
      * If slot is not empty may return max stack size of content item if it is lesser than slot's max stack size.
      * @see slotMaxStackSize
      */
@@ -164,6 +164,9 @@ public class InventorySlot(
             item
         }
     }
+
+    /** Returns `true` if this slot can hold the given [item]. */
+    public fun canHold(item: ItemStack): Boolean = contentValidator.isValid(item)
 
     override fun toString(): String {
         return "InventorySlot(id=$id, position=$position, content=$content)"

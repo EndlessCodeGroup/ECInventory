@@ -20,13 +20,9 @@
 package ru.endlesscode.inventory
 
 import org.bukkit.Bukkit
-import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.block.Container
-import org.bukkit.entity.Entity
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
-import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
@@ -35,21 +31,22 @@ import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.listener.*
 import ru.endlesscode.inventory.internal.listener.SlotInteractionResult.Change
 import ru.endlesscode.inventory.internal.util.*
-import ru.endlesscode.inventory.slot.*
+import ru.endlesscode.inventory.slot.InventorySlot
+import ru.endlesscode.inventory.slot.Slot
 import java.util.*
+import java.util.function.Predicate
 
 /**
- * Provides utilities for working with RPG inventory, as with Bukkit inventory.
+ * Inventory consisting of [InventorySlot]s.
  *
  * @property id Unique ID of the inventory.
- * @param holder The Inventory's holder.
  * @param layout Layout of the inventory.
  */
 public class CustomInventory internal constructor(
     public val id: UUID,
     private val layout: InventoryLayout,
     private val scheduler: TaskScheduler = DI.scheduler,
-) : Inventory, InventoryHolder {
+) : InventoryHolder {
 
     /** Returns inventory layout name. */
     public val name: String get() = layout.name
@@ -60,14 +57,27 @@ public class CustomInventory internal constructor(
     /** Temporary [Inventory], used to show [CustomInventory] to player. */
     private var view: Inventory? = null
 
-    private val internalSlotsMap: IndexedMap<Int, Slot> = layout.slotsMap.asIndexedMap()
+    private val slotsLayout: IndexedMap<Int, Slot> = layout.slotsMap.asIndexedMap()
     private val slots: MutableMap<String, InventorySlot>
+
+    /** Returns number of slots in the inventory. */
+    public val size: Int
+        get() = slots.size
 
     /** View size is maximal slot position rounded to nine. */
     internal val viewSize: Int
-        get() = internalSlotsMap.lastKey().roundToPowerOf(9)
+        get() = slotsLayout.lastKey().roundToPowerOf(9)
 
-    private var maxStack = DEFAULT_MAX_STACK
+    /**
+     * Returns the maximum stack size for an ItemStack in this inventory.
+     * @see InventorySlot.maxStackSize
+     */
+    public var maxStackSize: Int = DEFAULT_MAX_STACK
+        internal set
+
+    /** Returns a list of players viewing the inventory. */
+    public val viewers: List<HumanEntity>
+        get() = view?.viewers.orEmpty()
 
     public constructor(layout: InventoryLayout) : this(
         id = UUID.randomUUID(),
@@ -77,13 +87,16 @@ public class CustomInventory internal constructor(
 
     init {
         val slots = mutableMapOf<String, InventorySlot>()
-        for ((position, slot) in internalSlotsMap) {
+        for ((position, slot) in slotsLayout) {
             slots[slot.id] = InventorySlot(slot, this, position)
         }
         this.slots = slots
     }
 
-    /** Returns the ItemStack found in the slot with the given [id][slotId], or `null` if there no such slot. */
+    /**
+     * Returns the ItemStack found in the slot with the given [id][slotId],
+     * or `null` if there are no such slot.
+     */
     public fun getItem(slotId: String): ItemStack? = slots[slotId]?.content
 
     /**
@@ -93,39 +106,40 @@ public class CustomInventory internal constructor(
      * @param item The ItemStack to set.
      */
     public fun setItem(slotId: String, item: ItemStack?) {
-        slots[slotId]?.let { it.content = item.orEmpty() }
+        slots[slotId]?.content = item.orEmpty()
     }
 
-    /** Returns the slot with the given [id][slotId], or `null` if there no such slot. */
+    /**
+     * Returns the slot with the given [id][slotId], or `null`
+     * if there are no such slot.
+     */
     public fun getSlot(slotId: String): InventorySlot? = slots[slotId]
 
     /**
-     * Returns slot by [index], or throws an exception if there no such slot.
+     * Returns slot by [index], or throws an exception if there are no such slot.
      *
      * @throws IndexOutOfBoundsException when the inventory doesn't contain a slot for the specified index.
      */
     public fun getSlot(index: Int): InventorySlot {
-        val slotId = internalSlotsMap.getByIndex(index).id
+        val slotId = slotsLayout.getByIndex(index).id
         return slots.getValue(slotId)
     }
 
-    /** Returns slot by theirs [position] or `null` if there no slot on given position. */
+    /** Returns slot by theirs [position] or `null` if there are no slot on the given position. */
     public fun getSlotAt(position: Int): InventorySlot? {
-        return internalSlotsMap[position]?.let {
-            slots[it.id]
-        }
+        return slotsLayout[position]?.let { slots[it.id] }
     }
 
-    /** Returns index of slot with given [id][slotId] or -1 if there no such slot. */
+    /** Returns index of slot with given [id][slotId] or -1 if there are no such slot. */
     public fun getIndexOfSlot(slotId: String): Int {
         return slots[slotId]?.let {
-            internalSlotsMap.getIndexOf(it.position)
+            slotsLayout.getIndexOf(it.position)
         } ?: -1
     }
 
     /** Returns index of slot with given [slot] or -1 if given slot isn't in the inventory. */
     public fun getIndexOfSlot(slot: InventorySlot): Int {
-        return if (slot.holder == this) internalSlotsMap.getIndexOf(slot.position) else -1
+        return if (slot.holder == this) slotsLayout.getIndexOf(slot.position) else -1
     }
 
     /** Returns the inventory's slots with the given [type] or all slots if type is `null`. */
@@ -136,11 +150,6 @@ public class CustomInventory internal constructor(
         } else {
             slots.values.filter { it.type == type }
         }
-    }
-
-    /** Clears out a particular slot with given [slotId]. */
-    public fun clear(slotId: String) {
-        setItem(slotId, null)
     }
 
     /** Returns the inventory's passive slots. */
@@ -154,7 +163,7 @@ public class CustomInventory internal constructor(
 
     /** Constructs and returns [Inventory] that can be shown to a player. */
     override fun getInventory(): Inventory {
-        return view ?: Bukkit.createInventory(holder, viewSize, name).also { view ->
+        return view ?: Bukkit.createInventory(this, viewSize, name).also { view ->
             view.maxStackSize = maxStackSize
             view.contents = buildViewContents()
             this.view = view
@@ -163,7 +172,7 @@ public class CustomInventory internal constructor(
 
     /** Opens this inventory for the given [player]. */
     public fun open(player: Player) {
-        player.openInventory(holder.inventory)
+        player.openInventory(inventory)
     }
 
     /** This method should be called when inventory close. */
@@ -174,9 +183,9 @@ public class CustomInventory internal constructor(
     /** Assigns given [slot] to the given [position], with replace of existing slot. */
     public fun assignSlot(position: Int, slot: Slot) {
         val inventorySlot = InventorySlot(slot, this, position)
-        val existingSlotId = internalSlotsMap[position]?.id
+        val existingSlotId = slotsLayout[position]?.id
 
-        internalSlotsMap[position] = inventorySlot
+        slotsLayout[position] = inventorySlot
         existingSlotId?.let { slots.remove(it) }
         slots[inventorySlot.id] = inventorySlot
     }
@@ -184,40 +193,39 @@ public class CustomInventory internal constructor(
     /**
      * Removes slot with the specified [id][slotId] from the inventory.
      *
-     * @return removed slot, or `null` if there no slot with the given id.
+     * @return removed slot, or `null` if there are no slot with the given id.
      */
     public fun removeSlot(slotId: String): InventorySlot? {
         val removedSlot = slots.remove(slotId)
-        if (removedSlot != null) {
-            internalSlotsMap.remove(removedSlot.position)
-        }
+        if (removedSlot != null) slotsLayout.remove(removedSlot.position)
 
         return removedSlot
     }
 
-    /** Returns the first empty Slot or `null` if there are no empty slots. */
-    public fun findEmptySlot(): InventorySlot? = getStorageSlots().find { it.isEmpty() }
-
-    override fun getSize(): Int = slots.size
-
-    @Deprecated("Use slot's maxStackSize instead")
-    override fun getMaxStackSize(): Int = maxStack
-
-    override fun setMaxStackSize(size: Int) {
-        maxStack = size
+    /**
+     * Returns the first empty that can hold the given [item]
+     * or `null` if there are no such slots.
+     */
+    public fun findEmptySlot(item: ItemStack): InventorySlot? {
+        return getStorageSlots().asSequence()
+            .filter(InventorySlot::isEmpty)
+            .find { it.canHold(item) }
     }
 
-    override fun getItem(index: Int): ItemStack = getSlot(index).content
-
-    override fun setItem(index: Int, item: ItemStack?) {
-        getSlot(index).content = item.orEmpty()
-    }
-
-    override fun addItem(vararg items: ItemStack): HashMap<Int, ItemStack> {
-        val leftover = hashMapOf<Int, ItemStack>()
+    /**
+     * Stores the given [items] in the inventory. This will try to fill
+     * existing stacks and empty slots as well as it can.
+     *
+     * The returned `Map` contains what it couldn't store, where the key is
+     * the index of the parameter, and the value is the ItemStack at that
+     * index of the varargs parameter. If all items are stored, it will return
+     * an empty `Map`.
+     */
+    public fun addItem(vararg items: ItemStack): Map<Int, ItemStack> {
+        val leftover = mutableMapOf<Int, ItemStack>()
         val nonFullSlots = mutableMapOf<Material, InventorySlot>()
 
-        var freeSlot = findEmptySlot()
+        var freeSlot = findEmptySlot(items.first())
         for (i in items.indices) {
             var item = items[i]
 
@@ -233,7 +241,7 @@ public class CustomInventory internal constructor(
                 }
 
                 item = slot.placeItem(item)
-                freeSlot = findEmptySlot()
+                freeSlot = findEmptySlot(item)
 
                 // Remember that there are the non-full slot
                 if (!slot.isFull()) nonFullSlots[item.type] = slot
@@ -243,8 +251,23 @@ public class CustomInventory internal constructor(
         return leftover
     }
 
-    override fun removeItem(vararg items: ItemStack): HashMap<Int, ItemStack> {
-        val leftover = hashMapOf<Int, ItemStack>()
+    /**
+     * Removes the given [items] from the inventory.
+     *
+     * It will try to remove 'as much as possible' from the types and amounts
+     * you give as arguments.
+     *
+     * The returned `Map` contains what it couldn't remove, where the key is
+     * the index of the parameter, and the value is the ItemStack at that
+     * index of the varargs parameter. If all the given ItemStacks are
+     * removed, it will return an empty `Map`.
+     *
+     * It is known that in some implementations this method will also set the
+     * inputted argument amount to the number of that item not removed from
+     * slots.
+     */
+    public fun removeItem(vararg items: ItemStack): Map<Int, ItemStack> {
+        val leftover = mutableMapOf<Int, ItemStack>()
         val itemsSlots = mutableMapOf<Material, InventorySlot>()
 
         for (i in items.indices) {
@@ -252,7 +275,7 @@ public class CustomInventory internal constructor(
             var toDelete = item.amount
 
             while (toDelete > 0) {
-                val itemSlot = itemsSlots.remove(item.type) ?: find(item)
+                val itemSlot = itemsSlots.remove(item.type) ?: findSimilar(item)
 
                 // Drat! we don't have this type in the inventory
                 if (itemSlot == null) {
@@ -272,173 +295,140 @@ public class CustomInventory internal constructor(
         return leftover
     }
 
-    override fun getContents(): Array<ItemStack> {
-        return slots.values
+    /**
+     * Checks if this inventory contains any item stacks with the given
+     * [material].
+     *
+     * @return `false` if the [material] is `AIR`.
+     */
+    public operator fun contains(material: Material): Boolean {
+        if (material.isAir) return false
+        return getStorageSlots().any { it.content.type == material }
+    }
+
+    /**
+     * Checks if this inventory contains the given [item].
+     *
+     * @return `false` if the [item] is `null`.
+     */
+    public operator fun contains(item: ItemStack?): Boolean {
+        if (item == null) return false
+        return getStorageSlots().any { it.content == item }
+    }
+
+    /**
+     * Checks if this inventory contains any item stacks with the given
+     * [material], adding to at least the minimum [amount] specified.
+     *
+     * @return `true` if the [amount] less than `1`. Returns `true` if
+     * the [material] is `AIR` and the inventory contains any empty slots.
+     */
+    public fun contains(material: Material, amount: Int): Boolean {
+        if (amount <= 0) return true
+
+        return getStorageSlots().asSequence()
             .map { it.content }
-            .toTypedArray()
+            .filter { it.type == material }
+            .scan(amount) { remainingAmount, item -> remainingAmount - item.amount }
+            .any { it <= 0 }
     }
 
-    override fun setContents(items: Array<out ItemStack>) {
-        setSlots(getSlots(), items)
+    /**
+     * Checks if the inventory contains at least the minimum [amount]
+     * specified of exactly matching [item].
+     *
+     * An `ItemStack` only counts if both the type and the amount
+     * of the stack match.
+     *
+     * @return `false` if the [item] is null, `true` if [amount] less
+     * than `1` or if amount of exactly matching ItemStacks were found.
+     */
+    public fun contains(item: ItemStack?, amount: Int): Boolean {
+        if (item == null) return false
+        if (amount <= 0) return true
+
+        return getStorageSlots().asSequence()
+            .filter { it.content == item }
+            .scan(amount) { remainingAmount, _ -> remainingAmount - 1 }
+            .any { it <= 0 }
     }
 
-    override fun getStorageContents(): Array<ItemStack> {
-        return getStorageSlots()
+    /**
+     * Checks if the inventory contains [item] matching the given ItemStack
+     * whose amounts sum to at least the minimum [amount] specified.
+     *
+     * @return `false` if [item] is `null`, `true` if [amount] less than `1`,
+     * `true` if enough ItemStacks were found to add to the given [amount].
+     */
+    public fun containsAtLeast(item: ItemStack?, amount: Int): Boolean {
+        if (item == null) return false
+        if (amount <= 0) return true
+
+        return getStorageSlots().asSequence()
             .map { it.content }
-            .toTypedArray()
+            .filter { it.isSimilar(item) }
+            .scan(amount) { remainingAmount, currentItem -> remainingAmount - currentItem.amount }
+            .any { it <= 0 }
     }
 
-    override fun setStorageContents(items: Array<out ItemStack>) {
-        setSlots(getStorageSlots(), items)
+    /**
+     * Returns the first slot in the inventory containing an `ItemStack` with
+     * the given [material] or `null` if there are no such slot.
+     */
+    public fun find(material: Material): InventorySlot? {
+        return getStorageSlots().find { it.content.type == material }
     }
 
-    override fun contains(material: Material): Boolean {
-        for (slot in getStorageSlots()) {
-            if (slot.content.type == material) return true
-        }
-
-        return false
+    /**
+     * Returns the first slot in the inventory containing the given [item].
+     * This will only match a slot if both the type and the amount
+     * of the stack match.
+     * @see findSimilar
+     */
+    public fun find(item: ItemStack): InventorySlot? {
+        return getStorageSlots().find { slot -> item == slot.content }
     }
 
-    override fun contains(item: ItemStack?): Boolean {
-        if (item == null) return false
-
-        for (slot in getStorageSlots()) {
-            if (slot.content == item) return true
-        }
-
-        return false
+    /**
+     * Returns the first slot in the inventory containing the item similar
+     * to the given [item].
+     * @see find
+     */
+    private fun findSimilar(item: ItemStack): InventorySlot? {
+        return getStorageSlots().find { slot -> item.isSimilar(slot.content) }
     }
 
-    override fun contains(material: Material, amount: Int): Boolean {
-        if (amount <= 0) return true
+    /**
+     * Check whether this inventory is empty. An inventory is considered
+     * to be empty if all slots of this inventory are empty.
+     */
+    public fun isEmpty(): Boolean = slots.values.all(InventorySlot::isEmpty)
 
-        var remainingAmount = amount
-        for (slot in getStorageSlots()) {
-            val item = slot.content
-            if (item.type == material) {
-                remainingAmount -= item.amount
-                if (remainingAmount <= 0) return true
-            }
-        }
-
-        return false
+    /** Removes all stacks in the inventory matching the given [material]. */
+    public fun removeAll(material: Material) {
+        removeAll { it.type == material }
     }
 
-    override fun contains(item: ItemStack?, amount: Int): Boolean {
-        if (item == null) return false
-        if (amount <= 0) return true
-
-        var remainingAmount = amount
-        for (slot in getStorageSlots()) {
-            if (slot.content == item && --remainingAmount <= 0) return true
-        }
-
-        return false
+    /** Removes all stacks in the inventory matching the given [item]. */
+    public fun removeAll(item: ItemStack) {
+        removeAll { it == item }
     }
 
-    override fun containsAtLeast(item: ItemStack?, amount: Int): Boolean {
-        if (item == null) return false
-        if (amount <= 0) return true
-
-        var remainingAmount = amount
-        for (slot in getStorageSlots()) {
-            val currentItem = slot.content
-            if (currentItem.isSimilar(item)) {
-                remainingAmount -= currentItem.amount
-                if (remainingAmount <= 0) return true
-            }
-        }
-
-        return false
+    /** Removes all stacks in the inventory matching the given [predicate]. */
+    public fun removeAll(predicate: Predicate<ItemStack>) {
+        getStorageSlots().asSequence()
+            .filter { predicate.test(it.content) }
+            .forEach { clear(it.id) }
     }
 
-    override fun all(material: Material): HashMap<Int, out ItemStack> {
-        val slots = hashMapOf<Int, ItemStack>()
-
-        for (slot in getStorageSlots()) {
-            if (slot.content.type == material) {
-                slots[getIndexOfSlot(slot)] = slot.content
-            }
-        }
-
-        return slots
-    }
-
-    override fun all(item: ItemStack?): HashMap<Int, out ItemStack> {
-        if (item == null) return hashMapOf()
-
-        val slots = hashMapOf<Int, ItemStack>()
-        for (slot in getStorageSlots()) {
-            if (slot.content == item) {
-                slots[getIndexOfSlot(slot)] = slot.content
-            }
-        }
-
-        return slots
-    }
-
-    override fun first(material: Material): Int {
-        val slot = getStorageSlots().firstOrNull { it.content.type == material } ?: return -1
-        return getIndexOfSlot(slot)
-    }
-
-    override fun first(item: ItemStack): Int {
-        val slot = find(item, withAmount = true) ?: return -1
-        return getIndexOfSlot(slot)
-    }
-
-    override fun firstEmpty(): Int {
-        val slot = findEmptySlot() ?: return -1
-        return getIndexOfSlot(slot)
-    }
-
-    override fun isEmpty(): Boolean = slots.values.all(InventorySlot::isEmpty)
-
-    override fun remove(material: Material) {
-        for (slot in getStorageSlots()) {
-            if (slot.content.type == material) {
-                clear(slot.id)
-            }
-        }
-    }
-
-    override fun remove(item: ItemStack) {
-        for (slot in getStorageSlots()) {
-            if (slot.content == item) {
-                clear(slot.id)
-            }
-        }
-    }
-
-    override fun clear(index: Int) {
-        setItem(index, null)
-    }
-
-    override fun clear() {
+    /** Clears out the whole inventory. */
+    public fun clear() {
         slots.keys.forEach(::clear)
     }
 
-    override fun getViewers(): List<HumanEntity> = view?.viewers.orEmpty()
-
-    override fun getType(): InventoryType = InventoryType.CHEST
-
-    override fun getHolder(): InventoryHolder = this
-
-    override fun iterator(): MutableListIterator<ItemStack> = InventoryIterator(this)
-
-    override fun iterator(index: Int): MutableListIterator<ItemStack> {
-        // ie, with -1, previous() will return the last element
-        val validIndex = if (index < 0) index + size + 1 else index
-        return InventoryIterator(this, validIndex)
-    }
-
-    override fun getLocation(): Location? {
-        return when (val holder = this.holder) {
-            is Container -> holder.location
-            is Entity -> holder.location
-            else -> null
-        }
+    /** Clears out a particular slot with the given [slotId]. */
+    public fun clear(slotId: String) {
+        setItem(slotId, null)
     }
 
     internal fun syncSlotWithView(slot: InventorySlot) {
@@ -462,13 +452,6 @@ public class CustomInventory internal constructor(
             contents[slot.position] = slot.getContentOrTexture()
         }
         return contents
-    }
-
-    private fun find(item: ItemStack, withAmount: Boolean = false): InventorySlot? {
-        return getStorageSlots().find { slot ->
-            if (withAmount) item == slot.content
-            else item.isSimilar(slot.content)
-        }
     }
 
     private fun findPartial(item: ItemStack?): InventorySlot? {

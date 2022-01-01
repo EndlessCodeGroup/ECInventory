@@ -104,7 +104,7 @@ class InventoryInteractionsTest : FeatureSpec({
 
         scenario("add item to similar slot") {
             initSlots(1)
-            inventory.findEmptySlot()?.content = ItemStack(Material.STICK, 2)
+            inventory.getSlotAt(1)?.content = ItemStack(Material.STICK, 2)
             val item = ItemStack(Material.STICK, 3)
             addItemToInventory(item)
 
@@ -116,7 +116,7 @@ class InventoryInteractionsTest : FeatureSpec({
 
         scenario("there no empty slots") {
             initSlots(1)
-            inventory.findEmptySlot()?.content = ItemStack(Material.STICK)
+            inventory.getSlotAt(1)?.content = ItemStack(Material.STICK)
             val item = ItemStack(Material.BLAZE_ROD)
             addItemToInventory(item)
 
