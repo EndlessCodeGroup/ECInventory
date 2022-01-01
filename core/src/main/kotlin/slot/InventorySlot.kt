@@ -81,17 +81,17 @@ public class InventorySlot(
     public fun getContentOrTexture(): ItemStack = if (isEmpty()) texture else content
 
     /** Swaps slot content with the given [item] and returns item taken from the slot. */
-    public fun swapItem(item: ItemStack): ItemStack {
-        return when {
-            item.isEmpty() && this.isEmpty() || item.amount > maxStackSize -> item
-            item.isEmpty() -> takeItem()
-            this.isEmpty() -> placeItem(item)
+    public fun swapItem(item: ItemStack): ItemStack = when {
+        item.amount > maxStackSize || !canHold(item) -> item
 
-            else -> {
-                val takenItem = content
-                content = item.cloneWithAmount()
-                takenItem
-            }
+        item.isEmpty() && this.isEmpty() -> item
+        item.isEmpty() -> takeItem()
+        this.isEmpty() -> placeItem(item)
+
+        else -> {
+            val takenItem = content
+            content = item.cloneWithAmount()
+            takenItem
         }
     }
 
@@ -123,7 +123,7 @@ public class InventorySlot(
      */
     public fun placeItem(item: ItemStack, amount: Int = item.amount): ItemStack {
         require(amount in 1..item.amount) { "Amount should be in range 1..${item.amount} but was $amount." }
-        if (item.isEmpty()) return item
+        if (item.isEmpty() || !canHold(item)) return item
 
         // Slot is empty, so we don't need to return slot content
         return if (this.isEmpty()) {
