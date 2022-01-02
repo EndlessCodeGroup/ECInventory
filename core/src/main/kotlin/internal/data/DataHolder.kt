@@ -21,6 +21,7 @@ package ru.endlesscode.inventory.internal.data
 
 import kotlinx.serialization.hocon.Hocon
 import ru.endlesscode.inventory.InventoryLayout
+import ru.endlesscode.inventory.InventoryLayout.Companion.MAX_ROWS
 import ru.endlesscode.inventory.InventoryLayoutImpl
 import ru.endlesscode.inventory.internal.config.ConfigurationCollector
 import ru.endlesscode.inventory.internal.di.DI
@@ -106,25 +107,32 @@ internal class DataHolder(
 
     private fun createInventory(id: String, config: InventoryConfig): InventoryLayout {
         val prefix = "Parsing inventory '$id':"
-        val emptySlotTexture = config.emptySlotTexture?.let { texture ->
-            requireNotNull(itemsRegistry.getItem(texture)) {
-                "$prefix Unknown texture '$texture'. $errorMimicIdExplanation"
-            }
-        }
+        val defaultSlot = getSlot(config.defaultSlot, prefix)
         require(config.slots.isNotEmpty()) { "$prefix Slots should not be empty." }
 
-        val slotMap = mutableMapOf<Int, Slot>()
+        val slotMap = sortedMapOf<Int, Slot>()
         config.slots.forEach { (key, slotName) ->
             val slotIds = parseSlotPositions(key, prefix)
-            val slot = requireNotNull(slots[slotName]) { "$prefix Unknown slot name '$slotName'." }
-            slotIds.forEach { slotId -> slotMap[slotId] = slot }
+            slotIds.forEach { slotId -> slotMap[slotId] = getSlot(slotName, prefix) }
+        }
+
+        val minRows = InventoryLayout.getMinimalRows(slotMap.lastKey() + 1)
+        val rows = config.rows ?: minRows
+        require(rows in 1..MAX_ROWS) { "$prefix Rows should be in range 1..$MAX_ROWS, but was $rows." }
+        require(rows >= minRows) {
+            "$prefix Minimal rows required for the given slots is $minRows, but $rows passed."
         }
 
         return InventoryLayoutImpl(
             id = id,
             name = config.name,
-            emptySlotTexture = emptySlotTexture.orEmpty(),
-            slotsMap = slotMap.toSortedMap(),
+            defaultSlot = defaultSlot,
+            slotsMap = slotMap,
+            rows = rows,
         )
+    }
+
+    private fun getSlot(name: String, errorPrefix: String): Slot {
+        return requireNotNull(slots[name]) { "$errorPrefix Unknown slot name '$name'.".trimStart() }
     }
 }

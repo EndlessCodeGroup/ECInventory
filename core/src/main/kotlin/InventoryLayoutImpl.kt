@@ -19,18 +19,23 @@
 
 package ru.endlesscode.inventory
 
-import org.bukkit.inventory.ItemStack
+import ru.endlesscode.inventory.InventoryLayout.Companion.MAX_ROWS
 import ru.endlesscode.inventory.slot.Slot
 import java.util.*
 
 internal data class InventoryLayoutImpl(
     override val id: String,
     override val name: String,
-    override val emptySlotTexture: ItemStack,
+    override val defaultSlot: Slot,
     override val slotsMap: SortedMap<Int, Slot>,
+    override val rows: Int = InventoryLayout.getMinimalRows(slotsMap.lastKey() + 1),
 ) : InventoryLayout {
 
     init {
         require(slotsMap.isNotEmpty()) { "Slots map shouldn't be empty." }
+        require(rows <= MAX_ROWS) { "Inventory can't contain more that $MAX_ROWS rows, but passed $rows rows." }
+
+        val minRows = InventoryLayout.getMinimalRows(slotsMap.lastKey() + 1)
+        require(rows >= minRows) { "Minimal rows required for the given slots is $minRows, but $rows passed." }
     }
 }
