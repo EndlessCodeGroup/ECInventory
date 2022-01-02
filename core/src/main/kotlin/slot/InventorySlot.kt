@@ -19,6 +19,7 @@
 
 package ru.endlesscode.inventory.slot
 
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.CustomInventory
 import ru.endlesscode.inventory.internal.util.*
@@ -38,8 +39,13 @@ public class InventorySlot(
     public val position: Int,
 ) : Slot by prototype {
 
+    /** Returns texture items with configured name and lore. */
     override val texture: ItemStack = prototype.texture
-        get() = field.clone()
+        get() = field.clone().editItemMeta {
+            setDisplayName(name.translateColorCodes())
+            lore = description.translateColorCodes()
+            addItemFlags(*ItemFlag.values())
+        }
 
     /**
      * Max stack size allowed in this slot.

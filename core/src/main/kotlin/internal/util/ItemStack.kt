@@ -21,6 +21,7 @@ package ru.endlesscode.inventory.internal.util
 
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -69,4 +70,9 @@ internal fun ItemStack.cloneWithAmount(amount: Int = this.amount): ItemStack {
 /** Returns copy of the given [ItemStack] with amount decreased by the given [amount]. */
 internal operator fun ItemStack.minus(amount: Int): ItemStack {
     return if (amount >= this.amount) AIR else cloneWithAmount(this.amount - amount)
+}
+
+/** Edit ItemStack meta. */
+internal fun ItemStack.editItemMeta(block: ItemMeta.() -> Unit): ItemStack = apply {
+    itemMeta = itemMeta?.apply(block)
 }
