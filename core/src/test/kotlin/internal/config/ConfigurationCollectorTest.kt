@@ -64,6 +64,7 @@ class ConfigurationCollectorTest : FileTestBase() {
         // Then
         collected shouldBe DataConfig(
             slots = mapOf(
+                "empty" to SlotConfig(type = Slot.Type.VISUAL),
                 "right-ring" to SlotConfig(
                     name = "Right ring",
                     texture = "ring-slot",
@@ -87,7 +88,7 @@ class ConfigurationCollectorTest : FileTestBase() {
             inventories = mapOf(
                 "default" to InventoryConfig(
                     name = "ECInventory",
-                    emptySlotTexture = null,
+                    defaultSlot = "empty",
                     slots = mapOf(
                         "0-2" to "amulet",
                         "1" to "ultimate-amulet",

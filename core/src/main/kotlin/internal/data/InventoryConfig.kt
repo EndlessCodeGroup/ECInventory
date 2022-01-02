@@ -24,6 +24,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class InventoryConfig(
     val name: String,
-    val emptySlotTexture: String? = null,
+    val defaultSlot: String,
     val slots: Map<String, String>,
+    val rows: Int? = null,
 )

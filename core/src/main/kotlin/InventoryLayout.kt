@@ -19,7 +19,6 @@
 
 package ru.endlesscode.inventory
 
-import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.slot.Slot
 import java.util.*
 
@@ -28,21 +27,37 @@ import java.util.*
  *
  * @property id Layout ID. Can be considered as an inventory type.
  * @property name Name of an inventory.
- * @property emptySlotTexture The item that will be used to fill unassigned slots.
+ * @property defaultSlot The slot that will be used for unassigned slots.
  * @property slotsMap The map of the slots. Sorted by key.
+ * @property rows The inventory size in rows. Should be in range 1..6.
  */
 public interface InventoryLayout {
     public val id: String
     public val name: String
-    public val emptySlotTexture: ItemStack
+    public val defaultSlot: Slot
     public val slotsMap: SortedMap<Int, Slot>
+    public val rows: Int
 
     public companion object {
 
+        /** Number of slots in one inventory row. */
+        public const val SLOTS_IN_ROW: Int = 9
+
+        /** Maximal possible number of rows in inventory. */
+        public const val MAX_ROWS: Int = 6
+
         /** Maximal possible inventory size. */
-        public const val MAX_SIZE: Int = 54
+        public const val MAX_SIZE: Int = SLOTS_IN_ROW * MAX_ROWS
 
         /** Maximal possible slot position in inventory. */
         public const val MAX_SLOT_POSITION: Int = MAX_SIZE - 1
+
+        /** Calculates minimal inventory size in rows wor the given [minSize] in slots. */
+        public fun getMinimalRows(minSize: Int): Int {
+            require(minSize in 1..MAX_SIZE) {
+                "Inventory size should be in range 1..$MAX_SIZE, but it was $minSize."
+            }
+            return (minSize + SLOTS_IN_ROW - 1) / SLOTS_IN_ROW
+        }
     }
 }
