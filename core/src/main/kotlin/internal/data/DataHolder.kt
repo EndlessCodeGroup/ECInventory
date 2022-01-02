@@ -21,7 +21,6 @@ package ru.endlesscode.inventory.internal.data
 
 import kotlinx.serialization.hocon.Hocon
 import ru.endlesscode.inventory.InventoryLayout
-import ru.endlesscode.inventory.InventoryLayout.Companion.MAX_SLOT_POSITION
 import ru.endlesscode.inventory.InventoryLayoutImpl
 import ru.endlesscode.inventory.internal.config.ConfigurationCollector
 import ru.endlesscode.inventory.internal.di.DI
@@ -116,13 +115,9 @@ internal class DataHolder(
 
         val slotMap = mutableMapOf<Int, Slot>()
         config.slots.forEach { (key, slotName) ->
-            val slotId = requireNotNull(key.toIntOrNull()) {
-                "$prefix Slot ID should be a number, but it was '$key'."
-            }
-            require(slotId in 0..MAX_SLOT_POSITION) {
-                "$prefix Slot ID should be in range 0..$MAX_SLOT_POSITION, but it was '$slotId'."
-            }
-            slotMap[slotId] = requireNotNull(slots[slotName]) { "$prefix Unknown slot name '$slotName'." }
+            val slotIds = parseSlotPositions(key, prefix)
+            val slot = requireNotNull(slots[slotName]) { "$prefix Unknown slot name '$slotName'." }
+            slotIds.forEach { slotId -> slotMap[slotId] = slot }
         }
 
         return InventoryLayoutImpl(

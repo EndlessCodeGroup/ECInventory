@@ -81,12 +81,16 @@ class ConfigurationCollectorTest : FileTestBase() {
                     type = Slot.Type.PASSIVE,
                     maxStackSize = 1,
                 ),
+                "amulet" to SlotConfig("Amulet"),
+                "ultimate-amulet" to SlotConfig("Ultimate Amulet"),
             ),
             inventories = mapOf(
                 "default" to InventoryConfig(
                     name = "ECInventory",
                     emptySlotTexture = null,
                     slots = mapOf(
+                        "0-2" to "amulet",
+                        "1" to "ultimate-amulet",
                         "24" to "left-ring",
                         "26" to "right-ring",
                     ),
