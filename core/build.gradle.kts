@@ -1,8 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import ru.endlesscode.bukkitgradle.dependencies.codemc
-import ru.endlesscode.bukkitgradle.dependencies.jitpack
-import ru.endlesscode.bukkitgradle.dependencies.papermc
-import ru.endlesscode.bukkitgradle.dependencies.spigotApi
+import ru.endlesscode.bukkitgradle.dependencies.*
 
 plugins {
     `kotlin-convention`
@@ -34,6 +31,7 @@ dependencies {
     compileOnly(libs.hocon)
     compileOnly(libs.mimic)
     compileOnly(libs.commandapi)
+    compileOnly(libs.placeholderapi)
     compileOnly(libs.mysql)
     compileOnly(libs.hikaricp)
 
@@ -45,6 +43,9 @@ dependencies {
 repositories {
     codemc()
     papermc()
+    placeholderApi {
+        content { includeGroup("me.clip") }
+    }
     jitpack {
         content { includeGroup("dev.jorel.CommandAPI") }
     }
