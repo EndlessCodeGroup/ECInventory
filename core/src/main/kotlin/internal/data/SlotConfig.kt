@@ -30,5 +30,5 @@ internal data class SlotConfig(
     val type: Slot.Type = Slot.Type.STORAGE,
     val allowedItems: List<String> = listOf("*"),
     val deniedItems: List<String> = emptyList(),
-    val maxStackSize: Int = 1,
+    val maxStackSize: Int = type.defaultStackSize,
 )

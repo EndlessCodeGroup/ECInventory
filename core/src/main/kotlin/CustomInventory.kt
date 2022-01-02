@@ -65,6 +65,8 @@ public class CustomInventory internal constructor(
 
     private val slotsSequence: Sequence<InventorySlot>
         get() = slotsById.values.asSequence().flatten()
+    private val containerSlotsSequence: Sequence<InventorySlot>
+        get() = slotsSequence.filter { it.type != Slot.Type.GUI }
 
     /** Returns number of slots in the inventory. */
     public val size: Int
@@ -152,20 +154,24 @@ public class CustomInventory internal constructor(
     /** Returns map where key is slotId and value is a list of slots with this slotId. */
     public fun getSlotsMap(): Map<String, List<InventorySlot>> = slotsById.mapValues { (_, value) -> value.toList() }
 
-    /** Returns slots that may contain items (all slots except visual). */
-    public fun getContainerSlots(): List<InventorySlot> = slotsSequence.filter { it.type != Slot.Type.VISUAL }.toList()
+    /**
+     * Returns equipment and storage slots.
+     * @see getEquipmentSlots
+     * @see getStorageSlots
+     */
+    public fun getContainerSlots(): List<InventorySlot> = containerSlotsSequence.toList()
 
-    /** Returns the inventory's slots with the given [type] or all slots if type is `null`. */
-    public fun getSlotsByType(type: Slot.Type): List<InventorySlot> = slotsSequence.filter { it.type == type }.toList()
-
-    /** Returns the inventory's passive slots. */
-    public fun getPassiveSlots(): List<InventorySlot> = getSlotsByType(Slot.Type.PASSIVE)
+    /** Returns the inventory's equipment slots. */
+    public fun getEquipmentSlots(): List<InventorySlot> = getSlotsByType(Slot.Type.EQUIPMENT)
 
     /** Returns the inventory's storage slots. */
     public fun getStorageSlots(): List<InventorySlot> = getSlotsByType(Slot.Type.STORAGE)
 
-    /** Returns the inventory's active slots. */
-    public fun getActiveSlots(): List<InventorySlot> = getSlotsByType(Slot.Type.ACTIVE)
+    /** Returns the inventory's GUI slots. */
+    public fun getGuiSlots(): List<InventorySlot> = getSlotsByType(Slot.Type.GUI)
+
+    /** Returns the inventory's slots with the given [type] or all slots if type is `null`. */
+    public fun getSlotsByType(type: Slot.Type): List<InventorySlot> = slotsSequence.filter { it.type == type }.toList()
 
     /** Constructs and returns [Inventory] that can be shown to a player. */
     override fun getInventory(): Inventory = getInventory(player = null)
@@ -256,7 +262,7 @@ public class CustomInventory internal constructor(
      * or `null` if there are no such slots.
      */
     public fun findEmptySlot(item: ItemStack): InventorySlot? {
-        return getStorageSlots().asSequence()
+        return containerSlotsSequence
             .filter(InventorySlot::isEmpty)
             .find { it.canHold(item) }
     }
@@ -324,7 +330,7 @@ public class CustomInventory internal constructor(
             var toDelete = item.amount
 
             while (toDelete > 0) {
-                val itemSlot = itemsSlots.remove(item.type) ?: findSimilar(item)
+                val itemSlot = itemsSlots.remove(item.type) ?: findSlotByContentSimilar(item)
 
                 // Drat! we don't have this type in the inventory
                 if (itemSlot == null) {
@@ -352,7 +358,7 @@ public class CustomInventory internal constructor(
      */
     public operator fun contains(material: Material): Boolean {
         if (material.isAir) return false
-        return getStorageSlots().any { it.content.type == material }
+        return containerSlotsSequence.any { it.content.type == material }
     }
 
     /**
@@ -362,7 +368,7 @@ public class CustomInventory internal constructor(
      */
     public operator fun contains(item: ItemStack?): Boolean {
         if (item == null) return false
-        return getStorageSlots().any { it.content == item }
+        return containerSlotsSequence.any { it.content == item }
     }
 
     /**
@@ -375,7 +381,7 @@ public class CustomInventory internal constructor(
     public fun contains(material: Material, amount: Int): Boolean {
         if (amount <= 0) return true
 
-        return getStorageSlots().asSequence()
+        return containerSlotsSequence
             .map { it.content }
             .filter { it.type == material }
             .scan(amount) { remainingAmount, item -> remainingAmount - item.amount }
@@ -396,7 +402,7 @@ public class CustomInventory internal constructor(
         if (item == null) return false
         if (amount <= 0) return true
 
-        return getStorageSlots().asSequence()
+        return containerSlotsSequence
             .filter { it.content == item }
             .scan(amount) { remainingAmount, _ -> remainingAmount - 1 }
             .any { it <= 0 }
@@ -413,7 +419,7 @@ public class CustomInventory internal constructor(
         if (item == null) return false
         if (amount <= 0) return true
 
-        return getStorageSlots().asSequence()
+        return containerSlotsSequence
             .map { it.content }
             .filter { it.isSimilar(item) }
             .scan(amount) { remainingAmount, currentItem -> remainingAmount - currentItem.amount }
@@ -424,27 +430,27 @@ public class CustomInventory internal constructor(
      * Returns the first slot in the inventory containing an `ItemStack` with
      * the given [material] or `null` if there are no such slot.
      */
-    public fun find(material: Material): InventorySlot? {
-        return getStorageSlots().find { it.content.type == material }
+    public fun findSlotByContent(material: Material): InventorySlot? {
+        return containerSlotsSequence.find { it.content.type == material }
     }
 
     /**
      * Returns the first slot in the inventory containing the given [item].
      * This will only match a slot if both the type and the amount
      * of the stack match.
-     * @see findSimilar
+     * @see findSlotByContentSimilar
      */
-    public fun find(item: ItemStack): InventorySlot? {
-        return getStorageSlots().find { slot -> item == slot.content }
+    public fun findSlotByContent(item: ItemStack): InventorySlot? {
+        return containerSlotsSequence.find { slot -> item == slot.content }
     }
 
     /**
      * Returns the first slot in the inventory containing the item similar
      * to the given [item].
-     * @see find
+     * @see findSlotByContent
      */
-    private fun findSimilar(item: ItemStack): InventorySlot? {
-        return getStorageSlots().find { slot -> item.isSimilar(slot.content) }
+    private fun findSlotByContentSimilar(item: ItemStack): InventorySlot? {
+        return containerSlotsSequence.find { slot -> item.isSimilar(slot.content) }
     }
 
     /**
@@ -465,9 +471,9 @@ public class CustomInventory internal constructor(
 
     /** Removes all stacks in the inventory matching the given [predicate]. */
     public fun removeAll(predicate: Predicate<ItemStack>) {
-        getStorageSlots().asSequence()
+        containerSlotsSequence
             .filter { predicate.test(it.content) }
-            .forEach { clear(it.id) }
+            .forEach { it.content = AIR }
     }
 
     /** Clears out the whole inventory. */
@@ -501,7 +507,7 @@ public class CustomInventory internal constructor(
     private fun findPartial(item: ItemStack?): InventorySlot? {
         if (item == null) return null
 
-        return getStorageSlots().find { slot ->
+        return containerSlotsSequence.find { slot ->
             val slotItem = slot.content
             !slot.isFull() && slotItem.isSimilar(item)
         }

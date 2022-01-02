@@ -31,7 +31,7 @@ import ru.endlesscode.inventory.internal.InstantTaskScheduler
 import ru.endlesscode.inventory.internal.listener.AddItemToInventory
 import ru.endlesscode.inventory.internal.util.AIR
 import ru.endlesscode.inventory.internal.util.orEmpty
-import ru.endlesscode.inventory.slot.EmptySlot
+import ru.endlesscode.inventory.slot.EmptyGuiSlot
 import ru.endlesscode.inventory.slot.Slot
 import ru.endlesscode.inventory.test.TestInventoryClickEvent
 import ru.endlesscode.inventory.test.TestInventoryView
@@ -63,7 +63,7 @@ class InventoryInteractionsTest : FeatureSpec({
             val inventoryLayout = InventoryLayoutImpl(
                 id = "test",
                 name = "Test",
-                defaultSlot = EmptySlot,
+                defaultSlot = EmptyGuiSlot,
                 slotsMap = slots.associateWith { slot() }.toSortedMap(),
             )
             inventory = spyk(CustomInventory(UUID.randomUUID(), inventoryLayout, InstantTaskScheduler()))

@@ -33,7 +33,7 @@ import ru.endlesscode.inventory.internal.listener.PlaceSlotContent
 import ru.endlesscode.inventory.internal.listener.SwapSlotContent
 import ru.endlesscode.inventory.internal.listener.TakeSlotContent
 import ru.endlesscode.inventory.internal.util.AIR
-import ru.endlesscode.inventory.slot.EmptySlot
+import ru.endlesscode.inventory.slot.EmptyGuiSlot
 import ru.endlesscode.inventory.slot.Slot
 import ru.endlesscode.inventory.slot.TestItemValidator
 import ru.endlesscode.inventory.test.TestInventoryClickEvent
@@ -47,7 +47,7 @@ class SlotInteractionsTest : FeatureSpec({
     val inventoryLayout = InventoryLayoutImpl(
         id = "test",
         name = "Test",
-        defaultSlot = EmptySlot,
+        defaultSlot = EmptyGuiSlot,
         slotsMap = sortedMapOf(
             1 to Slot(
                 texture = Material.BLACK_STAINED_GLASS_PANE,
