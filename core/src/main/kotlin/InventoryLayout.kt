@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2019-2021 EndlessCode Group and contributors
+ * Copyright (c) 2019-2022 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -38,10 +38,11 @@ public interface InventoryLayout {
     public val slotsMap: SortedMap<Int, Slot>
 
     public companion object {
-        /**
-         * Maximal possible slot position in inventory.
-         * Calculated as 54 (number of slots in large chest) - 1 (indices starts at 0)
-         */
-        public const val MAX_SLOT_POSITION: Int = 53
+
+        /** Maximal possible inventory size. */
+        public const val MAX_SIZE: Int = 54
+
+        /** Maximal possible slot position in inventory. */
+        public const val MAX_SLOT_POSITION: Int = MAX_SIZE - 1
     }
 }
