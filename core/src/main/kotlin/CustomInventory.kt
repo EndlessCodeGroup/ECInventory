@@ -144,6 +144,9 @@ public class CustomInventory internal constructor(
     /** Returns slots with the given [slotId] or empty list if there are no such slots. */
     public fun getSlots(slotId: String): List<InventorySlot> = slotsById[slotId]?.toList().orEmpty()
 
+    /** Returns map where key is slotId and value is a list of slots with this slotId. */
+    public fun getSlotsMap(): Map<String, List<InventorySlot>> = slotsById.mapValues { (_, value) -> value.toList() }
+
     /** Returns slots that may contain items (all slots except visual). */
     public fun getContainerSlots(): List<InventorySlot> = slotsSequence.filter { it.type != Slot.Type.VISUAL }.toList()
 
