@@ -21,6 +21,7 @@ package ru.endlesscode.inventory
 
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.OfflinePlayer
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -33,6 +34,7 @@ import ru.endlesscode.inventory.internal.listener.SlotInteractionResult.Change
 import ru.endlesscode.inventory.internal.util.*
 import ru.endlesscode.inventory.slot.InventorySlot
 import ru.endlesscode.inventory.slot.Slot
+import ru.endlesscode.inventory.util.Placeholders
 import java.util.*
 import java.util.function.Predicate
 
@@ -46,6 +48,7 @@ public class CustomInventory internal constructor(
     public val id: UUID,
     private val layout: InventoryLayout,
     private val scheduler: TaskScheduler = DI.scheduler,
+    private val placeholders: Placeholders = DI.placeholders,
 ) : InventoryHolder {
 
     /** Returns inventory layout name. */
@@ -162,17 +165,32 @@ public class CustomInventory internal constructor(
     public fun getActiveSlots(): List<InventorySlot> = getSlots(Slot.Type.ACTIVE)
 
     /** Constructs and returns [Inventory] that can be shown to a player. */
-    override fun getInventory(): Inventory {
-        return view ?: Bukkit.createInventory(this, viewSize, name).also { view ->
+    override fun getInventory(): Inventory = getInventory(player = null)
+
+    /** Constructs and returns [Inventory] that can be shown to the given [player]. */
+    private fun getInventory(player: OfflinePlayer?): Inventory {
+        val currentView = view
+        if (currentView != null) return currentView
+
+        val inventoryName = placeholders.apply(name.translateColorCodes(), player)
+        return Bukkit.createInventory(this, viewSize, inventoryName).also { view ->
             view.maxStackSize = maxStackSize
-            view.contents = buildViewContents()
+            view.contents = buildViewContents(player)
             this.view = view
         }
     }
 
+    private fun buildViewContents(player: OfflinePlayer?): Array<ItemStack> {
+        val contents = Array(viewSize) { layout.emptySlotTexture }
+        for (slot in getSlots()) {
+            contents[slot.position] = placeholders.apply(slot.getContentOrTexture(), player)
+        }
+        return contents
+    }
+
     /** Opens this inventory for the given [player]. */
     public fun open(player: Player) {
-        player.openInventory(inventory)
+        player.openInventory(getInventory(player))
     }
 
     /** This method should be called when inventory close. */
@@ -444,14 +462,6 @@ public class CustomInventory internal constructor(
         slots.forEachIndexed { index, slot ->
             setItem(slot.id, items.getOrNull(index))
         }
-    }
-
-    private fun buildViewContents(): Array<ItemStack> {
-        val contents = Array(viewSize) { layout.emptySlotTexture }
-        for (slot in getSlots()) {
-            contents[slot.position] = slot.getContentOrTexture()
-        }
-        return contents
     }
 
     private fun findPartial(item: ItemStack?): InventorySlot? {
