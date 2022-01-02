@@ -42,6 +42,7 @@ internal class WildcardItemValidatorTest : FeatureSpec({
                 "*_sword",
                 "custom:sword?",
                 "allowed:*",
+                "wooden_axe",
             ),
             denied = listOf(
                 "*denied",
@@ -55,7 +56,10 @@ internal class WildcardItemValidatorTest : FeatureSpec({
             "custom:swordX" to true,
             "custom:sword" to false,
             "cursed_sword" to false,
+            "custom:cursed_sword" to false,
             "allowed:but_denied" to false,
+            "wooden_axe" to true,
+            "minecraft:wooden_axe" to true,
         ) { (itemId, isValid) ->
             every { itemsRegistry.getItemId(any()) } returns itemId
             validator.isValid(ItemStack(Material.STICK)) shouldBe isValid
@@ -65,11 +69,12 @@ internal class WildcardItemValidatorTest : FeatureSpec({
     feature("wildcard parsing") {
         withData(
             "" to Regex(""),
-            "?" to Regex("."),
-            "*" to Regex(".*"),
-            "minecraft:*" to Regex("\\Qminecraft:\\E.*"),
-            "*_sword" to Regex(".*\\Q_sword\\E"),
-            "item?" to Regex("\\Qitem\\E."),
+            "     " to Regex(""),
+            "?" to Regex("(.+:)?."),
+            "*" to Regex("(.+:)?.*"),
+            "minecraft:*  " to Regex("\\Qminecraft:\\E.*"),
+            "*_sword" to Regex("(.+:)?.*\\Q_sword\\E"),
+            "item?" to Regex("(.+:)?\\Qitem\\E."),
             ".*:item[1-9]?" to Regex("\\Q.\\E.*\\Q:item[1-9]\\E."),
         ) { (wildcard, regex) -> WildcardItemValidator.parseWildcard(wildcard) shouldBe regex }
     }

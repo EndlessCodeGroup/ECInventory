@@ -30,6 +30,12 @@ import ru.endlesscode.mimic.items.BukkitItemsRegistry
  *
  * Item should match any of "allowed" wildcards and match to none
  * of "denied" wildcards to be considered as valid.
+ *
+ * Item IDs are taken from [Mimic](https://www.spigotmc.org/resources/82515/).
+ * Namespace is optional. If you've not specified any namespace, any namespace
+ * will be allowed. For example:
+ *
+ *     wooden_sword = *:wooden_sword
  */
 public class WildcardItemValidator internal constructor(
     allowed: List<String>,
@@ -58,10 +64,13 @@ public class WildcardItemValidator internal constructor(
     public companion object {
 
         internal fun parseWildcard(wildcard: String): Regex {
-            return Regex.escape(wildcard)
+            if (wildcard.isBlank()) return Regex("")
+
+            return Regex.escape(wildcard.trim())
                 .replace("*", "\\E.*\\Q")
                 .replace("?", "\\E.\\Q")
                 .replace("\\Q\\E", "")
+                .let { pattern -> if (':' in pattern) pattern else "(.+:)?$pattern" }
                 .toRegex()
         }
     }
