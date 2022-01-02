@@ -34,6 +34,7 @@ import org.bukkit.inventory.ItemStack
 public interface Slot {
     public val id: String
     public val name: String
+    public val description: List<String>
     public val texture: ItemStack
     public val type: Type
     public val contentValidator: ItemValidator

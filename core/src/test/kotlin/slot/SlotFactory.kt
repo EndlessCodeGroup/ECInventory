@@ -29,6 +29,7 @@ import ru.endlesscode.inventory.CustomInventory
 fun InventorySlot(
     id: String = "test-slot",
     name: String = "$id Name",
+    description: List<String> = listOf("$id Description"),
     texture: Material = Material.AIR,
     type: Slot.Type = Slot.Type.STORAGE,
     contentValidator: ItemValidator = ItemValidator.any,
@@ -37,7 +38,7 @@ fun InventorySlot(
     holder: CustomInventory = mockk(relaxed = true),
 ): InventorySlot {
     return InventorySlot(
-        prototype = Slot(id, name, texture, type, contentValidator, maxStackSize),
+        prototype = Slot(id, name, description, texture, type, contentValidator, maxStackSize),
         holder = holder,
         position = position,
     )
@@ -46,6 +47,7 @@ fun InventorySlot(
 fun Slot(
     id: String = "test-slot",
     name: String = "$id Name",
+    description: List<String> = listOf("$id Description"),
     texture: Material = Material.AIR,
     type: Slot.Type = Slot.Type.STORAGE,
     contentValidator: ItemValidator = ItemValidator.any,
@@ -53,6 +55,7 @@ fun Slot(
 ): Slot = SlotImpl(
     id = id,
     name = name,
+    description = description,
     texture = ItemStack(texture),
     type = type,
     contentValidator = contentValidator,

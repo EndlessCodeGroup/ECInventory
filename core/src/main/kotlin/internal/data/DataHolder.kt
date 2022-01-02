@@ -27,6 +27,7 @@ import ru.endlesscode.inventory.internal.config.ConfigurationCollector
 import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.util.Log
 import ru.endlesscode.inventory.internal.util.MAX_STACK_SIZE
+import ru.endlesscode.inventory.internal.util.isNullOrEmpty
 import ru.endlesscode.inventory.internal.util.orEmpty
 import ru.endlesscode.inventory.slot.Slot
 import ru.endlesscode.inventory.slot.SlotImpl
@@ -77,6 +78,14 @@ internal class DataHolder(
                 "$prefix Unknown texture '${config.texture}'. $errorMimicIdExplanation"
             }
         }
+
+        if (textureItem.isNullOrEmpty() && (config.name.isNotEmpty() || config.description.isNotEmpty())) {
+            Log.w(
+                "$prefix 'name' and 'description' is present but 'texture' is not specified.",
+                "Slot name and description can't be shown without texture.",
+            )
+        }
+
         val correctMaxStackSize = config.maxStackSize.coerceIn(1, MAX_STACK_SIZE)
         if (correctMaxStackSize != config.maxStackSize) {
             Log.w(
@@ -88,6 +97,7 @@ internal class DataHolder(
         return SlotImpl(
             id = id,
             name = config.name,
+            description = config.description,
             texture = textureItem.orEmpty(),
             type = config.type,
             contentValidator = WildcardItemValidator(config.allowedItems, config.deniedItems),

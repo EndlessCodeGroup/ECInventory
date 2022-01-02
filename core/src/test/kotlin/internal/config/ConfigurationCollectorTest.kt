@@ -74,6 +74,7 @@ class ConfigurationCollectorTest : FileTestBase() {
                 ),
                 "left-ring" to SlotConfig(
                     name = "Left ring",
+                    description = listOf("First line", "Second line"),
                     texture = "ring-slot",
                     allowedItems = listOf("minecraft:diamond_shovel", "mimic:ring_*"),
                     deniedItems = listOf("mimic:ring_slot"),
