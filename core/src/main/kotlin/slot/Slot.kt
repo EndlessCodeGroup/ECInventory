@@ -21,6 +21,7 @@ package ru.endlesscode.inventory.slot
 
 import kotlinx.serialization.Serializable
 import org.bukkit.inventory.ItemStack
+import ru.endlesscode.inventory.internal.util.MAX_STACK_SIZE
 
 /**
  * Represents slot.
@@ -41,17 +42,14 @@ public interface Slot {
     public val maxStackSize: Int
 
     @Serializable(with = SlotTypeSerializer::class)
-    public enum class Type {
-        /** Indicates that the slot should be counted on stats counting. */
-        PASSIVE,
-
+    public enum class Type(public val defaultStackSize: Int) {
         /** Indicates that the slot used just to store items. */
-        STORAGE,
+        STORAGE(defaultStackSize = MAX_STACK_SIZE),
 
-        /** The slot isn't storage and shouldn't be counted on stats counting. */
-        ACTIVE,
+        /** Indicates that the slot can store equipment. */
+        EQUIPMENT(defaultStackSize = 1),
 
-        /** Indicates that slot can't contain items. */
-        VISUAL,
+        /** Indicates that slot can't store items. */
+        GUI(defaultStackSize = 0),
     }
 }

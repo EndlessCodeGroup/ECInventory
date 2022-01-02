@@ -64,13 +64,13 @@ class ConfigurationCollectorTest : FileTestBase() {
         // Then
         collected shouldBe DataConfig(
             slots = mapOf(
-                "empty" to SlotConfig(type = Slot.Type.VISUAL),
+                "empty" to SlotConfig(type = Slot.Type.GUI),
                 "right-ring" to SlotConfig(
                     name = "Right ring",
                     texture = "ring-slot",
                     allowedItems = listOf("minecraft:diamond_shovel", "mimic:ring_*"),
                     deniedItems = listOf("mimic:ring_slot"),
-                    type = Slot.Type.PASSIVE,
+                    type = Slot.Type.EQUIPMENT,
                     maxStackSize = 1,
                 ),
                 "left-ring" to SlotConfig(
@@ -79,7 +79,7 @@ class ConfigurationCollectorTest : FileTestBase() {
                     texture = "ring-slot",
                     allowedItems = listOf("minecraft:diamond_shovel", "mimic:ring_*"),
                     deniedItems = listOf("mimic:ring_slot"),
-                    type = Slot.Type.PASSIVE,
+                    type = Slot.Type.EQUIPMENT,
                     maxStackSize = 1,
                 ),
                 "amulet" to SlotConfig("Amulet"),
