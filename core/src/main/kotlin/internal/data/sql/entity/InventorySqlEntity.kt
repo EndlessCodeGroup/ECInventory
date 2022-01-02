@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2021 EndlessCode Group and contributors
+ * Copyright (c) 2021-2022 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -33,17 +33,24 @@ internal class InventorySqlEntity(
 
 internal fun CustomInventory.toSqlEntity(): InventorySqlEntity {
     val yaml = YamlConfiguration()
-    getContainerSlots()
-        .asSequence()
-        .filterNot(InventorySlot::isEmpty)
-        .forEach { slot -> yaml[slot.id] = slot.content }
+    getSlotsMap()
+        .forEach { (slotId, slots) ->
+            slots.asSequence()
+                .filterNot(InventorySlot::isEmpty)
+                .forEachIndexed { n, slot -> yaml["$slotId:$n"] = slot.content }
+        }
+
     return InventorySqlEntity(id, type, yaml.saveToString())
 }
 
 internal fun InventorySqlEntity.toDomain(layout: InventoryLayout): CustomInventory {
     val yaml = YamlConfiguration.loadConfiguration(content.reader())
     val inventory = CustomInventory(id, layout)
-    yaml.getKeys(false)
-        .forEach { id -> inventory.setItem(id, yaml.getItemStack(id)) }
+    yaml.getKeys(false).forEach { key ->
+        val parts = key.split(":", limit = 2)
+        val slotId = parts.first()
+        val n = parts.getOrNull(1)?.toIntOrNull() ?: 0
+        inventory.setItem(slotId, n, yaml.getItemStack(key))
+    }
     return inventory
 }
