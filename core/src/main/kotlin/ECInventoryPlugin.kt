@@ -21,6 +21,7 @@ package ru.endlesscode.inventory
 
 import org.bukkit.plugin.java.JavaPlugin
 import ru.endlesscode.inventory.internal.di.DI
+import ru.endlesscode.inventory.internal.hook.PlaceholderApiPlaceholders
 import ru.endlesscode.inventory.internal.listener.InventoryClicksRouter
 import ru.endlesscode.inventory.internal.listener.PlayerInventoriesLoader
 import ru.endlesscode.inventory.internal.registerCommand
@@ -56,6 +57,8 @@ public class ECInventoryPlugin : JavaPlugin() {
         }
 
         return makeSure {
+            initHooks()
+
             val data = DI.data
             if (data.inventories.isEmpty()) {
                 Log.i("Inventory configs not found, add it to 'data' folder")
@@ -65,6 +68,10 @@ public class ECInventoryPlugin : JavaPlugin() {
             data.database.init()
             true
         }
+    }
+
+    private fun initHooks() {
+        PlaceholderApiPlaceholders.hook(server.pluginManager)
     }
 
     private fun makeSure(action: () -> Boolean): Boolean {
