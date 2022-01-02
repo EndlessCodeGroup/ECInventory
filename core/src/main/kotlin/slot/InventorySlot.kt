@@ -109,7 +109,7 @@ public class InventorySlot(
         return if (amount < content.amount) {
             val takenItems = content.clone()
             takenItems.amount = amount
-            content.amount -= amount
+            changeContentAmount { it - amount }
             takenItems
         } else {
             // Take all items from the slot
@@ -156,19 +156,25 @@ public class InventorySlot(
                 item
             } else if (content.amount + amount <= maxStackSize) {
                 // There are enough place for all items
-                content.amount += amount
+                changeContentAmount { it + amount }
                 item - amount
             } else {
                 // We can place some items
                 val leftover = item.clone()
                 leftover.amount -= maxStackSize - content.amount
 
-                content.amount = maxStackSize
+                changeContentAmount { maxStackSize }
                 leftover
             }
         } else {
             item
         }
+    }
+
+    /** Changes amount and synchronizes new content with inventory. */
+    private fun changeContentAmount(change: (Int) -> Int) {
+        content.amount = change(content.amount)
+        content = content
     }
 
     /** Returns `true` if this slot can hold the given [item]. */

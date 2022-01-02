@@ -23,8 +23,12 @@ import io.kotest.assertions.assertSoftly
 import io.kotest.common.ExperimentalKotest
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.shouldBe
+import io.mockk.clearMocks
+import io.mockk.mockk
+import io.mockk.verify
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+import ru.endlesscode.inventory.CustomInventory
 import ru.endlesscode.inventory.internal.util.AIR
 import ru.endlesscode.inventory.test.mockItemFactory
 
@@ -32,13 +36,19 @@ import ru.endlesscode.inventory.test.mockItemFactory
 internal class InventorySlotTest : FeatureSpec({
 
     val slotContentValidator = TestItemValidator()
+    val inventory = mockk<CustomInventory>(relaxed = true)
 
     // SUT
     val slot = InventorySlot(
         texture = Material.BLACK_STAINED_GLASS_PANE,
         maxStackSize = 4,
         contentValidator = slotContentValidator,
+        holder = inventory,
     )
+
+    fun verifySyncCalled(syncCalled: Boolean) {
+        verify(exactly = if (syncCalled) 1 else 0) { inventory.syncSlotWithView(slot) }
+    }
 
     beforeSpec {
         mockItemFactory()
@@ -51,18 +61,22 @@ internal class InventorySlotTest : FeatureSpec({
             slotContent: ItemStack,
             takeAmount: Int = slotContent.amount,
             afterTake: State = State(content = AIR, cursor = slotContent),
+            syncCalled: Boolean = true,
         ) = scenario(name) {
             slot.content = slotContent
+            clearMocks(inventory)
 
             assertSoftly {
                 slot.takeItem(takeAmount) shouldBe afterTake.cursor
                 slot.content shouldBe afterTake.content
+                verifySyncCalled(syncCalled)
             }
         }
 
         scenario(
             "take item from empty slot",
             slotContent = AIR,
+            syncCalled = false,
         )
 
         scenario(
@@ -88,14 +102,17 @@ internal class InventorySlotTest : FeatureSpec({
             beforePlace: State,
             afterPlace: State = State(content = beforePlace.cursor, cursor = beforePlace.content),
             placeAmount: Int = beforePlace.cursor.amount,
+            syncCalled: Boolean = true,
         ) = scenario(name) {
             val (currentContent, currentCursor) = beforePlace
             val (resultContent, resultCursor) = afterPlace
             slot.content = currentContent
+            clearMocks(inventory)
 
             assertSoftly {
                 slot.placeItem(currentCursor, placeAmount) shouldBe resultCursor
                 slot.content shouldBe resultContent
+                verifySyncCalled(syncCalled)
             }
         }
 
@@ -142,6 +159,7 @@ internal class InventorySlotTest : FeatureSpec({
                 content = item(amount = slot.maxStackSize),
                 cursor = item(),
             ),
+            syncCalled = false,
         )
 
         scenario(
@@ -188,20 +206,24 @@ internal class InventorySlotTest : FeatureSpec({
             name: String,
             beforeSwap: State,
             afterSwap: State = State(content = beforeSwap.cursor, cursor = beforeSwap.content),
+            syncCalled: Boolean = true,
         ) = scenario(name) {
             val (currentContent, currentCursor) = beforeSwap
             val (resultContent, resultCursor) = afterSwap
             slot.content = currentContent
+            clearMocks(inventory)
 
             assertSoftly {
                 slot.swapItem(currentCursor) shouldBe resultCursor
                 slot.content shouldBe resultContent
+                verifySyncCalled(syncCalled)
             }
         }
 
         scenario(
             "swap empty slot with empty item",
             beforeSwap = State(content = AIR, cursor = AIR),
+            syncCalled = false,
         )
 
         scenario(
@@ -224,6 +246,7 @@ internal class InventorySlotTest : FeatureSpec({
                 content = AIR,
                 cursor = item(amount = slot.maxStackSize + 1),
             ),
+            syncCalled = false,
         )
 
         scenario(
@@ -244,6 +267,7 @@ internal class InventorySlotTest : FeatureSpec({
                 content = item(Material.BLAZE_ROD),
                 cursor = item(amount = slot.maxStackSize + 1),
             ),
+            syncCalled = false,
         )
     }
 
