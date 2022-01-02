@@ -26,6 +26,8 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.CustomInventory
 
+val EmptySlot = Slot("empty", type = Slot.Type.VISUAL)
+
 fun InventorySlot(
     id: String = "test-slot",
     name: String = "$id Name",

@@ -33,6 +33,7 @@ import ru.endlesscode.inventory.internal.listener.PlaceSlotContent
 import ru.endlesscode.inventory.internal.listener.SwapSlotContent
 import ru.endlesscode.inventory.internal.listener.TakeSlotContent
 import ru.endlesscode.inventory.internal.util.AIR
+import ru.endlesscode.inventory.slot.EmptySlot
 import ru.endlesscode.inventory.slot.Slot
 import ru.endlesscode.inventory.slot.TestItemValidator
 import ru.endlesscode.inventory.test.TestInventoryClickEvent
@@ -46,19 +47,19 @@ class SlotInteractionsTest : FeatureSpec({
     val inventoryLayout = InventoryLayoutImpl(
         id = "test",
         name = "Test",
-        emptySlotTexture = AIR,
+        defaultSlot = EmptySlot,
         slotsMap = sortedMapOf(
             1 to Slot(
                 texture = Material.BLACK_STAINED_GLASS_PANE,
                 maxStackSize = 4,
                 contentValidator = slotContentValidator,
             )
-        )
+        ),
     )
 
     // SUT
     val inventory = spyk(CustomInventory(UUID.randomUUID(), inventoryLayout, InstantTaskScheduler()))
-    val slot = inventory.getSlotAt(1)!!
+    val slot = inventory.getSlotAt(1)
 
     val inventoryView = TestInventoryView()
     lateinit var event: TestInventoryClickEvent

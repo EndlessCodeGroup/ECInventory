@@ -44,10 +44,10 @@ class InventoryClicksRouterTest : FeatureSpec({
     // SUT
     val router = InventoryClicksRouter(InstantTaskScheduler())
 
-    var clickedSlot: InventorySlot? = null
+    lateinit var clickedSlot: InventorySlot
     var appliedInteraction: InventoryInteraction? = null
     val inventory = mockk<CustomInventory>(relaxUnitFun = true) {
-        every { viewSize } returns 54
+        every { size } returns 54
         every { getSlotAt(any()) } answers { clickedSlot }
         every { handleInteraction(any()) } answers { appliedInteraction = firstArg() }
     }
@@ -87,11 +87,6 @@ class InventoryClicksRouterTest : FeatureSpec({
             verifyInteraction(interaction = null)
         }
 
-        scenario("click non-functional inventory slot") {
-            performClick(PICKUP_ALL)
-            verifyInteraction(interaction = null, eventCancelled = true)
-        }
-
         scenario("do nothing with slot") {
             clickedSlot = mockk()
             performClick(NOTHING)
@@ -105,7 +100,7 @@ class InventoryClicksRouterTest : FeatureSpec({
             }
             val event = performClick(PICKUP_ALL)
 
-            verifyInteraction(TakeSlotContent.fromClick(event, clickedSlot!!))
+            verifyInteraction(TakeSlotContent.fromClick(event, clickedSlot))
         }
 
         scenario("place item to slot") {
@@ -113,13 +108,13 @@ class InventoryClicksRouterTest : FeatureSpec({
             inventoryView.cursor = ItemStack(Material.STICK)
             val event = performClick(PLACE_ALL)
 
-            verifyInteraction(PlaceSlotContent.fromClick(event, clickedSlot!!))
+            verifyInteraction(PlaceSlotContent.fromClick(event, clickedSlot))
         }
 
         scenario("collect items similar to inventory items") {
             every { inventoryView.topInventory.contents } returns arrayOf(ItemStack(Material.STICK, 2))
             inventoryView.cursor = ItemStack(Material.STICK)
-            performClick(COLLECT_TO_CURSOR, slot = inventory.viewSize + 1)
+            performClick(COLLECT_TO_CURSOR, slot = inventory.size + 1)
 
             verifyInteraction(interaction = null, eventCancelled = true)
         }
@@ -127,12 +122,13 @@ class InventoryClicksRouterTest : FeatureSpec({
         scenario("collect items not similar to inventory items") {
             every { inventoryView.topInventory.contents } returns arrayOf(ItemStack(Material.BLAZE_ROD, 2))
             inventoryView.cursor = ItemStack(Material.STICK)
-            performClick(COLLECT_TO_CURSOR, slot = inventory.viewSize + 1)
+            performClick(COLLECT_TO_CURSOR, slot = inventory.size + 1)
 
             verifyInteraction(interaction = null)
         }
 
         scenario("collect items inside inventory") {
+            clickedSlot = mockk()
             performClick(COLLECT_TO_CURSOR)
             verifyInteraction(interaction = null, eventCancelled = true)
         }
@@ -141,14 +137,14 @@ class InventoryClicksRouterTest : FeatureSpec({
             clickedSlot = mockk { every { isEmpty() } returns true }
             val event = performClick(SWAP_WITH_CURSOR)
 
-            verifyInteraction(PlaceSlotContent.fromClick(event, clickedSlot!!))
+            verifyInteraction(PlaceSlotContent.fromClick(event, clickedSlot))
         }
 
         scenario("swap with cursor non-empty item") {
             clickedSlot = mockk { every { isEmpty() } returns false }
             val event = performClick(SWAP_WITH_CURSOR)
 
-            verifyInteraction(SwapSlotContent.fromClick(event, clickedSlot!!))
+            verifyInteraction(SwapSlotContent.fromClick(event, clickedSlot))
         }
 
         scenario("swap with hotbar slot") {
@@ -157,7 +153,7 @@ class InventoryClicksRouterTest : FeatureSpec({
             inventoryView.bottomInventory.setItem(0, hotbarItem)
             val event = performClick(HOTBAR_SWAP, hotbarKey = 0)
 
-            verifyInteraction(SwapSlotContent(event, clickedSlot!!, hotbarItem))
+            verifyInteraction(SwapSlotContent(event, clickedSlot, hotbarItem))
         }
 
         scenario("swap with offhand slot") {
@@ -166,17 +162,17 @@ class InventoryClicksRouterTest : FeatureSpec({
             inventoryView.offhandItem = offhandItem
             val event = performClick(HOTBAR_SWAP, click = SWAP_OFFHAND)
 
-            verifyInteraction(SwapSlotContent(event, clickedSlot!!, offhandItem))
+            verifyInteraction(SwapSlotContent(event, clickedSlot, offhandItem))
         }
 
         scenario("move empty item to inventory") {
-            performClick(MOVE_TO_OTHER_INVENTORY, slot = inventory.viewSize + 1)
+            performClick(MOVE_TO_OTHER_INVENTORY, slot = inventory.size + 1)
             verifyInteraction(interaction = null, eventCancelled = true)
         }
 
         scenario("move item to inventory") {
             val item = ItemStack(Material.STICK)
-            val event = performClick(MOVE_TO_OTHER_INVENTORY, current = item, slot = inventory.viewSize + 1)
+            val event = performClick(MOVE_TO_OTHER_INVENTORY, current = item, slot = inventory.size + 1)
 
             verifyInteraction(AddItemToInventory(event, item), eventCancelled = true)
         }
@@ -193,16 +189,11 @@ class InventoryClicksRouterTest : FeatureSpec({
             router.onDrag(event)
         }
 
-        scenario("click non-functional inventory slot") {
-            performDrag()
-            verifyInteraction(interaction = null, eventCancelled = true)
-        }
-
         scenario("drag in inventory") {
             performDrag(
                 slots = mapOf(
                     0 to ItemStack(Material.STICK),
-                    inventory.viewSize to ItemStack(Material.STICK),
+                    inventory.size to ItemStack(Material.STICK),
                 ),
             )
 
@@ -212,8 +203,8 @@ class InventoryClicksRouterTest : FeatureSpec({
         scenario("drag outside of inventory") {
             performDrag(
                 slots = mapOf(
-                    inventory.viewSize to ItemStack(Material.STICK),
-                    inventory.viewSize + 1 to ItemStack(Material.STICK),
+                    inventory.size to ItemStack(Material.STICK),
+                    inventory.size + 1 to ItemStack(Material.STICK),
                 ),
             )
 
@@ -225,7 +216,7 @@ class InventoryClicksRouterTest : FeatureSpec({
             val item = ItemStack(Material.STICK, 2)
             val event = performDrag(item)
 
-            verifyInteraction(PlaceSlotContent(event, clickedSlot!!, item, amount = 2))
+            verifyInteraction(PlaceSlotContent(event, clickedSlot, item, amount = 2))
         }
 
         scenario("place one item") {
@@ -233,7 +224,7 @@ class InventoryClicksRouterTest : FeatureSpec({
             val item = ItemStack(Material.STICK, 2)
             val event = performDrag(item, rightClick = true)
 
-            verifyInteraction(PlaceSlotContent(event, clickedSlot!!, item, amount = 1))
+            verifyInteraction(PlaceSlotContent(event, clickedSlot, item, amount = 1))
         }
     }
 })
