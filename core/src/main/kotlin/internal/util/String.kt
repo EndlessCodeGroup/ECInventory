@@ -21,6 +21,10 @@ package ru.endlesscode.inventory.internal.util
 
 import org.bukkit.ChatColor
 
+internal fun List<String>.translateColorCodes(colorCode: Char = '&'): List<String> {
+    return map { it.translateColorCodes(colorCode) }
+}
+
 internal fun String.translateColorCodes(colorCode: Char = '&'): String {
     return ChatColor.translateAlternateColorCodes(colorCode, this)
 }

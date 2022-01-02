@@ -25,6 +25,7 @@ import ru.endlesscode.inventory.internal.util.MAX_STACK_SIZE
 internal data class SlotImpl(
     override val id: String,
     override val name: String,
+    override val description: List<String>,
     override val texture: ItemStack,
     override val type: Slot.Type,
     override val contentValidator: ItemValidator,
