@@ -55,17 +55,12 @@ internal class InventoryClicksRouter(
         } else if (position in inventory) {
             // User slightly moved mouse, consider it was a click
             val slot = inventory.getSlotAt(position)
-            if (slot == null) {
-                event.isCancelled = true
-                return
-            }
-
             val interaction = event.toPlaceInteraction(slot)
             inventory.handleInteraction(interaction)
         }
     }
 
-    private operator fun CustomInventory.contains(position: Int) = position < viewSize
+    private operator fun CustomInventory.contains(position: Int) = position < size
 
     private fun InventoryDragEvent.toPlaceInteraction(slot: InventorySlot): PlaceSlotContent {
         val amount = if (type == DragType.SINGLE) 1 else oldCursor.amount
@@ -92,14 +87,7 @@ internal class InventoryClicksRouter(
 
         return if (isCustomInventoryInteraction) {
             val clickedSlot = inventory.getSlotAt(rawSlot)
-
-            // Prevent interaction with non-functional inventory slots
-            if (clickedSlot == null) {
-                isCancelled = true
-                null
-            } else {
-                inventorySlotInteraction(clickedSlot)
-            }
+            inventorySlotInteraction(clickedSlot)
         } else {
             vanillaSlotInteraction()
         }

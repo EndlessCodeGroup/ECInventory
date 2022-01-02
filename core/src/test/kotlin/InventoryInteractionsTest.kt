@@ -31,6 +31,7 @@ import ru.endlesscode.inventory.internal.InstantTaskScheduler
 import ru.endlesscode.inventory.internal.listener.AddItemToInventory
 import ru.endlesscode.inventory.internal.util.AIR
 import ru.endlesscode.inventory.internal.util.orEmpty
+import ru.endlesscode.inventory.slot.EmptySlot
 import ru.endlesscode.inventory.slot.Slot
 import ru.endlesscode.inventory.test.TestInventoryClickEvent
 import ru.endlesscode.inventory.test.TestInventoryView
@@ -62,20 +63,18 @@ class InventoryInteractionsTest : FeatureSpec({
             val inventoryLayout = InventoryLayoutImpl(
                 id = "test",
                 name = "Test",
-                emptySlotTexture = AIR,
+                defaultSlot = EmptySlot,
                 slotsMap = slots.associateWith { slot() }.toSortedMap(),
             )
             inventory = spyk(CustomInventory(UUID.randomUUID(), inventoryLayout, InstantTaskScheduler()))
         }
 
         fun setSlotsContent(vararg bindings: Pair<Int, ItemStack>) {
-            for ((position, item) in bindings) {
-                inventory.getSlotAt(position)?.content = item
-            }
+            for ((position, item) in bindings) inventory.setItemAt(position, item)
         }
 
         fun addItemToInventory(item: ItemStack) {
-            event = TestInventoryClickEvent(inventoryView, MOVE_TO_OTHER_INVENTORY, slot = inventory.viewSize + 1)
+            event = TestInventoryClickEvent(inventoryView, MOVE_TO_OTHER_INVENTORY, slot = inventory.size + 1)
             event.currentItem = item
             val interaction = AddItemToInventory(event, item)
             inventory.handleInteraction(interaction)

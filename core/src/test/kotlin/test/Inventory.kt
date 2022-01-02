@@ -28,7 +28,7 @@ import org.bukkit.inventory.InventoryHolder
 import ru.endlesscode.inventory.CustomInventory
 import ru.endlesscode.inventory.internal.util.AIR
 
-fun Inventory(inv: CustomInventory) = Inventory(inv.viewSize, inv)
+fun Inventory(inv: CustomInventory) = Inventory(inv.size, inv)
 
 fun Inventory(
     size: Int,
