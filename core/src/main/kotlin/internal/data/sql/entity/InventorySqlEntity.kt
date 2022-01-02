@@ -33,7 +33,7 @@ internal class InventorySqlEntity(
 
 internal fun CustomInventory.toSqlEntity(): InventorySqlEntity {
     val yaml = YamlConfiguration()
-    getSlots()
+    getContainerSlots()
         .asSequence()
         .filterNot(InventorySlot::isEmpty)
         .forEach { slot -> yaml[slot.id] = slot.content }

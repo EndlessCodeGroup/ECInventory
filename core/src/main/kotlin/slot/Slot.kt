@@ -42,22 +42,16 @@ public interface Slot {
 
     @Serializable(with = SlotTypeSerializer::class)
     public enum class Type {
-        /**
-         * Indicates that the slot should be counted on stats counting.
-         * @see RPGInventory.getPassiveSlots
-         */
+        /** Indicates that the slot should be counted on stats counting. */
         PASSIVE,
 
-        /**
-         * Indicates that the slot used just to store items.
-         * @see RPGInventory.getStorageSlots
-         */
+        /** Indicates that the slot used just to store items. */
         STORAGE,
 
-        /**
-         * The slot isn't storage and shouldn't be counted on stats counting.
-         * @see RPGInventory.getActiveSlots
-         */
-        ACTIVE
+        /** The slot isn't storage and shouldn't be counted on stats counting. */
+        ACTIVE,
+
+        /** Indicates that slot can't contain items. */
+        VISUAL,
     }
 }
