@@ -58,7 +58,7 @@ class SlotInteractionsTest : FeatureSpec({
 
     // SUT
     val inventory = spyk(CustomInventory(UUID.randomUUID(), inventoryLayout, InstantTaskScheduler()))
-    val slot = inventory.getSlot(0)
+    val slot = inventory.getSlotAt(1)!!
 
     val inventoryView = TestInventoryView()
     lateinit var event: TestInventoryClickEvent

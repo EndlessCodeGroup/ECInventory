@@ -84,7 +84,7 @@ class InventoryInteractionsTest : FeatureSpec({
         fun assertSlots(current: ItemStack, vararg pairs: Pair<Int, ItemStack>) {
             val expectedContent = pairs.toMap()
             assertSoftly {
-                inventory.getSlots().forAll { slot ->
+                inventory.getContainerSlots().forAll { slot ->
                     slot.content shouldBe expectedContent[slot.position].orEmpty()
                 }
                 event.currentItem shouldBe current
