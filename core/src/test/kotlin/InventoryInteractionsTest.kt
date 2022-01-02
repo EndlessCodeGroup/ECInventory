@@ -19,6 +19,7 @@
 
 package ru.endlesscode.inventory
 
+import io.kotest.assertions.assertSoftly
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.inspectors.forAll
 import io.kotest.matchers.shouldBe
@@ -67,6 +68,12 @@ class InventoryInteractionsTest : FeatureSpec({
             inventory = spyk(CustomInventory(UUID.randomUUID(), inventoryLayout, InstantTaskScheduler()))
         }
 
+        fun setSlotsContent(vararg bindings: Pair<Int, ItemStack>) {
+            for ((position, item) in bindings) {
+                inventory.getSlotAt(position)?.content = item
+            }
+        }
+
         fun addItemToInventory(item: ItemStack) {
             event = TestInventoryClickEvent(inventoryView, MOVE_TO_OTHER_INVENTORY, slot = inventory.viewSize + 1)
             event.currentItem = item
@@ -76,10 +83,12 @@ class InventoryInteractionsTest : FeatureSpec({
 
         fun assertSlots(current: ItemStack, vararg pairs: Pair<Int, ItemStack>) {
             val expectedContent = pairs.toMap()
-            inventory.getSlots().forAll { slot ->
-                slot.content shouldBe expectedContent[slot.position].orEmpty()
+            assertSoftly {
+                inventory.getSlots().forAll { slot ->
+                    slot.content shouldBe expectedContent[slot.position].orEmpty()
+                }
+                event.currentItem shouldBe current
             }
-            event.currentItem shouldBe current
         }
 
         scenario("add item to empty slot") {
@@ -104,7 +113,8 @@ class InventoryInteractionsTest : FeatureSpec({
 
         scenario("add item to similar slot") {
             initSlots(1)
-            inventory.getSlotAt(1)?.content = ItemStack(Material.STICK, 2)
+            setSlotsContent(1 to ItemStack(Material.STICK, 2))
+
             val item = ItemStack(Material.STICK, 3)
             addItemToInventory(item)
 
@@ -116,7 +126,8 @@ class InventoryInteractionsTest : FeatureSpec({
 
         scenario("there no empty slots") {
             initSlots(1)
-            inventory.getSlotAt(1)?.content = ItemStack(Material.STICK)
+            setSlotsContent(1 to ItemStack(Material.STICK))
+
             val item = ItemStack(Material.BLAZE_ROD)
             addItemToInventory(item)
 
