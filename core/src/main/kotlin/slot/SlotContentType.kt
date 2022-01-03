@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2021-2022 EndlessCode Group and contributors
+ * Copyright (c) 2022 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,17 +17,17 @@
  * along with ECInventory. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.inventory.internal.data
+package ru.endlesscode.inventory.slot
 
-import kotlinx.serialization.Serializable
+public enum class SlotContentType {
 
-@Serializable
-internal data class SlotConfig(
-    val name: String = "",
-    val description: List<String> = emptyList(),
-    val texture: String? = null,
-    val type: SlotConfigType = SlotConfigType.GENERIC,
-    val allowedItems: List<String> = listOf("*"),
-    val deniedItems: List<String> = emptyList(),
-    val maxStackSize: Int = type.defaultStackSize,
-)
+    /** Indicates that this is generic slot. */
+    GENERIC,
+
+    /**
+     * Indicates that slot holds equipment.
+     * Items from such slots should be counted as equipped and should
+     * apply stats and effects to a player.
+     */
+    EQUIPMENT,
+}

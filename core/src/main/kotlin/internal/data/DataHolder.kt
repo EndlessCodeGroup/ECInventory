@@ -20,6 +20,7 @@
 package ru.endlesscode.inventory.internal.data
 
 import kotlinx.serialization.hocon.Hocon
+import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.InventoryLayout
 import ru.endlesscode.inventory.InventoryLayout.Companion.MAX_ROWS
 import ru.endlesscode.inventory.InventoryLayoutImpl
@@ -29,9 +30,7 @@ import ru.endlesscode.inventory.internal.util.Log
 import ru.endlesscode.inventory.internal.util.MAX_STACK_SIZE
 import ru.endlesscode.inventory.internal.util.isNullOrEmpty
 import ru.endlesscode.inventory.internal.util.orEmpty
-import ru.endlesscode.inventory.slot.ContainerSlotImpl
-import ru.endlesscode.inventory.slot.Slot
-import ru.endlesscode.inventory.slot.WildcardItemValidator
+import ru.endlesscode.inventory.slot.*
 import ru.endlesscode.mimic.items.BukkitItemsRegistry
 import java.nio.file.Path
 
@@ -86,6 +85,13 @@ internal class DataHolder(
             )
         }
 
+        return when (config.type) {
+            SlotConfigType.GENERIC, SlotConfigType.EQUIPMENT -> createContainerSlot(id, config, textureItem.orEmpty(), prefix)
+            SlotConfigType.GUI -> createGuiSlot(id, config, textureItem.orEmpty(), prefix)
+        }
+    }
+
+    private fun createContainerSlot(id: String, config: SlotConfig, texture: ItemStack, prefix: String): Slot {
         val correctMaxStackSize = config.maxStackSize.coerceIn(1, MAX_STACK_SIZE)
         if (correctMaxStackSize != config.maxStackSize) {
             Log.w(
@@ -94,14 +100,42 @@ internal class DataHolder(
             )
         }
 
+        val contentType = when (config.type) {
+            SlotConfigType.GENERIC -> SlotContentType.GENERIC
+            SlotConfigType.EQUIPMENT -> SlotContentType.EQUIPMENT
+            else -> error("$prefix Unexpected slot type '${config.type}'.")
+        }
+
         return ContainerSlotImpl(
             id = id,
             name = config.name,
             description = config.description,
-            texture = textureItem.orEmpty(),
-            type = config.type,
+            texture = texture,
+            contentType = contentType,
             contentValidator = WildcardItemValidator(config.allowedItems, config.deniedItems),
             maxStackSize = correctMaxStackSize,
+        )
+    }
+
+    private fun createGuiSlot(id: String, config: SlotConfig, texture: ItemStack, prefix: String): Slot {
+        val redundantOptions = mapOf(
+            "allowed-items" to { config.allowedItems.singleOrNull() == "*" },
+            "denied-items" to { config.deniedItems.isEmpty() },
+            "max-stack-size" to { config.maxStackSize == SlotConfigType.GUI.defaultStackSize },
+        ).filterValues { isDefault -> !isDefault() }.keys
+
+        if (redundantOptions.isNotEmpty()) {
+            Log.w(
+                "$prefix These options are not applicable to slots with type GUI and may be removed:",
+                "  ${redundantOptions.joinToString()}",
+            )
+        }
+
+        return SlotImpl(
+            id = id,
+            name = config.name,
+            description = config.description,
+            texture = texture
         )
     }
 

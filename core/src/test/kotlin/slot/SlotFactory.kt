@@ -25,7 +25,6 @@ import io.mockk.mockk
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.CustomInventory
-import ru.endlesscode.inventory.internal.data.SlotType
 
 val EmptyGuiSlot = Slot("empty")
 
@@ -34,7 +33,7 @@ fun ContainerInventorySlot(
     name: String = "$id Name",
     description: List<String> = listOf("$id Description"),
     texture: Material = Material.AIR,
-    type: SlotType = SlotType.STORAGE,
+    type: SlotContentType = SlotContentType.GENERIC,
     contentValidator: ItemValidator = ItemValidator.any,
     maxStackSize: Int = 1,
     position: Int = 0,
@@ -59,7 +58,7 @@ fun ContainerSlot(
     name: String = "$id Name",
     description: List<String> = listOf("$id Description"),
     texture: Material = Material.AIR,
-    type: SlotType = SlotType.STORAGE,
+    type: SlotContentType = SlotContentType.GENERIC,
     contentValidator: ItemValidator = ItemValidator.any,
     maxStackSize: Int = 1,
 ): ContainerSlot = ContainerSlotImpl(
@@ -67,7 +66,7 @@ fun ContainerSlot(
     name = name,
     description = description,
     texture = ItemStack(texture),
-    type = type,
+    contentType = type,
     contentValidator = contentValidator,
     maxStackSize = maxStackSize,
 )

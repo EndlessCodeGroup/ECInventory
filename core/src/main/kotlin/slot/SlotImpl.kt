@@ -20,7 +20,6 @@
 package ru.endlesscode.inventory.slot
 
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.inventory.internal.data.SlotType
 import ru.endlesscode.inventory.internal.util.MAX_STACK_SIZE
 
 internal data class SlotImpl(
@@ -35,7 +34,7 @@ internal data class ContainerSlotImpl(
     override val name: String,
     override val description: List<String>,
     override val texture: ItemStack,
-    override val type: SlotType,
+    override val contentType: SlotContentType,
     override val contentValidator: ItemValidator,
     override val maxStackSize: Int,
 ) : ContainerSlot {

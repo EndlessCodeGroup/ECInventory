@@ -24,18 +24,19 @@ import ru.endlesscode.inventory.internal.data.serialization.ConfigEnumSerializer
 import ru.endlesscode.inventory.internal.util.MAX_STACK_SIZE
 
 @Serializable(with = SlotTypeSerializer::class)
-public enum class SlotType(public val defaultStackSize: Int) {
-    /** Indicates that the slot used just to store items. */
-    STORAGE(defaultStackSize = MAX_STACK_SIZE),
+internal enum class SlotConfigType(val defaultStackSize: Int) {
 
-    /** Indicates that the slot can store equipment. */
+    /** Generic slot used just to store items. */
+    GENERIC(defaultStackSize = MAX_STACK_SIZE),
+
+    /** Slot that can store equipment. */
     EQUIPMENT(defaultStackSize = 1),
 
-    /** Indicates that slot can't store items. */
+    /** Slot that is used for GUI and can't store items. */
     GUI(defaultStackSize = 0),
 }
 
-internal object SlotTypeSerializer : ConfigEnumSerializer<SlotType>(
-    serialName = SlotType::class.java.canonicalName,
+internal object SlotTypeSerializer : ConfigEnumSerializer<SlotConfigType>(
+    serialName = SlotConfigType::class.java.canonicalName,
     values = enumValues(),
 )
