@@ -47,12 +47,15 @@ class InventoryClicksRouterTest : FeatureSpec({
     // SUT
     val router = InventoryClicksRouter(InstantTaskScheduler())
 
-    var clickedSlot: InventorySlot = mockk<GuiInventorySlot>()
+    var clickedSlot: InventorySlot = mockk<GuiInventorySlot>(relaxUnitFun = true)
     var appliedInteraction: InventoryInteraction? = null
     val inventory = mockk<CustomInventory>(relaxUnitFun = true) {
         every { size } returns 54
         every { getSlotAt(any()) } answers { clickedSlot }
-        every { handleInteraction(any()) } answers { appliedInteraction = firstArg() }
+        every { handleInteraction(any()) } answers {
+            appliedInteraction = firstArg()
+            true
+        }
     }
     val inventoryView = TestInventoryView(Inventory(inventory))
 
@@ -73,7 +76,7 @@ class InventoryClicksRouterTest : FeatureSpec({
     }
 
     fun clickedContainerSlot(content: ItemStack = AIR): ContainerInventorySlot {
-        val slot = mockk<ContainerInventorySlot> {
+        val slot = mockk<ContainerInventorySlot>(relaxUnitFun = true) {
             every { this@mockk.content } returns content
             every { isEmpty() } returns content.isEmpty()
         }

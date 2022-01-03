@@ -30,7 +30,7 @@ import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.internal.TaskScheduler
 import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.listener.*
-import ru.endlesscode.inventory.internal.listener.SlotInteractionResult.Change
+import ru.endlesscode.inventory.internal.listener.SlotInteractionResult.*
 import ru.endlesscode.inventory.internal.util.*
 import ru.endlesscode.inventory.slot.*
 import ru.endlesscode.inventory.util.Placeholders
@@ -540,18 +540,23 @@ public class CustomInventory internal constructor(
         }
     }
 
-    internal fun handleInteraction(interaction: InventoryInteraction) {
-        when (interaction) {
+    /**
+     * Tries to handle the given [interaction].
+     * @return `true` if interaction was handled successfully; `false` if interaction was not handled.
+     */
+    internal fun handleInteraction(interaction: InventoryInteraction): Boolean {
+        return when (interaction) {
             is SlotInteraction -> handleSlotInteraction(interaction)
 
             is AddItemToInventory -> {
                 val itemLeft = addItem(interaction.item).values.firstOrNull()
                 interaction.setSlotItem(itemLeft.orEmpty())
+                true
             }
         }
     }
 
-    private fun handleSlotInteraction(interaction: SlotInteraction) {
+    private fun handleSlotInteraction(interaction: SlotInteraction): Boolean {
         val slot = interaction.slot
         val result = when (interaction) {
             is TakeSlotContent -> slot.takeItemInteraction(interaction.amount)
@@ -566,18 +571,20 @@ public class CustomInventory internal constructor(
                 scheduler.runOnMain { interaction.syncCursor(result.cursorReplacement) }
             }
         }
+
+        return result != Deny
     }
 
     /** Swap content with the given [item]. */
     private fun ContainerInventorySlot.swapItemInteraction(item: ItemStack): SlotInteractionResult = when {
-        item.amount > maxStackSize || !canHold(item) -> SlotInteractionResult.Deny
-        item.isEmpty() && this.isEmpty() -> SlotInteractionResult.Deny
+        item.amount > maxStackSize || !canHold(item) -> Deny
+        item.isEmpty() && this.isEmpty() -> Deny
         item.isEmpty() -> takeItemInteraction()
         this.isEmpty() -> placeItemInteraction(item)
 
         else -> {
             swapItem(item)
-            SlotInteractionResult.Accept
+            Allow
         }
     }
 
@@ -586,8 +593,8 @@ public class CustomInventory internal constructor(
         val expectedCursor = getView().cloneWithAmount(amount)
         val actualCursor = takeItem(amount)
         return when {
-            actualCursor.isEmpty() -> SlotInteractionResult.Deny
-            expectedCursor == actualCursor -> SlotInteractionResult.Accept
+            actualCursor.isEmpty() -> Deny
+            expectedCursor == actualCursor -> Allow
             else -> Change(currentItemReplacement = actualCursor)
         }
     }
@@ -609,7 +616,7 @@ public class CustomInventory internal constructor(
                 cursorReplacement = newCursor,
             )
         else {
-            SlotInteractionResult.Deny
+            Deny
         }
     }
 

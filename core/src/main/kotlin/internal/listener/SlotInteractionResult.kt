@@ -24,7 +24,7 @@ import org.bukkit.inventory.ItemStack
 /** Result of [SlotInteraction]. */
 internal sealed interface SlotInteractionResult {
 
-    object Accept : SlotInteractionResult
+    object Allow : SlotInteractionResult
     object Deny : SlotInteractionResult
 
     data class Change(

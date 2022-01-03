@@ -49,7 +49,7 @@ internal sealed interface SlotInteraction : InventoryInteraction {
                 }
             }
 
-            is Accept -> {
+            is Allow -> {
                 // Event just passed
             }
         }
