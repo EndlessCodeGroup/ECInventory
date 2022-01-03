@@ -19,37 +19,33 @@
 
 package ru.endlesscode.inventory.slot
 
-import kotlinx.serialization.Serializable
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.inventory.internal.util.MAX_STACK_SIZE
+import ru.endlesscode.inventory.internal.data.SlotType
 
 /**
  * Represents slot.
  *
  * @property id Identifier of the slot.
  * @property name A localized name of the slot.
+ * @property description A localized description of the slot.
  * @property texture The item that will be placed to the slot when it is empty.
- * @property type Slot type.
- * @property maxStackSize The maximum stack size for an ItemStack in this slot.
  */
 public interface Slot {
     public val id: String
     public val name: String
     public val description: List<String>
     public val texture: ItemStack
-    public val type: Type
+}
+
+/**
+ * Represents slot that may contain items.
+ *
+ * @property type Slot type.
+ * @property contentValidator Determines what items this slot can contain
+ * @property maxStackSize The maximum stack size for an ItemStack in this slot.
+ */
+public interface ContainerSlot : Slot {
+    public val type: SlotType
     public val contentValidator: ItemValidator
     public val maxStackSize: Int
-
-    @Serializable(with = SlotTypeSerializer::class)
-    public enum class Type(public val defaultStackSize: Int) {
-        /** Indicates that the slot used just to store items. */
-        STORAGE(defaultStackSize = MAX_STACK_SIZE),
-
-        /** Indicates that the slot can store equipment. */
-        EQUIPMENT(defaultStackSize = 1),
-
-        /** Indicates that slot can't store items. */
-        GUI(defaultStackSize = 0),
-    }
 }

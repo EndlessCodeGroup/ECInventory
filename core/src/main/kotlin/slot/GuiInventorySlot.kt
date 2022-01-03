@@ -19,18 +19,31 @@
 
 package ru.endlesscode.inventory.slot
 
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.CustomInventory
+import ru.endlesscode.inventory.internal.util.editItemMeta
+import ru.endlesscode.inventory.internal.util.translateColorCodes
 
-/** Represents inventory slot. */
-public interface InventorySlot : Slot {
+/** Inventory GUI slot, that can't contain items. */
+public class GuiInventorySlot(
+    prototype: Slot,
+    override val holder: CustomInventory,
+    override val position: Int,
+) : InventorySlot, Slot by prototype {
 
-    /** The inventory that contain this slot. */
-    public val holder: CustomInventory
+    /** Returns texture items with configured name and lore. */
+    override val texture: ItemStack = prototype.texture
+        get() = field.clone().editItemMeta {
+            setDisplayName(name.translateColorCodes())
+            lore = description.translateColorCodes()
+            addItemFlags(*ItemFlag.values())
+        }
 
-    /** Position of the slot in the inventory. */
-    public val position: Int
+    /** Always returns [texture] as a view. */
+    override fun getView(): ItemStack = texture
 
-    /** Returns stack that should be used as a slot view. */
-    public fun getView(): ItemStack
+    init {
+        require(prototype !is InventorySlot) { "InventorySlot can't be used as prototype" }
+    }
 }

@@ -27,14 +27,14 @@ import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.internal.listener.SlotInteractionResult.*
 import ru.endlesscode.inventory.internal.util.isNullOrEmpty
 import ru.endlesscode.inventory.internal.util.orEmpty
-import ru.endlesscode.inventory.slot.InventorySlot
+import ru.endlesscode.inventory.slot.ContainerInventorySlot
 
 internal sealed interface InventoryInteraction {
     val event: InventoryInteractEvent
 }
 
 internal sealed interface SlotInteraction : InventoryInteraction {
-    val slot: InventorySlot
+    val slot: ContainerInventorySlot
 
     /** Applies result of interaction to the [event]. */
     fun apply(result: SlotInteractionResult) {
@@ -62,12 +62,12 @@ internal sealed interface SlotInteraction : InventoryInteraction {
 
 internal data class TakeSlotContent(
     override val event: InventoryInteractEvent,
-    override val slot: InventorySlot,
+    override val slot: ContainerInventorySlot,
     val amount: Int,
 ) : SlotInteraction {
 
     companion object {
-        fun fromClick(event: InventoryClickEvent, slot: InventorySlot): TakeSlotContent {
+        fun fromClick(event: InventoryClickEvent, slot: ContainerInventorySlot): TakeSlotContent {
             val amount: Int = when (event.action) {
                 PICKUP_ONE, DROP_ONE_SLOT -> 1
                 PICKUP_HALF -> (slot.content.amount + 1) / 2
@@ -80,13 +80,13 @@ internal data class TakeSlotContent(
 
 internal data class PlaceSlotContent(
     override val event: InventoryInteractEvent,
-    override val slot: InventorySlot,
+    override val slot: ContainerInventorySlot,
     val item: ItemStack,
     val amount: Int,
 ) : SlotInteraction {
 
     companion object {
-        fun fromClick(event: InventoryClickEvent, slot: InventorySlot): PlaceSlotContent {
+        fun fromClick(event: InventoryClickEvent, slot: ContainerInventorySlot): PlaceSlotContent {
             val item: ItemStack = checkNotNull(event.cursor) { "Cursor item shouldn't be null" }
             val amount: Int = when (event.action) {
                 PLACE_ONE -> 1
@@ -100,12 +100,12 @@ internal data class PlaceSlotContent(
 
 internal data class SwapSlotContent(
     override val event: InventoryClickEvent,
-    override val slot: InventorySlot,
+    override val slot: ContainerInventorySlot,
     val item: ItemStack,
 ) : SlotInteraction {
 
     companion object {
-        fun fromClick(event: InventoryClickEvent, slot: InventorySlot): SwapSlotContent {
+        fun fromClick(event: InventoryClickEvent, slot: ContainerInventorySlot): SwapSlotContent {
             val item = when {
                 event.action == SWAP_WITH_CURSOR -> event.cursor.orEmpty()
                 event.click == SWAP_OFFHAND -> event.view.player.inventory.itemInOffHand

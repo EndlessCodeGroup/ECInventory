@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2021 EndlessCode Group and contributors
+ * Copyright (c) 2022 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,11 +17,25 @@
  * along with ECInventory. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.inventory.slot
+package ru.endlesscode.inventory.internal.data
 
+import kotlinx.serialization.Serializable
 import ru.endlesscode.inventory.internal.data.serialization.ConfigEnumSerializer
+import ru.endlesscode.inventory.internal.util.MAX_STACK_SIZE
 
-internal object SlotTypeSerializer : ConfigEnumSerializer<Slot.Type>(
-    serialName = Slot.Type::class.java.canonicalName,
+@Serializable(with = SlotTypeSerializer::class)
+public enum class SlotType(public val defaultStackSize: Int) {
+    /** Indicates that the slot used just to store items. */
+    STORAGE(defaultStackSize = MAX_STACK_SIZE),
+
+    /** Indicates that the slot can store equipment. */
+    EQUIPMENT(defaultStackSize = 1),
+
+    /** Indicates that slot can't store items. */
+    GUI(defaultStackSize = 0),
+}
+
+internal object SlotTypeSerializer : ConfigEnumSerializer<SlotType>(
+    serialName = SlotType::class.java.canonicalName,
     values = enumValues(),
 )

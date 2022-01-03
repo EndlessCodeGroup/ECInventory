@@ -29,8 +29,8 @@ import ru.endlesscode.inventory.internal.util.Log
 import ru.endlesscode.inventory.internal.util.MAX_STACK_SIZE
 import ru.endlesscode.inventory.internal.util.isNullOrEmpty
 import ru.endlesscode.inventory.internal.util.orEmpty
+import ru.endlesscode.inventory.slot.ContainerSlotImpl
 import ru.endlesscode.inventory.slot.Slot
-import ru.endlesscode.inventory.slot.SlotImpl
 import ru.endlesscode.inventory.slot.WildcardItemValidator
 import ru.endlesscode.mimic.items.BukkitItemsRegistry
 import java.nio.file.Path
@@ -94,7 +94,7 @@ internal class DataHolder(
             )
         }
 
-        return SlotImpl(
+        return ContainerSlotImpl(
             id = id,
             name = config.name,
             description = config.description,
