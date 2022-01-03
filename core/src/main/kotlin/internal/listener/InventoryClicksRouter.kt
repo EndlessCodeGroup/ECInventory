@@ -19,6 +19,8 @@
 
 package ru.endlesscode.inventory.internal.listener
 
+import org.bukkit.entity.HumanEntity
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -28,6 +30,8 @@ import ru.endlesscode.inventory.CustomInventory
 import ru.endlesscode.inventory.internal.TaskScheduler
 import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.slot.ContainerInventorySlot
+import ru.endlesscode.inventory.slot.InventorySlot
+import ru.endlesscode.inventory.slot.SlotClickType
 
 /** Converts [InventoryInteractEvent] to [SlotInteraction] and passes it to inventory. */
 internal class InventoryClicksRouter(
@@ -54,14 +58,16 @@ internal class InventoryClicksRouter(
             if (slots.any { it in inventory }) event.isCancelled = true
         } else if (position in inventory) {
             // User slightly moved mouse, consider it was a click
-            val slot = inventory.getSlotAt(position) as? ContainerInventorySlot
-            if (slot == null) {
+            val slot = inventory.getSlotAt(position)
+            var clickHandled = false
+            if (slot is ContainerInventorySlot) {
+                val interaction = event.toPlaceInteraction(slot)
+                clickHandled = inventory.handleInteraction(interaction)
+            } else {
                 event.isCancelled = true
-                return
             }
 
-            val interaction = event.toPlaceInteraction(slot)
-            inventory.handleInteraction(interaction)
+            if (!clickHandled) slot.onClick(event.whoClicked, SlotClickType.of(event.type))
         }
     }
 
@@ -75,26 +81,30 @@ internal class InventoryClicksRouter(
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     fun onClick(event: InventoryClickEvent) {
         val inventory = event.customInventory ?: return
-        val interaction = event.toInteraction(inventory) ?: return
-        inventory.handleInteraction(interaction)
+        val isCustomInventoryInteraction = event.clickedInventory?.holder == inventory
+        val slot = if (isCustomInventoryInteraction) inventory.getSlotAt(event.rawSlot) else null
 
-        // We should manually sync offhand slot after SWAP_OFFHAND event
-        // Issue: https://hub.spigotmc.org/jira/browse/SPIGOT-6145
-        if (event.click == ClickType.SWAP_OFFHAND) {
-            val playerInventory = event.whoClicked.inventory
-            scheduler.runOnMain { playerInventory.setItemInOffHand(playerInventory.itemInOffHand) }
+        var clickHandled = false
+        val interaction = event.toInteraction(slot)
+        if (interaction != null) {
+            clickHandled = inventory.handleInteraction(interaction)
+
+            // We should manually sync offhand slot after SWAP_OFFHAND event
+            // Issue: https://hub.spigotmc.org/jira/browse/SPIGOT-6145
+            if (event.click == ClickType.SWAP_OFFHAND) {
+                val playerInventory = event.whoClicked.inventory
+                scheduler.runOnMain { playerInventory.setItemInOffHand(playerInventory.itemInOffHand) }
+            }
         }
+
+        if (!clickHandled) slot?.onClick(event.whoClicked, SlotClickType.of(event.click))
     }
 
     /** Converts this event to [SlotInteraction] or returns `null` if the event shouldn't be handled. */
-    private fun InventoryClickEvent.toInteraction(inventory: CustomInventory): InventoryInteraction? {
-        val isCustomInventoryInteraction = clickedInventory?.holder == inventory
-
-        return if (isCustomInventoryInteraction) {
-            val clickedSlot = inventory.getSlotAt(rawSlot) as? ContainerInventorySlot
-
+    private fun InventoryClickEvent.toInteraction(clickedSlot: InventorySlot?): InventoryInteraction? {
+        return if (clickedSlot != null) {
             // Prevent interaction with non-container inventory slots
-            if (clickedSlot == null) {
+            if (clickedSlot !is ContainerInventorySlot) {
                 isCancelled = true
                 null
             } else {
@@ -105,7 +115,9 @@ internal class InventoryClicksRouter(
         }
     }
 
-    private fun InventoryClickEvent.inventorySlotInteraction(slot: ContainerInventorySlot): SlotInteraction? = when (action) {
+    private fun InventoryClickEvent.inventorySlotInteraction(
+        slot: ContainerInventorySlot,
+    ): SlotInteraction? = when (action) {
         PICKUP_ALL, PICKUP_SOME, PICKUP_HALF, PICKUP_ONE,
         DROP_ALL_SLOT, DROP_ONE_SLOT,
         MOVE_TO_OTHER_INVENTORY -> TakeSlotContent.fromClick(this, slot)
@@ -148,5 +160,10 @@ internal class InventoryClicksRouter(
         }
 
         else -> null
+    }
+
+    private fun InventorySlot.onClick(player: HumanEntity, clickType: SlotClickType?) {
+        if (player !is Player || clickType == null) return
+        onClick(player, clickType)
     }
 }
