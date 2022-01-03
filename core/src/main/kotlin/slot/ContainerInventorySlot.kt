@@ -38,7 +38,7 @@ public class ContainerInventorySlot(
     /** Returns texture items with configured name and lore. */
     override val texture: ItemStack = prototype.texture
         get() = field.clone().editItemMeta {
-            setDisplayName(name.translateColorCodes())
+            setDisplayNameAllowingEmpty(name.translateColorCodes())
             lore = description.translateColorCodes()
             addItemFlags(*ItemFlag.values())
         }
