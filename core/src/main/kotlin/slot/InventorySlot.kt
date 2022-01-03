@@ -19,18 +19,56 @@
 
 package ru.endlesscode.inventory.slot
 
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.CustomInventory
 
 /** Represents inventory slot. */
-public interface InventorySlot : Slot {
+public abstract class InventorySlot : Slot {
 
     /** The inventory that contain this slot. */
-    public val holder: CustomInventory
+    public abstract val holder: CustomInventory
 
     /** Position of the slot in the inventory. */
-    public val position: Int
+    public abstract val position: Int
+
+    private val onClickListeners = mutableListOf<OnClickListener>()
 
     /** Returns stack that should be used as a slot view. */
-    public fun getView(): ItemStack
+    public abstract fun getView(): ItemStack
+
+    /**
+     * Called when [player] clicked the slot.
+     * @see addOnClickListener
+     * @see removeOnClickListener
+     */
+    public open fun onClick(player: Player, clickType: SlotClickType) {
+        onClickListeners.forEach { it.onClick(this, player, clickType) }
+    }
+
+    /**
+     * Adds a [listener] to be invoked when this slot is clicked.
+     * @see onClick
+     * @see removeOnClickListener
+     */
+    public fun addOnClickListener(listener: OnClickListener) {
+        onClickListeners.add(listener)
+    }
+
+    /**
+     * Removes the given [listener] from this slot if present.
+     * @return `true` if the listener has been successfully removed; false otherwise
+     * @see onClick
+     * @see addOnClickListener
+     */
+    public fun removeOnClickListener(listener: OnClickListener): Boolean {
+        return onClickListeners.remove(listener)
+    }
+
+    /** Callback to be invoked when this slot is clicked. */
+    public fun interface OnClickListener {
+
+        /** Called when the [slot] is clicked by the [player]. */
+        public fun onClick(slot: InventorySlot, player: Player, clickType: SlotClickType)
+    }
 }

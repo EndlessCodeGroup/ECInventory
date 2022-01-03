@@ -31,7 +31,7 @@ public class GuiInventorySlot(
     prototype: Slot,
     override val holder: CustomInventory,
     override val position: Int,
-) : InventorySlot, Slot by prototype {
+) : InventorySlot(), Slot by prototype {
 
     /** Returns texture items with configured name and lore. */
     override val texture: ItemStack = prototype.texture

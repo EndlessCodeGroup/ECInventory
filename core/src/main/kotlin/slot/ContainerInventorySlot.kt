@@ -33,7 +33,7 @@ public class ContainerInventorySlot(
     prototype: ContainerSlot,
     override val holder: CustomInventory,
     override val position: Int,
-) : InventorySlot, ContainerSlot by prototype {
+) : InventorySlot(), ContainerSlot by prototype {
 
     /** Returns texture items with configured name and lore. */
     override val texture: ItemStack = prototype.texture
