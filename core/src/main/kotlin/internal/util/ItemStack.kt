@@ -76,3 +76,8 @@ internal operator fun ItemStack.minus(amount: Int): ItemStack {
 internal fun ItemStack.editItemMeta(block: ItemMeta.() -> Unit): ItemStack = apply {
     itemMeta = itemMeta?.apply(block)
 }
+
+/** Allows setting empty display name to [ItemMeta]. */
+internal fun ItemMeta.setDisplayNameAllowingEmpty(displayName: String) {
+    setDisplayName(displayName.ifEmpty { "&r" })
+}

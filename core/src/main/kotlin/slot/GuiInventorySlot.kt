@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.CustomInventory
 import ru.endlesscode.inventory.internal.util.editItemMeta
+import ru.endlesscode.inventory.internal.util.setDisplayNameAllowingEmpty
 import ru.endlesscode.inventory.internal.util.translateColorCodes
 
 /** Inventory GUI slot, that can't contain items. */
@@ -35,7 +36,7 @@ public class GuiInventorySlot(
     /** Returns texture items with configured name and lore. */
     override val texture: ItemStack = prototype.texture
         get() = field.clone().editItemMeta {
-            setDisplayName(name.translateColorCodes())
+            setDisplayNameAllowingEmpty(name.translateColorCodes())
             lore = description.translateColorCodes()
             addItemFlags(*ItemFlag.values())
         }
