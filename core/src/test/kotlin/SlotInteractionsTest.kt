@@ -33,8 +33,9 @@ import ru.endlesscode.inventory.internal.listener.PlaceSlotContent
 import ru.endlesscode.inventory.internal.listener.SwapSlotContent
 import ru.endlesscode.inventory.internal.listener.TakeSlotContent
 import ru.endlesscode.inventory.internal.util.AIR
+import ru.endlesscode.inventory.slot.ContainerInventorySlot
+import ru.endlesscode.inventory.slot.ContainerSlot
 import ru.endlesscode.inventory.slot.EmptyGuiSlot
-import ru.endlesscode.inventory.slot.Slot
 import ru.endlesscode.inventory.slot.TestItemValidator
 import ru.endlesscode.inventory.test.TestInventoryClickEvent
 import ru.endlesscode.inventory.test.TestInventoryView
@@ -49,7 +50,7 @@ class SlotInteractionsTest : FeatureSpec({
         name = "Test",
         defaultSlot = EmptyGuiSlot,
         slotsMap = sortedMapOf(
-            1 to Slot(
+            1 to ContainerSlot(
                 texture = Material.BLACK_STAINED_GLASS_PANE,
                 maxStackSize = 4,
                 contentValidator = slotContentValidator,
@@ -59,7 +60,7 @@ class SlotInteractionsTest : FeatureSpec({
 
     // SUT
     val inventory = spyk(CustomInventory(UUID.randomUUID(), inventoryLayout, InstantTaskScheduler()))
-    val slot = inventory.getSlotAt(1)
+    val slot = inventory.getSlotAt(1) as ContainerInventorySlot
 
     val inventoryView = TestInventoryView()
     lateinit var event: TestInventoryClickEvent
@@ -96,7 +97,7 @@ class SlotInteractionsTest : FeatureSpec({
         ) {
             event = TestInventoryClickEvent(inventoryView, action)
             slot.content = content
-            event.currentItem = slot.getContentOrTexture()
+            event.currentItem = slot.getView()
 
             initSlotContent = content
             initEventCursor = AIR
@@ -132,7 +133,7 @@ class SlotInteractionsTest : FeatureSpec({
             event = TestInventoryClickEvent(inventoryView, action)
             slot.content = current
             event.cursor = cursor
-            event.currentItem = slot.getContentOrTexture()
+            event.currentItem = slot.getView()
 
             initSlotContent = current
             initEventCursor = cursor
@@ -210,7 +211,7 @@ class SlotInteractionsTest : FeatureSpec({
         ) {
             event = TestInventoryClickEvent(inventoryView, HOTBAR_SWAP)
             slot.content = content
-            event.currentItem = slot.getContentOrTexture()
+            event.currentItem = slot.getView()
 
             initSlotContent = content
             initEventCursor = AIR

@@ -39,7 +39,7 @@ internal class InventorySlotTest : FeatureSpec({
     val inventory = mockk<CustomInventory>(relaxed = true)
 
     // SUT
-    val slot = InventorySlot(
+    val slot = ContainerInventorySlot(
         texture = Material.BLACK_STAINED_GLASS_PANE,
         maxStackSize = 4,
         contentValidator = slotContentValidator,

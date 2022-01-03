@@ -22,7 +22,7 @@ package ru.endlesscode.inventory.internal.data.sql.entity
 import org.bukkit.configuration.file.YamlConfiguration
 import ru.endlesscode.inventory.CustomInventory
 import ru.endlesscode.inventory.InventoryLayout
-import ru.endlesscode.inventory.slot.InventorySlot
+import ru.endlesscode.inventory.slot.ContainerInventorySlot
 import java.util.*
 
 internal class InventorySqlEntity(
@@ -36,7 +36,8 @@ internal fun CustomInventory.toSqlEntity(): InventorySqlEntity {
     getSlotsMap()
         .forEach { (slotId, slots) ->
             slots.asSequence()
-                .filterNot(InventorySlot::isEmpty)
+                .filterIsInstance<ContainerInventorySlot>()
+                .filterNot(ContainerInventorySlot::isEmpty)
                 .forEachIndexed { n, slot -> yaml["$slotId:$n"] = slot.content }
         }
 

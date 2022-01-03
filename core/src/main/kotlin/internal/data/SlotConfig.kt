@@ -20,14 +20,13 @@
 package ru.endlesscode.inventory.internal.data
 
 import kotlinx.serialization.Serializable
-import ru.endlesscode.inventory.slot.Slot
 
 @Serializable
 internal data class SlotConfig(
     val name: String = "",
     val description: List<String> = emptyList(),
     val texture: String? = null,
-    val type: Slot.Type = Slot.Type.STORAGE,
+    val type: SlotType = SlotType.STORAGE,
     val allowedItems: List<String> = listOf("*"),
     val deniedItems: List<String> = emptyList(),
     val maxStackSize: Int = type.defaultStackSize,

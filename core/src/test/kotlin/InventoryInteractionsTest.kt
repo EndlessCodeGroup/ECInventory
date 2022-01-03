@@ -31,6 +31,7 @@ import ru.endlesscode.inventory.internal.InstantTaskScheduler
 import ru.endlesscode.inventory.internal.listener.AddItemToInventory
 import ru.endlesscode.inventory.internal.util.AIR
 import ru.endlesscode.inventory.internal.util.orEmpty
+import ru.endlesscode.inventory.slot.ContainerSlot
 import ru.endlesscode.inventory.slot.EmptyGuiSlot
 import ru.endlesscode.inventory.slot.Slot
 import ru.endlesscode.inventory.test.TestInventoryClickEvent
@@ -51,9 +52,8 @@ class InventoryInteractionsTest : FeatureSpec({
     }
 
     val maxStackSize = 4
-    var slotsCounter = 0
-    fun slot(): Slot = Slot(
-        id = "slot${++slotsCounter}",
+    fun containerSlot(id: Int): Slot = ContainerSlot(
+        id = "slot${id}",
         maxStackSize = maxStackSize,
     )
 
@@ -64,7 +64,7 @@ class InventoryInteractionsTest : FeatureSpec({
                 id = "test",
                 name = "Test",
                 defaultSlot = EmptyGuiSlot,
-                slotsMap = slots.associateWith { slot() }.toSortedMap(),
+                slotsMap = slots.associateWith(::containerSlot).toSortedMap(),
             )
             inventory = spyk(CustomInventory(UUID.randomUUID(), inventoryLayout, InstantTaskScheduler()))
         }

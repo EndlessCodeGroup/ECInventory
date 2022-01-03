@@ -36,6 +36,9 @@ import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.CustomInventory
 import ru.endlesscode.inventory.internal.InstantTaskScheduler
 import ru.endlesscode.inventory.internal.util.AIR
+import ru.endlesscode.inventory.internal.util.isEmpty
+import ru.endlesscode.inventory.slot.ContainerInventorySlot
+import ru.endlesscode.inventory.slot.GuiInventorySlot
 import ru.endlesscode.inventory.slot.InventorySlot
 import ru.endlesscode.inventory.test.*
 
@@ -44,7 +47,7 @@ class InventoryClicksRouterTest : FeatureSpec({
     // SUT
     val router = InventoryClicksRouter(InstantTaskScheduler())
 
-    lateinit var clickedSlot: InventorySlot
+    var clickedSlot: InventorySlot = mockk<GuiInventorySlot>()
     var appliedInteraction: InventoryInteraction? = null
     val inventory = mockk<CustomInventory>(relaxUnitFun = true) {
         every { size } returns 54
@@ -69,6 +72,15 @@ class InventoryClicksRouterTest : FeatureSpec({
         }
     }
 
+    fun clickedContainerSlot(content: ItemStack = AIR): ContainerInventorySlot {
+        val slot = mockk<ContainerInventorySlot> {
+            every { this@mockk.content } returns content
+            every { isEmpty() } returns content.isEmpty()
+        }
+        clickedSlot = slot
+        return slot
+    }
+
     feature("inventory click event") {
         fun performClick(
             action: InventoryAction = NOTHING,
@@ -87,28 +99,31 @@ class InventoryClicksRouterTest : FeatureSpec({
             verifyInteraction(interaction = null)
         }
 
+        scenario("click gui inventory slot") {
+            performClick(PICKUP_ALL)
+            verifyInteraction(interaction = null, eventCancelled = true)
+        }
+
         scenario("do nothing with slot") {
-            clickedSlot = mockk()
+            clickedContainerSlot()
             performClick(NOTHING)
 
             verifyInteraction(interaction = null)
         }
 
         scenario("take item from slot") {
-            clickedSlot = mockk {
-                every { content } returns ItemStack(Material.STICK)
-            }
+            val slot = clickedContainerSlot(ItemStack(Material.STICK))
             val event = performClick(PICKUP_ALL)
 
-            verifyInteraction(TakeSlotContent.fromClick(event, clickedSlot))
+            verifyInteraction(TakeSlotContent.fromClick(event, slot))
         }
 
         scenario("place item to slot") {
-            clickedSlot = mockk()
+            val slot = clickedContainerSlot()
             inventoryView.cursor = ItemStack(Material.STICK)
             val event = performClick(PLACE_ALL)
 
-            verifyInteraction(PlaceSlotContent.fromClick(event, clickedSlot))
+            verifyInteraction(PlaceSlotContent.fromClick(event, slot))
         }
 
         scenario("collect items similar to inventory items") {
@@ -128,41 +143,41 @@ class InventoryClicksRouterTest : FeatureSpec({
         }
 
         scenario("collect items inside inventory") {
-            clickedSlot = mockk()
+            clickedContainerSlot()
             performClick(COLLECT_TO_CURSOR)
             verifyInteraction(interaction = null, eventCancelled = true)
         }
 
         scenario("swap with cursor empty slot") {
-            clickedSlot = mockk { every { isEmpty() } returns true }
+            val slot = clickedContainerSlot()
             val event = performClick(SWAP_WITH_CURSOR)
 
-            verifyInteraction(PlaceSlotContent.fromClick(event, clickedSlot))
+            verifyInteraction(PlaceSlotContent.fromClick(event, slot))
         }
 
         scenario("swap with cursor non-empty item") {
-            clickedSlot = mockk { every { isEmpty() } returns false }
+            val slot = clickedContainerSlot(ItemStack(Material.STICK))
             val event = performClick(SWAP_WITH_CURSOR)
 
-            verifyInteraction(SwapSlotContent.fromClick(event, clickedSlot))
+            verifyInteraction(SwapSlotContent.fromClick(event, slot))
         }
 
         scenario("swap with hotbar slot") {
-            clickedSlot = mockk { every { content } returns AIR }
+            val slot = clickedContainerSlot()
             val hotbarItem = ItemStack(Material.STICK)
             inventoryView.bottomInventory.setItem(0, hotbarItem)
             val event = performClick(HOTBAR_SWAP, hotbarKey = 0)
 
-            verifyInteraction(SwapSlotContent(event, clickedSlot, hotbarItem))
+            verifyInteraction(SwapSlotContent(event, slot, hotbarItem))
         }
 
         scenario("swap with offhand slot") {
-            clickedSlot = mockk { every { content } returns AIR }
+            val slot = clickedContainerSlot()
             val offhandItem = ItemStack(Material.STICK)
             inventoryView.offhandItem = offhandItem
             val event = performClick(HOTBAR_SWAP, click = SWAP_OFFHAND)
 
-            verifyInteraction(SwapSlotContent(event, clickedSlot, offhandItem))
+            verifyInteraction(SwapSlotContent(event, slot, offhandItem))
         }
 
         scenario("move empty item to inventory") {
@@ -189,6 +204,11 @@ class InventoryClicksRouterTest : FeatureSpec({
             router.onDrag(event)
         }
 
+        scenario("drag gui inventory slot") {
+            performDrag()
+            verifyInteraction(interaction = null, eventCancelled = true)
+        }
+
         scenario("drag in inventory") {
             performDrag(
                 slots = mapOf(
@@ -212,19 +232,19 @@ class InventoryClicksRouterTest : FeatureSpec({
         }
 
         scenario("place all items") {
-            clickedSlot = mockk()
+            val slot = clickedContainerSlot()
             val item = ItemStack(Material.STICK, 2)
             val event = performDrag(item)
 
-            verifyInteraction(PlaceSlotContent(event, clickedSlot, item, amount = 2))
+            verifyInteraction(PlaceSlotContent(event, slot, item, amount = 2))
         }
 
         scenario("place one item") {
-            clickedSlot = mockk()
+            val slot = clickedContainerSlot()
             val item = ItemStack(Material.STICK, 2)
             val event = performDrag(item, rightClick = true)
 
-            verifyInteraction(PlaceSlotContent(event, clickedSlot, item, amount = 1))
+            verifyInteraction(PlaceSlotContent(event, slot, item, amount = 1))
         }
     }
 })

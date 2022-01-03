@@ -25,22 +25,23 @@ import io.mockk.mockk
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.CustomInventory
+import ru.endlesscode.inventory.internal.data.SlotType
 
-val EmptyGuiSlot = Slot("empty", type = Slot.Type.GUI)
+val EmptyGuiSlot = Slot("empty")
 
-fun InventorySlot(
+fun ContainerInventorySlot(
     id: String = "test-slot",
     name: String = "$id Name",
     description: List<String> = listOf("$id Description"),
     texture: Material = Material.AIR,
-    type: Slot.Type = Slot.Type.STORAGE,
+    type: SlotType = SlotType.STORAGE,
     contentValidator: ItemValidator = ItemValidator.any,
     maxStackSize: Int = 1,
     position: Int = 0,
     holder: CustomInventory = mockk(relaxed = true),
-): InventorySlot {
-    return InventorySlot(
-        prototype = Slot(id, name, description, texture, type, contentValidator, maxStackSize),
+): ContainerInventorySlot {
+    return ContainerInventorySlot(
+        prototype = ContainerSlot(id, name, description, texture, type, contentValidator, maxStackSize),
         holder = holder,
         position = position,
     )
@@ -51,10 +52,17 @@ fun Slot(
     name: String = "$id Name",
     description: List<String> = listOf("$id Description"),
     texture: Material = Material.AIR,
-    type: Slot.Type = Slot.Type.STORAGE,
+): Slot = SlotImpl(id, name, description, ItemStack(texture))
+
+fun ContainerSlot(
+    id: String = "test-slot",
+    name: String = "$id Name",
+    description: List<String> = listOf("$id Description"),
+    texture: Material = Material.AIR,
+    type: SlotType = SlotType.STORAGE,
     contentValidator: ItemValidator = ItemValidator.any,
     maxStackSize: Int = 1,
-): Slot = SlotImpl(
+): ContainerSlot = ContainerSlotImpl(
     id = id,
     name = name,
     description = description,

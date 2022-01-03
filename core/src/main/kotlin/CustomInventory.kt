@@ -28,12 +28,12 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.internal.TaskScheduler
+import ru.endlesscode.inventory.internal.data.SlotType
 import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.listener.*
 import ru.endlesscode.inventory.internal.listener.SlotInteractionResult.Change
 import ru.endlesscode.inventory.internal.util.*
-import ru.endlesscode.inventory.slot.InventorySlot
-import ru.endlesscode.inventory.slot.Slot
+import ru.endlesscode.inventory.slot.*
 import ru.endlesscode.inventory.util.Placeholders
 import java.util.*
 import java.util.function.Predicate
@@ -65,8 +65,8 @@ public class CustomInventory internal constructor(
 
     private val slotsSequence: Sequence<InventorySlot>
         get() = slotsById.values.asSequence().flatten()
-    private val containerSlotsSequence: Sequence<InventorySlot>
-        get() = slotsSequence.filter { it.type != Slot.Type.GUI }
+    private val containerSlotsSequence: Sequence<ContainerInventorySlot>
+        get() = slotsSequence.filterIsInstance<ContainerInventorySlot>()
 
     /** Returns number of slots in the inventory. */
     public val size: Int
@@ -74,7 +74,7 @@ public class CustomInventory internal constructor(
 
     /**
      * Returns the maximum stack size for an ItemStack in this inventory.
-     * @see InventorySlot.maxStackSize
+     * @see ContainerInventorySlot.maxStackSize
      */
     public var maxStackSize: Int = DEFAULT_MAX_STACK
         internal set
@@ -93,7 +93,7 @@ public class CustomInventory internal constructor(
         for (position in 0 until size) {
             val slot = layout.slotsMap[position] ?: layout.defaultSlot
             slotsById.getOrPut(slot.id, ::mutableListOf)
-                .add(InventorySlot(slot, this, position))
+                .add(createInventorySlot(slot, position))
         }
         updateSlotsIndex()
     }
@@ -106,7 +106,10 @@ public class CustomInventory internal constructor(
      * the given [slotId].
      */
     @JvmOverloads
-    public fun getItem(slotId: String, n: Int = 0): ItemStack? = getSlot(slotId, n)?.content
+    public fun getItem(slotId: String, n: Int = 0): ItemStack? {
+        val slot = getSlot(slotId, n) as? ContainerInventorySlot
+        return slot?.content
+    }
 
     /** Stores the given [item] at the first slot with the given [slotId]. */
     public fun setItem(slotId: String, item: ItemStack?) {
@@ -115,19 +118,31 @@ public class CustomInventory internal constructor(
 
     /** Stores the given [item] at the [n]th slot with the given [slotId]. */
     public fun setItem(slotId: String, n: Int, item: ItemStack?) {
-        getSlot(slotId, n)?.content = item.orEmpty()
+        val slot = getSlot(slotId, n) as? ContainerInventorySlot
+        slot?.content = item.orEmpty()
     }
 
     /** Stores the given [item] at the slot assigned to the given [position]. */
     public fun setItemAt(position: Int, item: ItemStack?) {
-        getSlotAt(position).content = item.orEmpty()
+        val slot = getSlotAt(position) as? ContainerInventorySlot
+        slot?.content = item.orEmpty()
     }
 
     /**
      * Returns the list of ItemStacks found in the slots with the given [slotId]
-     * or an empty list if there are no such slots.
+     * or an empty list if there are no such slots or these slots doesn't contain
+     * items.
+     *
+     * Returned list may not contain `null` or `AIR`.
      */
-    public fun getItems(slotId: String): List<ItemStack> = slotsById[slotId].orEmpty().map { it.content }
+    public fun getItems(slotId: String): List<ItemStack> {
+        return slotsById[slotId].orEmpty()
+            .asSequence()
+            .filterIsInstance<ContainerInventorySlot>()
+            .filterNot { it.isEmpty() }
+            .map { it.content }
+            .toList()
+    }
 
     /**
      * Returns the slot with the given [id][slotId], or `null`
@@ -154,24 +169,29 @@ public class CustomInventory internal constructor(
     /** Returns map where key is slotId and value is a list of slots with this slotId. */
     public fun getSlotsMap(): Map<String, List<InventorySlot>> = slotsById.mapValues { (_, value) -> value.toList() }
 
+    /** Returns the inventory's equipment slots. */
+    public fun getEquipmentSlots(): List<ContainerInventorySlot> = getContainerSlots(SlotType.EQUIPMENT)
+
+    /** Returns the inventory's storage slots. */
+    public fun getStorageSlots(): List<ContainerInventorySlot> = getContainerSlots(SlotType.STORAGE)
+
     /**
-     * Returns equipment and storage slots.
+     * Returns container slots matching to the given [type].
+     * If the [type] is not passed, returns all container slots.
      * @see getEquipmentSlots
      * @see getStorageSlots
      */
-    public fun getContainerSlots(): List<InventorySlot> = containerSlotsSequence.toList()
-
-    /** Returns the inventory's equipment slots. */
-    public fun getEquipmentSlots(): List<InventorySlot> = getSlotsByType(Slot.Type.EQUIPMENT)
-
-    /** Returns the inventory's storage slots. */
-    public fun getStorageSlots(): List<InventorySlot> = getSlotsByType(Slot.Type.STORAGE)
+    @JvmOverloads
+    public fun getContainerSlots(type: SlotType? = null): List<ContainerInventorySlot> {
+        return if (type != null) {
+            containerSlotsSequence.filter { it.type == type }.toList()
+        } else {
+            containerSlotsSequence.toList()
+        }
+    }
 
     /** Returns the inventory's GUI slots. */
-    public fun getGuiSlots(): List<InventorySlot> = getSlotsByType(Slot.Type.GUI)
-
-    /** Returns the inventory's slots with the given [type] or all slots if type is `null`. */
-    public fun getSlotsByType(type: Slot.Type): List<InventorySlot> = slotsSequence.filter { it.type == type }.toList()
+    public fun getGuiSlots(): List<GuiInventorySlot> = slotsSequence.filterIsInstance<GuiInventorySlot>().toList()
 
     /** Constructs and returns [Inventory] that can be shown to a player. */
     override fun getInventory(): Inventory = getInventory(player = null)
@@ -191,7 +211,7 @@ public class CustomInventory internal constructor(
 
     private fun buildViewContents(player: OfflinePlayer?): Array<ItemStack> {
         return Array(size) { position ->
-            placeholders.apply(getSlotAt(position).getContentOrTexture(), player)
+            placeholders.apply(getSlotAt(position).getView(), player)
         }
     }
 
@@ -233,7 +253,7 @@ public class CustomInventory internal constructor(
      * @return replaced slot.
      */
     public fun assignSlot(position: Int, slot: Slot): InventorySlot {
-        val newSlot = InventorySlot(slot, this, position)
+        val newSlot = createInventorySlot(slot, position)
         val (currentSlotId, n) = slotsIndex[position]
 
         val previousSlots = slotsById.getValue(currentSlotId)
@@ -244,6 +264,14 @@ public class CustomInventory internal constructor(
         updateSlotsIndex()
 
         return previousSlot
+    }
+
+    private fun createInventorySlot(slot: Slot, position: Int): InventorySlot {
+        return if (slot is ContainerSlot) {
+            ContainerInventorySlot(slot, this, position)
+        } else {
+            GuiInventorySlot(slot, this, position)
+        }
     }
 
     // Should be called after any operation that changes slots.
@@ -261,9 +289,9 @@ public class CustomInventory internal constructor(
      * Returns the first empty that can hold the given [item]
      * or `null` if there are no such slots.
      */
-    public fun findEmptySlot(item: ItemStack): InventorySlot? {
+    public fun findEmptySlot(item: ItemStack): ContainerInventorySlot? {
         return containerSlotsSequence
-            .filter(InventorySlot::isEmpty)
+            .filter(ContainerInventorySlot::isEmpty)
             .find { it.canHold(item) }
     }
 
@@ -278,7 +306,7 @@ public class CustomInventory internal constructor(
      */
     public fun addItem(vararg items: ItemStack): Map<Int, ItemStack> {
         val leftover = mutableMapOf<Int, ItemStack>()
-        val nonFullSlots = mutableMapOf<Material, InventorySlot>()
+        val nonFullSlots = mutableMapOf<Material, ContainerInventorySlot>()
 
         var freeSlot = findEmptySlot(items.first())
         for (i in items.indices) {
@@ -323,7 +351,7 @@ public class CustomInventory internal constructor(
      */
     public fun removeItem(vararg items: ItemStack): Map<Int, ItemStack> {
         val leftover = mutableMapOf<Int, ItemStack>()
-        val itemsSlots = mutableMapOf<Material, InventorySlot>()
+        val itemsSlots = mutableMapOf<Material, ContainerInventorySlot>()
 
         for (i in items.indices) {
             val item = items[i]
@@ -430,7 +458,7 @@ public class CustomInventory internal constructor(
      * Returns the first slot in the inventory containing an `ItemStack` with
      * the given [material] or `null` if there are no such slot.
      */
-    public fun findSlotByContent(material: Material): InventorySlot? {
+    public fun findSlotByContent(material: Material): ContainerInventorySlot? {
         return containerSlotsSequence.find { it.content.type == material }
     }
 
@@ -440,7 +468,7 @@ public class CustomInventory internal constructor(
      * of the stack match.
      * @see findSlotByContentSimilar
      */
-    public fun findSlotByContent(item: ItemStack): InventorySlot? {
+    public fun findSlotByContent(item: ItemStack): ContainerInventorySlot? {
         return containerSlotsSequence.find { slot -> item == slot.content }
     }
 
@@ -449,15 +477,15 @@ public class CustomInventory internal constructor(
      * to the given [item].
      * @see findSlotByContent
      */
-    private fun findSlotByContentSimilar(item: ItemStack): InventorySlot? {
+    private fun findSlotByContentSimilar(item: ItemStack): ContainerInventorySlot? {
         return containerSlotsSequence.find { slot -> item.isSimilar(slot.content) }
     }
 
     /**
      * Check whether this inventory is empty. An inventory is considered
-     * to be empty if all slots of this inventory are empty.
+     * to be empty if all container slots of this inventory are empty.
      */
-    public fun isEmpty(): Boolean = slotsSequence.all(InventorySlot::isEmpty)
+    public fun isEmpty(): Boolean = containerSlotsSequence.all(ContainerInventorySlot::isEmpty)
 
     /** Removes all stacks in the inventory matching the given [material]. */
     public fun removeAll(material: Material) {
@@ -497,14 +525,14 @@ public class CustomInventory internal constructor(
         setItemAt(position, null)
     }
 
-    internal fun syncSlotWithView(slot: InventorySlot) {
+    internal fun syncSlotWithView(slot: ContainerInventorySlot) {
         // Do sync on the next tick for the case if it was called from click event
         scheduler.runOnMain {
-            view?.setItem(slot.position, slot.getContentOrTexture())
+            view?.setItem(slot.position, slot.getView())
         }
     }
 
-    private fun findPartial(item: ItemStack?): InventorySlot? {
+    private fun findPartial(item: ItemStack?): ContainerInventorySlot? {
         if (item == null) return null
 
         return containerSlotsSequence.find { slot ->
@@ -542,7 +570,7 @@ public class CustomInventory internal constructor(
     }
 
     /** Swap content with the given [item]. */
-    private fun InventorySlot.swapItemInteraction(item: ItemStack): SlotInteractionResult = when {
+    private fun ContainerInventorySlot.swapItemInteraction(item: ItemStack): SlotInteractionResult = when {
         item.amount > maxStackSize || !canHold(item) -> SlotInteractionResult.Deny
         item.isEmpty() && this.isEmpty() -> SlotInteractionResult.Deny
         item.isEmpty() -> takeItemInteraction()
@@ -555,8 +583,8 @@ public class CustomInventory internal constructor(
     }
 
     /** Takes item from this slot and returns result of this interaction. */
-    private fun InventorySlot.takeItemInteraction(amount: Int = content.amount): SlotInteractionResult {
-        val expectedCursor = getContentOrTexture().cloneWithAmount(amount)
+    private fun ContainerInventorySlot.takeItemInteraction(amount: Int = content.amount): SlotInteractionResult {
+        val expectedCursor = getView().cloneWithAmount(amount)
         val actualCursor = takeItem(amount)
         return when {
             actualCursor.isEmpty() -> SlotInteractionResult.Deny
@@ -566,7 +594,10 @@ public class CustomInventory internal constructor(
     }
 
     /** Places the given [item] to this slot and returns result of this interaction. */
-    private fun InventorySlot.placeItemInteraction(item: ItemStack, amount: Int = item.amount): SlotInteractionResult {
+    private fun ContainerInventorySlot.placeItemInteraction(
+        item: ItemStack,
+        amount: Int = item.amount,
+    ): SlotInteractionResult {
         require(amount in 1..item.amount)
         require(this.isEmpty() || content.isSimilar(item))
 
@@ -587,7 +618,7 @@ public class CustomInventory internal constructor(
         /**
          * By default, will be used stack size 64, and it will be increased when
          * will be added new slots with greater max stack size.
-         * @see InventorySlot
+         * @see ContainerInventorySlot
          */
         public const val DEFAULT_MAX_STACK: Int = 64
     }
