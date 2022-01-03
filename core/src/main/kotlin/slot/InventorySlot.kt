@@ -20,8 +20,12 @@
 package ru.endlesscode.inventory.slot
 
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.CustomInventory
+import ru.endlesscode.inventory.internal.util.editItemMeta
+import ru.endlesscode.inventory.internal.util.setDisplayNameAllowingEmpty
+import ru.endlesscode.inventory.internal.util.translateColorCodes
 
 /** Represents inventory slot. */
 public abstract class InventorySlot : Slot {
@@ -36,6 +40,13 @@ public abstract class InventorySlot : Slot {
 
     /** Returns stack that should be used as a slot view. */
     public abstract fun getView(): ItemStack
+
+    /** Returns texture items with configured name and lore. */
+    protected fun prepareTexture(texture: ItemStack): ItemStack = texture.clone().editItemMeta {
+        setDisplayNameAllowingEmpty(name.translateColorCodes())
+        lore = description.translateColorCodes()
+        addItemFlags(*ItemFlag.values())
+    }
 
     /**
      * Called when [player] clicked the slot.
