@@ -28,7 +28,6 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.internal.TaskScheduler
-import ru.endlesscode.inventory.internal.data.SlotType
 import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.listener.*
 import ru.endlesscode.inventory.internal.listener.SlotInteractionResult.Change
@@ -169,22 +168,22 @@ public class CustomInventory internal constructor(
     /** Returns map where key is slotId and value is a list of slots with this slotId. */
     public fun getSlotsMap(): Map<String, List<InventorySlot>> = slotsById.mapValues { (_, value) -> value.toList() }
 
-    /** Returns the inventory's equipment slots. */
-    public fun getEquipmentSlots(): List<ContainerInventorySlot> = getContainerSlots(SlotType.EQUIPMENT)
+    /** Returns the inventory's generic container slots. */
+    public fun getGenericSlots(): List<ContainerInventorySlot> = getContainerSlots(SlotContentType.GENERIC)
 
-    /** Returns the inventory's storage slots. */
-    public fun getStorageSlots(): List<ContainerInventorySlot> = getContainerSlots(SlotType.STORAGE)
+    /** Returns the inventory's equipment container slots. */
+    public fun getEquipmentSlots(): List<ContainerInventorySlot> = getContainerSlots(SlotContentType.EQUIPMENT)
 
     /**
-     * Returns container slots matching to the given [type].
-     * If the [type] is not passed, returns all container slots.
+     * Returns container slots matching to the given [contentType].
+     * If the [contentType] is not passed, returns all container slots.
      * @see getEquipmentSlots
-     * @see getStorageSlots
+     * @see getGenericSlots
      */
     @JvmOverloads
-    public fun getContainerSlots(type: SlotType? = null): List<ContainerInventorySlot> {
-        return if (type != null) {
-            containerSlotsSequence.filter { it.type == type }.toList()
+    public fun getContainerSlots(contentType: SlotContentType? = null): List<ContainerInventorySlot> {
+        return if (contentType != null) {
+            containerSlotsSequence.filter { it.contentType == contentType }.toList()
         } else {
             containerSlotsSequence.toList()
         }

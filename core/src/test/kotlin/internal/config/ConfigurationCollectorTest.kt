@@ -24,7 +24,7 @@ import io.kotest.matchers.shouldBe
 import ru.endlesscode.inventory.internal.data.DataConfig
 import ru.endlesscode.inventory.internal.data.InventoryConfig
 import ru.endlesscode.inventory.internal.data.SlotConfig
-import ru.endlesscode.inventory.internal.data.SlotType
+import ru.endlesscode.inventory.internal.data.SlotConfigType
 import ru.endlesscode.inventory.internal.util.copyTo
 import ru.endlesscode.inventory.test.FileTestBase
 import java.nio.file.Path
@@ -64,13 +64,13 @@ class ConfigurationCollectorTest : FileTestBase() {
         // Then
         collected shouldBe DataConfig(
             slots = mapOf(
-                "empty" to SlotConfig(type = SlotType.GUI),
+                "empty" to SlotConfig(type = SlotConfigType.GUI),
                 "right-ring" to SlotConfig(
                     name = "Right ring",
                     texture = "ring-slot",
                     allowedItems = listOf("minecraft:diamond_shovel", "mimic:ring_*"),
                     deniedItems = listOf("mimic:ring_slot"),
-                    type = SlotType.EQUIPMENT,
+                    type = SlotConfigType.EQUIPMENT,
                     maxStackSize = 1,
                 ),
                 "left-ring" to SlotConfig(
@@ -79,7 +79,7 @@ class ConfigurationCollectorTest : FileTestBase() {
                     texture = "ring-slot",
                     allowedItems = listOf("minecraft:diamond_shovel", "mimic:ring_*"),
                     deniedItems = listOf("mimic:ring_slot"),
-                    type = SlotType.EQUIPMENT,
+                    type = SlotConfigType.EQUIPMENT,
                     maxStackSize = 1,
                 ),
                 "amulet" to SlotConfig("Amulet"),

@@ -20,7 +20,6 @@
 package ru.endlesscode.inventory.slot
 
 import org.bukkit.inventory.ItemStack
-import ru.endlesscode.inventory.internal.data.SlotType
 
 /**
  * Represents slot.
@@ -40,12 +39,12 @@ public interface Slot {
 /**
  * Represents slot that may contain items.
  *
- * @property type Slot type.
+ * @property contentType The type of slot content.
  * @property contentValidator Determines what items this slot can contain
  * @property maxStackSize The maximum stack size for an ItemStack in this slot.
  */
 public interface ContainerSlot : Slot {
-    public val type: SlotType
+    public val contentType: SlotContentType
     public val contentValidator: ItemValidator
     public val maxStackSize: Int
 }
