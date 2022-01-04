@@ -86,9 +86,10 @@ internal class InventoryClicksRouter(
 
         var clickHandled = false
         val interaction = event.toInteraction(slot)
-        if (interaction != null) {
-            clickHandled = inventory.handleInteraction(interaction)
+        if (interaction != null) clickHandled = inventory.handleInteraction(interaction)
+        if (!clickHandled) slot?.onClick(event.whoClicked, SlotClickType.of(event.click))
 
+        if (isCustomInventoryInteraction) {
             // We should manually sync offhand slot after SWAP_OFFHAND event
             // Issue: https://hub.spigotmc.org/jira/browse/SPIGOT-6145
             if (event.click == ClickType.SWAP_OFFHAND) {
@@ -96,8 +97,6 @@ internal class InventoryClicksRouter(
                 scheduler.runOnMain { playerInventory.setItemInOffHand(playerInventory.itemInOffHand) }
             }
         }
-
-        if (!clickHandled) slot?.onClick(event.whoClicked, SlotClickType.of(event.click))
     }
 
     /** Converts this event to [SlotInteraction] or returns `null` if the event shouldn't be handled. */

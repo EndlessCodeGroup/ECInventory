@@ -24,6 +24,7 @@ import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.bukkit.Material
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.ClickType.LEFT
@@ -181,6 +182,13 @@ class InventoryClicksRouterTest : FeatureSpec({
             val event = performClick(HOTBAR_SWAP, click = SWAP_OFFHAND)
 
             verifyInteraction(SwapSlotContent(event, slot, offhandItem))
+            verify { inventoryView.playerInventory.setItemInOffHand(any()) }
+        }
+
+        scenario("swap gui slot with offhand") {
+            performClick(HOTBAR_SWAP, click = SWAP_OFFHAND)
+            verifyInteraction(interaction = null, eventCancelled = true)
+            verify { inventoryView.playerInventory.setItemInOffHand(any()) }
         }
 
         scenario("move empty item to inventory") {
