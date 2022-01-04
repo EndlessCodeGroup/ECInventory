@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2021 EndlessCode Group and contributors
+ * Copyright (c) 2021-2022 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,6 +27,7 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.PlayerInventory
 import ru.endlesscode.inventory.internal.util.AIR
 
 class TestInventoryView(
@@ -37,15 +38,17 @@ class TestInventoryView(
 
     var offhandItem: ItemStack = AIR
 
+    val playerInventory: PlayerInventory = mockk(relaxUnitFun = true) {
+        every { itemInOffHand } answers { offhandItem }
+        every { setItemInOffHand(any()) } answers { offhandItem = firstArg() }
+    }
+
     private var _cursor: ItemStack = AIR
 
     private val player = mockk<Player>(relaxUnitFun = true) {
         every { itemOnCursor } answers { _cursor }
         every { setItemOnCursor(any()) } answers { _cursor = firstArg() }
-        every { inventory } returns mockk(relaxUnitFun = true) {
-            every { itemInOffHand } answers { offhandItem }
-            every { setItemInOffHand(any()) } answers { offhandItem = firstArg() }
-        }
+        every { inventory } returns playerInventory
     }
 
     override fun getTopInventory(): Inventory = topInventory
