@@ -27,8 +27,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.bukkit.Material
 import org.bukkit.event.inventory.ClickType
-import org.bukkit.event.inventory.ClickType.LEFT
-import org.bukkit.event.inventory.ClickType.SWAP_OFFHAND
+import org.bukkit.event.inventory.ClickType.*
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryAction.*
 import org.bukkit.event.inventory.InventoryInteractEvent
@@ -50,12 +49,13 @@ class InventoryClicksRouterTest : FeatureSpec({
 
     var clickedSlot: InventorySlot = mockk<GuiInventorySlot>(relaxUnitFun = true)
     var appliedInteraction: InventoryInteraction? = null
+    var handleInteractionResult = false
     val inventory = mockk<CustomInventory>(relaxUnitFun = true) {
         every { size } returns 54
         every { getSlotAt(any()) } answers { clickedSlot }
         every { handleInteraction(any()) } answers {
             appliedInteraction = firstArg()
-            true
+            handleInteractionResult
         }
     }
     val inventoryView = TestInventoryView(Inventory(inventory))
@@ -69,10 +69,12 @@ class InventoryClicksRouterTest : FeatureSpec({
     fun verifyInteraction(
         interaction: InventoryInteraction?,
         eventCancelled: Boolean = false,
+        clickDispatchedToSlot: Boolean = false,
     ) {
         assertSoftly {
             interactEvent.isCancelled shouldBe eventCancelled
             appliedInteraction shouldBe interaction
+            verify(exactly = if (clickDispatchedToSlot) 1 else 0) { clickedSlot.onClick(any(), any()) }
         }
     }
 
@@ -92,9 +94,11 @@ class InventoryClicksRouterTest : FeatureSpec({
             click: ClickType = LEFT,
             hotbarKey: Int = -1,
             current: ItemStack = AIR,
+            interactionHandled: Boolean = true,
         ) = TestInventoryClickEvent(inventoryView, action, slot, click = click, hotbarKey = hotbarKey).also { event ->
             event.currentItem = current
             interactEvent = event
+            handleInteractionResult = interactionHandled
             router.onClick(event)
         }
 
@@ -105,12 +109,16 @@ class InventoryClicksRouterTest : FeatureSpec({
 
         scenario("click gui inventory slot") {
             performClick(PICKUP_ALL)
-            verifyInteraction(interaction = null, eventCancelled = true)
+            verifyInteraction(
+                interaction = null,
+                eventCancelled = true,
+                clickDispatchedToSlot = true,
+            )
         }
 
         scenario("do nothing with slot") {
             clickedContainerSlot()
-            performClick(NOTHING)
+            performClick(NOTHING, click = ClickType.UNKNOWN)
 
             verifyInteraction(interaction = null)
         }
@@ -120,6 +128,16 @@ class InventoryClicksRouterTest : FeatureSpec({
             val event = performClick(PICKUP_ALL)
 
             verifyInteraction(TakeSlotContent.fromClick(event, slot))
+        }
+
+        scenario("take item from slot not handled") {
+            val slot = clickedContainerSlot(ItemStack(Material.STICK))
+            val event = performClick(PICKUP_ALL, interactionHandled = false)
+
+            verifyInteraction(
+                interaction = TakeSlotContent.fromClick(event, slot),
+                clickDispatchedToSlot = true,
+            )
         }
 
         scenario("place item to slot") {
@@ -148,7 +166,7 @@ class InventoryClicksRouterTest : FeatureSpec({
 
         scenario("collect items inside inventory") {
             clickedContainerSlot()
-            performClick(COLLECT_TO_CURSOR)
+            performClick(COLLECT_TO_CURSOR, click = DOUBLE_CLICK)
             verifyInteraction(interaction = null, eventCancelled = true)
         }
 
@@ -210,14 +228,20 @@ class InventoryClicksRouterTest : FeatureSpec({
             cursor: ItemStack = ItemStack(Material.STICK),
             rightClick: Boolean = false,
             slots: Map<Int, ItemStack> = mapOf(0 to cursor),
+            interactionHandled: Boolean = true,
         ) = TestInventoryDragEvent(inventoryView, cursor, rightClick = rightClick, slots = slots).also { event ->
             interactEvent = event
+            handleInteractionResult = interactionHandled
             router.onDrag(event)
         }
 
         scenario("drag gui inventory slot") {
             performDrag()
-            verifyInteraction(interaction = null, eventCancelled = true)
+            verifyInteraction(
+                interaction = null,
+                eventCancelled = true,
+                clickDispatchedToSlot = true,
+            )
         }
 
         scenario("drag in inventory") {
@@ -256,6 +280,17 @@ class InventoryClicksRouterTest : FeatureSpec({
             val event = performDrag(item, rightClick = true)
 
             verifyInteraction(PlaceSlotContent(event, slot, item, amount = 1))
+        }
+
+        scenario("place items not handled") {
+            val slot = clickedContainerSlot()
+            val item = ItemStack(Material.STICK, 2)
+            val event = performDrag(item, interactionHandled = false)
+
+            verifyInteraction(
+                interaction = PlaceSlotContent(event, slot, item, amount = 2),
+                clickDispatchedToSlot = true,
+            )
         }
     }
 })

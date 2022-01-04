@@ -59,15 +59,15 @@ internal class InventoryClicksRouter(
         } else if (position in inventory) {
             // User slightly moved mouse, consider it was a click
             val slot = inventory.getSlotAt(position)
-            var clickHandled = false
+            var interactionHandled = false
             if (slot is ContainerInventorySlot) {
                 val interaction = event.toPlaceInteraction(slot)
-                clickHandled = inventory.handleInteraction(interaction)
+                interactionHandled = inventory.handleInteraction(interaction)
             } else {
                 event.isCancelled = true
             }
 
-            if (!clickHandled) slot.onClick(event.whoClicked, SlotClickType.of(event.type))
+            if (!interactionHandled) slot.onClick(event.whoClicked, SlotClickType.of(event.type))
         }
     }
 
@@ -84,10 +84,10 @@ internal class InventoryClicksRouter(
         val isCustomInventoryInteraction = event.clickedInventory?.holder == inventory
         val slot = if (isCustomInventoryInteraction) inventory.getSlotAt(event.rawSlot) else null
 
-        var clickHandled = false
+        var interactionHandled = false
         val interaction = event.toInteraction(slot)
-        if (interaction != null) clickHandled = inventory.handleInteraction(interaction)
-        if (!clickHandled) slot?.onClick(event.whoClicked, SlotClickType.of(event.click))
+        if (interaction != null) interactionHandled = inventory.handleInteraction(interaction)
+        if (!interactionHandled) slot?.onClick(event.whoClicked, SlotClickType.of(event.click))
 
         if (isCustomInventoryInteraction) {
             // We should manually sync offhand slot after SWAP_OFFHAND event
