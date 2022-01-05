@@ -37,6 +37,9 @@ public class ContainerInventorySlot(
     override val texture: ItemStack = prototype.texture
         get() = prepareTexture(field)
 
+    override val onClickListeners: List<OnClickListener>
+        get() = super.onClickListeners
+
     /**
      * Max stack size allowed in this slot.
      * @see maxStackSize
@@ -66,6 +69,7 @@ public class ContainerInventorySlot(
     init {
         require(prototype !is InventorySlot) { "InventorySlot can't be used as prototype" }
         updateHolderMaxStackSize()
+        prototype.onClickListeners.forEach(::addOnClickListener)
     }
 
     /** Returns `true` if slot's content is empty. */

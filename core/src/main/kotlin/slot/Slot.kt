@@ -28,12 +28,14 @@ import org.bukkit.inventory.ItemStack
  * @property name A localized name of the slot.
  * @property description A localized description of the slot.
  * @property texture The item that will be placed to the slot when it is empty.
+ * @see InventorySlot
  */
 public interface Slot {
     public val id: String
     public val name: String
     public val description: List<String>
     public val texture: ItemStack
+    public val onClickListeners: List<InventorySlot.OnClickListener>
 }
 
 /**
@@ -42,6 +44,7 @@ public interface Slot {
  * @property contentType The type of slot content.
  * @property contentValidator Determines what items this slot can contain
  * @property maxStackSize The maximum stack size for an ItemStack in this slot.
+ * @see ContainerInventorySlot
  */
 public interface ContainerSlot : Slot {
     public val contentType: SlotContentType

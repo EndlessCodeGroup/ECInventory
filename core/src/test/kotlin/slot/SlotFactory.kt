@@ -33,6 +33,7 @@ fun ContainerInventorySlot(
     name: String = "$id Name",
     description: List<String> = listOf("$id Description"),
     texture: Material = Material.AIR,
+    listeners: List<InventorySlot.OnClickListener> = emptyList(),
     type: SlotContentType = SlotContentType.GENERIC,
     contentValidator: ItemValidator = ItemValidator.any,
     maxStackSize: Int = 1,
@@ -40,7 +41,7 @@ fun ContainerInventorySlot(
     holder: CustomInventory = mockk(relaxed = true),
 ): ContainerInventorySlot {
     return ContainerInventorySlot(
-        prototype = ContainerSlot(id, name, description, texture, type, contentValidator, maxStackSize),
+        prototype = ContainerSlot(id, name, description, texture, listeners, type, contentValidator, maxStackSize),
         holder = holder,
         position = position,
     )
@@ -51,13 +52,15 @@ fun Slot(
     name: String = "$id Name",
     description: List<String> = listOf("$id Description"),
     texture: Material = Material.AIR,
-): Slot = SlotImpl(id, name, description, ItemStack(texture))
+    listeners: List<InventorySlot.OnClickListener> = emptyList(),
+): Slot = SlotImpl(id, name, description, ItemStack(texture), listeners)
 
 fun ContainerSlot(
     id: String = "test-slot",
     name: String = "$id Name",
     description: List<String> = listOf("$id Description"),
     texture: Material = Material.AIR,
+    listeners: List<InventorySlot.OnClickListener> = emptyList(),
     type: SlotContentType = SlotContentType.GENERIC,
     contentValidator: ItemValidator = ItemValidator.any,
     maxStackSize: Int = 1,
@@ -66,6 +69,7 @@ fun ContainerSlot(
     name = name,
     description = description,
     texture = ItemStack(texture),
+    onClickListeners = listeners,
     contentType = type,
     contentValidator = contentValidator,
     maxStackSize = maxStackSize,

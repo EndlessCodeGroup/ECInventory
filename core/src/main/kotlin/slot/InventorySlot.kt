@@ -36,7 +36,10 @@ public abstract class InventorySlot : Slot {
     /** Position of the slot in the inventory. */
     public abstract val position: Int
 
-    private val onClickListeners = mutableListOf<OnClickListener>()
+    private val _onClickListeners = mutableListOf<OnClickListener>()
+
+    override val onClickListeners: List<OnClickListener>
+        get() = _onClickListeners
 
     /** Returns stack that should be used as a slot view. */
     public abstract fun getView(): ItemStack
@@ -63,7 +66,7 @@ public abstract class InventorySlot : Slot {
      * @see removeOnClickListener
      */
     public fun addOnClickListener(listener: OnClickListener) {
-        onClickListeners.add(listener)
+        _onClickListeners.add(listener)
     }
 
     /**
@@ -73,7 +76,7 @@ public abstract class InventorySlot : Slot {
      * @see addOnClickListener
      */
     public fun removeOnClickListener(listener: OnClickListener): Boolean {
-        return onClickListeners.remove(listener)
+        return _onClickListeners.remove(listener)
     }
 
     /** Callback to be invoked when this slot is clicked. */
