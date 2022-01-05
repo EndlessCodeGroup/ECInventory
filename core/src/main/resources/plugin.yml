@@ -13,3 +13,5 @@ permissions:
     default: true
   ecinventory.open.others:
     default: op
+  ecinventory.reload:
+    default: op

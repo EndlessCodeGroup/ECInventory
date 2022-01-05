@@ -20,6 +20,7 @@
 package ru.endlesscode.inventory.internal.util
 
 import org.bukkit.ChatColor
+import org.bukkit.command.CommandSender
 
 internal fun List<String>.translateColorCodes(colorCode: Char = '&'): List<String> {
     return map { it.translateColorCodes(colorCode) }
@@ -27,4 +28,8 @@ internal fun List<String>.translateColorCodes(colorCode: Char = '&'): List<Strin
 
 internal fun String.translateColorCodes(colorCode: Char = '&'): String {
     return ChatColor.translateAlternateColorCodes(colorCode, this)
+}
+
+internal fun CommandSender.sendColorizedMessage(vararg messages: String) {
+    sendMessage(*messages.map { it.translateColorCodes() }.toTypedArray())
 }

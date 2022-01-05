@@ -23,16 +23,21 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.arguments.Argument
 import dev.jorel.commandapi.arguments.MultiLiteralArgument
 import dev.jorel.commandapi.arguments.PlayerArgument
+import dev.jorel.commandapi.executors.CommandExecutor
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import ru.endlesscode.inventory.ECInventoryPlugin
 import ru.endlesscode.inventory.internal.di.DI
+import ru.endlesscode.inventory.internal.util.sendColorizedMessage
 
 private val rootCommand get() = CommandAPICommand("inventories").withAliases("inv")
 
-internal fun registerCommand() {
+internal fun registerCommand(plugin: ECInventoryPlugin) {
     rootCommand
         .withSubcommand(subcommandOpen())
         .withSubcommand(subcommandOpenOthers())
+        .withSubcommand(subcommandReload(plugin))
         .register()
 }
 
@@ -53,6 +58,23 @@ private fun subcommandOpenOthers(): CommandAPICommand =
         )
         .executesPlayer(PlayerCommandExecutor { sender, args ->
             openInventory(sender, type = args.first() as String, target = args[1] as Player)
+        })
+
+private fun subcommandReload(plugin: ECInventoryPlugin): CommandAPICommand =
+    CommandAPICommand("reload")
+        .withPermission("ecinventory.reload")
+        .executes(CommandExecutor { sender, _ ->
+            val onlinePlayers = Bukkit.getServer().onlinePlayers.size
+            if (onlinePlayers > 1) {
+                sender.sendColorizedMessage(
+                    "&7------------------[ &6ATTENTION!&7 ]------------------",
+                    "&e/inventories reload&6 may lead to unexpected behavior,",
+                    "&6use it only for debug purposes when players can't join",
+                    "&6to the server.",
+                    "&7------------------------------------------------"
+                )
+            }
+            plugin.reload(sender)
         })
 
 private fun inventoryArgument(): Argument = MultiLiteralArgument(*DI.data.inventories.keys.toTypedArray())
