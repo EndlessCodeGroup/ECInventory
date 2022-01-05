@@ -31,5 +31,7 @@ internal fun String.translateColorCodes(colorCode: Char = '&'): String {
 }
 
 internal fun CommandSender.sendColorizedMessage(vararg messages: String) {
-    sendMessage(*messages.map { it.translateColorCodes() }.toTypedArray())
+    for (message in messages) {
+        sendMessage(message.translateColorCodes())
+    }
 }

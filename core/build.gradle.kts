@@ -11,6 +11,7 @@ bukkit {
     apiVersion = libs.versions.bukkit.get()
 
     meta {
+        apiVersion.set("1.16")
         name.set("ECInventory")
         main.set("ru.endlesscode.inventory.ECInventoryPlugin")
         authors.set(listOf("osipxd", "Dereku", "EndlessCode Group"))
