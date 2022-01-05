@@ -21,8 +21,6 @@ package ru.endlesscode.inventory.internal.data
 
 import kotlinx.serialization.hocon.Hocon
 import ru.endlesscode.inventory.InventoryLayout
-import ru.endlesscode.inventory.InventoryLayout.Companion.MAX_ROWS
-import ru.endlesscode.inventory.InventoryLayoutImpl
 import ru.endlesscode.inventory.internal.config.ConfigurationCollector
 import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.util.Log
@@ -57,43 +55,12 @@ internal class DataHolder(
     private fun collectData() {
         val data = collector.collect<DataConfig>()
         slots = data.slots.mapValues { (id, config) -> config.parseSlot(id, itemsRegistry) }
-        inventories = data.inventories.mapValues { (id, config) -> createInventory(id, config) }
+        inventories = data.inventories.mapValues { (id, config) -> config.parseInventoryLayout(id, slots) }
 
         val usedSlots = inventories.values.asSequence()
             .flatMap { it.slotsMap.values.asSequence().map(Slot::id) }
             .toSet()
         val unusedSlots = slots.keys - usedSlots
         if (unusedSlots.isNotEmpty()) Log.w("These slots are not used and could be removed: $unusedSlots.")
-    }
-
-    private fun createInventory(id: String, config: InventoryConfig): InventoryLayout {
-        val prefix = "Parsing inventory '$id':"
-        val defaultSlot = getSlot(config.defaultSlot, prefix)
-        require(config.slots.isNotEmpty()) { "$prefix Slots should not be empty." }
-
-        val slotMap = sortedMapOf<Int, Slot>()
-        config.slots.forEach { (key, slotName) ->
-            val slotIds = parseSlotPositions(key, prefix)
-            slotIds.forEach { slotId -> slotMap[slotId] = getSlot(slotName, prefix) }
-        }
-
-        val minRows = InventoryLayout.getMinimalRows(slotMap.lastKey() + 1)
-        val rows = config.rows ?: minRows
-        require(rows in 1..MAX_ROWS) { "$prefix Rows should be in range 1..$MAX_ROWS, but was $rows." }
-        require(rows >= minRows) {
-            "$prefix Minimal rows required for the given slots is $minRows, but $rows passed."
-        }
-
-        return InventoryLayoutImpl(
-            id = id,
-            name = config.name,
-            defaultSlot = defaultSlot,
-            slotsMap = slotMap,
-            rows = rows,
-        )
-    }
-
-    private fun getSlot(name: String, errorPrefix: String): Slot {
-        return requireNotNull(slots[name]) { "$errorPrefix Unknown slot name '$name'.".trimStart() }
     }
 }
