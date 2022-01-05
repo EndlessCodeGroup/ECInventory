@@ -20,18 +20,13 @@
 package ru.endlesscode.inventory.internal.data
 
 import kotlinx.serialization.hocon.Hocon
-import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.InventoryLayout
 import ru.endlesscode.inventory.InventoryLayout.Companion.MAX_ROWS
 import ru.endlesscode.inventory.InventoryLayoutImpl
 import ru.endlesscode.inventory.internal.config.ConfigurationCollector
-import ru.endlesscode.inventory.internal.data.SlotConfigType.*
 import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.util.Log
-import ru.endlesscode.inventory.internal.util.MAX_STACK_SIZE
-import ru.endlesscode.inventory.internal.util.isEmpty
-import ru.endlesscode.inventory.internal.util.orEmpty
-import ru.endlesscode.inventory.slot.*
+import ru.endlesscode.inventory.slot.Slot
 import ru.endlesscode.mimic.items.BukkitItemsRegistry
 import java.nio.file.Path
 
@@ -61,7 +56,7 @@ internal class DataHolder(
 
     private fun collectData() {
         val data = collector.collect<DataConfig>()
-        slots = data.slots.mapValues { (id, config) -> createSlot(id, config) }
+        slots = data.slots.mapValues { (id, config) -> config.parseSlot(id, itemsRegistry) }
         inventories = data.inventories.mapValues { (id, config) -> createInventory(id, config) }
 
         val usedSlots = inventories.values.asSequence()
@@ -69,75 +64,6 @@ internal class DataHolder(
             .toSet()
         val unusedSlots = slots.keys - usedSlots
         if (unusedSlots.isNotEmpty()) Log.w("These slots are not used and could be removed: $unusedSlots.")
-    }
-
-    private fun createSlot(id: String, config: SlotConfig): Slot {
-        val prefix = "Parsing slot '$id':"
-        val textureItem = config.texture?.let {
-            requireNotNull(itemsRegistry.getItem(it)) {
-                "$prefix Unknown texture '${config.texture}'. $errorMimicIdExplanation"
-            }
-        }.orEmpty()
-
-        if (textureItem.isEmpty() && (config.name.isNotEmpty() || config.description.isNotEmpty())) {
-            Log.w(
-                "$prefix 'name' and 'description' is present but 'texture' is not specified.",
-                "Slot name and description can't be shown without texture.",
-            )
-        }
-
-        return when (config.type) {
-            GENERIC, EQUIPMENT -> createContainerSlot(id, config, textureItem, prefix)
-            GUI -> createGuiSlot(id, config, textureItem, prefix)
-        }
-    }
-
-    private fun createContainerSlot(id: String, config: SlotConfig, texture: ItemStack, prefix: String): Slot {
-        val correctMaxStackSize = config.maxStackSize.coerceIn(1, MAX_STACK_SIZE)
-        if (correctMaxStackSize != config.maxStackSize) {
-            Log.w(
-                "$prefix max stack size should be in range 1..$MAX_STACK_SIZE, but was '${config.maxStackSize}'.",
-                "Will be used $correctMaxStackSize instead, please fix slot config.",
-            )
-        }
-
-        val contentType = when (config.type) {
-            GENERIC -> SlotContentType.GENERIC
-            EQUIPMENT -> SlotContentType.EQUIPMENT
-            else -> error("$prefix Unexpected slot type '${config.type}'.")
-        }
-
-        return ContainerSlotImpl(
-            id = id,
-            name = config.name,
-            description = config.description,
-            texture = texture,
-            contentType = contentType,
-            contentValidator = WildcardItemValidator(config.allowedItems, config.deniedItems),
-            maxStackSize = correctMaxStackSize,
-        )
-    }
-
-    private fun createGuiSlot(id: String, config: SlotConfig, texture: ItemStack, prefix: String): Slot {
-        val redundantOptions = mapOf(
-            "allowed-items" to { config.allowedItems.singleOrNull() == "*" },
-            "denied-items" to { config.deniedItems.isEmpty() },
-            "max-stack-size" to { config.maxStackSize == GUI.defaultStackSize },
-        ).filterValues { isDefault -> !isDefault() }.keys
-
-        if (redundantOptions.isNotEmpty()) {
-            Log.w(
-                "$prefix These options are not applicable to slots with type GUI and may be removed:",
-                "  ${redundantOptions.joinToString()}",
-            )
-        }
-
-        return SlotImpl(
-            id = id,
-            name = config.name,
-            description = config.description,
-            texture = texture
-        )
     }
 
     private fun createInventory(id: String, config: InventoryConfig): InventoryLayout {
