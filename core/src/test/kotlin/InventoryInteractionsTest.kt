@@ -62,7 +62,7 @@ class InventoryInteractionsTest : FeatureSpec({
         fun initSlots(vararg slots: Int) {
             val inventoryLayout = InventoryLayoutImpl(
                 id = "test",
-                name = "Test",
+                displayName = "Test",
                 defaultSlot = EmptyGuiSlot,
                 slotsMap = slots.associateWith(::containerSlot).toSortedMap(),
             )

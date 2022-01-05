@@ -24,15 +24,15 @@ import org.bukkit.inventory.ItemStack
 /**
  * Represents slot.
  *
- * @property id Identifier of the slot.
- * @property name A localized name of the slot.
+ * @property name Name of the slot, used to identify slot "type".
+ * @property displayName A localized name of the slot.
  * @property description A localized description of the slot.
  * @property texture The item that will be placed to the slot when it is empty.
  * @see InventorySlot
  */
 public interface Slot {
-    public val id: String
     public val name: String
+    public val displayName: String
     public val description: List<String>
     public val texture: ItemStack
     public val onClickListeners: List<InventorySlot.OnClickListener>

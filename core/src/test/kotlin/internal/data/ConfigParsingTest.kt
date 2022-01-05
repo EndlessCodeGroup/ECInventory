@@ -29,7 +29,7 @@ import ru.endlesscode.inventory.internal.data.parseSlotPositions
 @OptIn(ExperimentalKotest::class)
 internal class ConfigParsingTest : FeatureSpec({
 
-    feature("parseSlotIdsRange") {
+    feature("parseSlotPositions") {
 
         scenario("valid data") {
             withData(

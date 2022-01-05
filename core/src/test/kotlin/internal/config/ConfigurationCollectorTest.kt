@@ -68,7 +68,7 @@ class ConfigurationCollectorTest : FileTestBase() {
             slots = mapOf(
                 "empty" to SlotConfig(type = SlotConfigType.GUI),
                 "right-ring" to SlotConfig(
-                    name = "Right ring",
+                    displayName = "Right ring",
                     texture = "ring-slot",
                     allowedItems = listOf("minecraft:diamond_shovel", "mimic:ring_*"),
                     deniedItems = listOf("mimic:ring_slot"),
@@ -76,7 +76,7 @@ class ConfigurationCollectorTest : FileTestBase() {
                     maxStackSize = 1,
                 ),
                 "left-ring" to SlotConfig(
-                    name = "Left ring",
+                    displayName = "Left ring",
                     description = listOf("First line", "Second line"),
                     texture = "ring-slot",
                     allowedItems = listOf("minecraft:diamond_shovel", "mimic:ring_*"),
@@ -85,7 +85,7 @@ class ConfigurationCollectorTest : FileTestBase() {
                     maxStackSize = 1,
                 ),
                 "amulet" to SlotConfig(
-                    name = "Amulet",
+                    displayName = "Amulet",
                     actions = listOf(
                         SlotActionBinding(
                             predicates = listOf(LEFT_CLICK),
@@ -105,7 +105,7 @@ class ConfigurationCollectorTest : FileTestBase() {
             ),
             inventories = mapOf(
                 "default" to InventoryConfig(
-                    name = "ECInventory",
+                    displayName = "ECInventory",
                     defaultSlot = "empty",
                     slots = mapOf(
                         "0-2" to "amulet",

@@ -46,7 +46,7 @@ public abstract class InventorySlot : Slot {
 
     /** Returns texture items with configured name and lore. */
     protected fun prepareTexture(texture: ItemStack): ItemStack = texture.clone().editItemMeta {
-        setDisplayNameAllowingEmpty(name.translateColorCodes())
+        setDisplayNameAllowingEmpty(displayName.translateColorCodes())
         lore = description.translateColorCodes()
         addItemFlags(*ItemFlag.values())
     }

@@ -47,7 +47,7 @@ class SlotInteractionsTest : FeatureSpec({
     val slotContentValidator = TestItemValidator()
     val inventoryLayout = InventoryLayoutImpl(
         id = "test",
-        name = "Test",
+        displayName = "Test",
         defaultSlot = EmptyGuiSlot,
         slotsMap = sortedMapOf(
             1 to ContainerSlot(

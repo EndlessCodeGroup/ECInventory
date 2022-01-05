@@ -65,8 +65,8 @@ fun ContainerSlot(
     contentValidator: ItemValidator = ItemValidator.any,
     maxStackSize: Int = 1,
 ): ContainerSlot = ContainerSlotImpl(
-    id = id,
-    name = name,
+    name = id,
+    displayName = name,
     description = description,
     texture = ItemStack(texture),
     onClickListeners = listeners,

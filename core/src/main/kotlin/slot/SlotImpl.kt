@@ -23,16 +23,16 @@ import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.internal.util.MAX_STACK_SIZE
 
 internal data class SlotImpl(
-    override val id: String,
     override val name: String,
+    override val displayName: String,
     override val description: List<String>,
     override val texture: ItemStack,
     override val onClickListeners: List<InventorySlot.OnClickListener>,
 ) : Slot
 
 internal data class ContainerSlotImpl(
-    override val id: String,
     override val name: String,
+    override val displayName: String,
     override val description: List<String>,
     override val texture: ItemStack,
     override val onClickListeners: List<InventorySlot.OnClickListener>,
@@ -43,7 +43,7 @@ internal data class ContainerSlotImpl(
 
     init {
         require(maxStackSize in 1..MAX_STACK_SIZE) {
-            "Can't create slot '$id'. Max stack size should be in range 1..$MAX_STACK_SIZE, bit it was $maxStackSize."
+            "Can't create slot '$name'. Max stack size should be in range 1..$MAX_STACK_SIZE, bit it was $maxStackSize."
         }
     }
 }

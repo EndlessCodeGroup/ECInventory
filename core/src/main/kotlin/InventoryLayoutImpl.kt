@@ -25,7 +25,7 @@ import java.util.*
 
 internal data class InventoryLayoutImpl(
     override val id: String,
-    override val name: String,
+    override val displayName: String,
     override val defaultSlot: Slot,
     override val slotsMap: SortedMap<Int, Slot>,
     override val rows: Int = InventoryLayout.getMinimalRows(slotsMap.lastKey() + 1),

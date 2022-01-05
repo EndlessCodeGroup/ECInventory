@@ -27,7 +27,7 @@ import ru.endlesscode.inventory.slot.Slot
 
 @Serializable
 internal data class InventoryConfig(
-    val name: String,
+    val displayName: String,
     val defaultSlot: String,
     val slots: Map<String, String>,
     val rows: Int? = null,
@@ -40,8 +40,8 @@ internal data class InventoryConfig(
 
         val slotMap = sortedMapOf<Int, Slot>()
         slots.forEach { (key, slotName) ->
-            val slotIds = parseSlotPositions(key, prefix)
-            slotIds.forEach { slotId -> slotMap[slotId] = knownSlots.getSlot(slotName, prefix) }
+            val positions = parseSlotPositions(key, prefix)
+            positions.forEach { position -> slotMap[position] = knownSlots.getSlot(slotName, prefix) }
         }
 
         val minRows = InventoryLayout.getMinimalRows(slotMap.lastKey() + 1)
@@ -53,7 +53,7 @@ internal data class InventoryConfig(
 
         return InventoryLayoutImpl(
             id = id,
-            name = name,
+            displayName = displayName,
             defaultSlot = defaultSlot,
             slotsMap = slotMap,
             rows = rows,

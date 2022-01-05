@@ -42,4 +42,8 @@ public class GuiInventorySlot(
         require(prototype !is InventorySlot) { "InventorySlot can't be used as prototype" }
         prototype.onClickListeners.forEach(::addOnClickListener)
     }
+
+    override fun toString(): String {
+        return "GuiInventorySlot(name=$name, position=$position)"
+    }
 }

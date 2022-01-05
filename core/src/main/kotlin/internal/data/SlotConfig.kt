@@ -33,7 +33,7 @@ import ru.endlesscode.mimic.items.BukkitItemsRegistry
 
 @Serializable
 internal data class SlotConfig(
-    val name: String = "",
+    val displayName: String = "",
     val description: List<String> = emptyList(),
     val texture: String? = null,
     val type: SlotConfigType = GENERIC,
@@ -46,15 +46,15 @@ internal data class SlotConfig(
     private val onClickListeners: List<InventorySlot.OnClickListener>
         get() = listOf(SlotClickBindings(actions))
 
-    fun parseSlot(id: String, itemsRegistry: BukkitItemsRegistry): Slot {
-        val prefix = "Parsing slot '$id':"
+    fun parseSlot(name: String, itemsRegistry: BukkitItemsRegistry): Slot {
+        val prefix = "Parsing slot '$name':"
         val textureItem = texture?.let {
             requireNotNull(itemsRegistry.getItem(it)) {
                 "$prefix Unknown texture '$texture'. $errorMimicIdExplanation"
             }
         }.orEmpty()
 
-        if (textureItem.isEmpty() && (name.isNotEmpty() || description.isNotEmpty())) {
+        if (textureItem.isEmpty() && (displayName.isNotEmpty() || description.isNotEmpty())) {
             Log.w(
                 "$prefix 'name' and 'description' is present but 'texture' is not specified.",
                 "Slot name and description can't be shown without texture.",
@@ -62,12 +62,12 @@ internal data class SlotConfig(
         }
 
         return when (type) {
-            GENERIC, EQUIPMENT -> createContainerSlot(id, textureItem, prefix)
-            GUI -> createGuiSlot(id, textureItem, prefix)
+            GENERIC, EQUIPMENT -> createContainerSlot(name, textureItem, prefix)
+            GUI -> createGuiSlot(name, textureItem, prefix)
         }
     }
 
-    private fun createContainerSlot(id: String, texture: ItemStack, prefix: String): Slot {
+    private fun createContainerSlot(name: String, texture: ItemStack, prefix: String): Slot {
         val correctMaxStackSize = maxStackSize.coerceIn(1, MAX_STACK_SIZE)
         if (correctMaxStackSize != maxStackSize) {
             Log.w(
@@ -83,8 +83,8 @@ internal data class SlotConfig(
         }
 
         return ContainerSlotImpl(
-            id = id,
             name = name,
+            displayName = displayName,
             description = description,
             texture = texture,
             onClickListeners = onClickListeners,
@@ -94,7 +94,7 @@ internal data class SlotConfig(
         )
     }
 
-    private fun createGuiSlot(id: String, texture: ItemStack, prefix: String): Slot {
+    private fun createGuiSlot(name: String, texture: ItemStack, prefix: String): Slot {
         val redundantOptions = mapOf(
             "allowed-items" to { allowedItems.singleOrNull() == "*" },
             "denied-items" to { deniedItems.isEmpty() },
@@ -109,8 +109,8 @@ internal data class SlotConfig(
         }
 
         return SlotImpl(
-            id = id,
             name = name,
+            displayName = displayName,
             description = description,
             texture = texture,
             onClickListeners = onClickListeners,

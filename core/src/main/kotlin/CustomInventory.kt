@@ -50,8 +50,8 @@ public class CustomInventory internal constructor(
     private val placeholders: Placeholders = DI.placeholders,
 ) : InventoryHolder {
 
-    /** Returns inventory layout name. */
-    public val name: String get() = layout.name
+    /** Returns inventory name displayed to players. */
+    public val displayName: String get() = layout.displayName.translateColorCodes()
 
     /** Returns inventory layout ID. It can be considered as an inventory type. */
     public val type: String get() = layout.id
@@ -59,11 +59,11 @@ public class CustomInventory internal constructor(
     /** Temporary [Inventory], used to show [CustomInventory] to player. */
     private var view: Inventory? = null
 
-    private val slotsById: MutableMap<String, MutableList<InventorySlot>> = mutableMapOf()
+    private val slotsByName: MutableMap<String, MutableList<InventorySlot>> = mutableMapOf()
     private var slotsIndex: Array<Pair<String, Int>> = emptyArray()
 
     private val slotsSequence: Sequence<InventorySlot>
-        get() = slotsById.values.asSequence().flatten()
+        get() = slotsByName.values.asSequence().flatten()
     private val containerSlotsSequence: Sequence<ContainerInventorySlot>
         get() = slotsSequence.filterIsInstance<ContainerInventorySlot>()
 
@@ -91,33 +91,33 @@ public class CustomInventory internal constructor(
     init {
         for (position in 0 until size) {
             val slot = layout.slotsMap[position] ?: layout.defaultSlot
-            slotsById.getOrPut(slot.id, ::mutableListOf)
+            slotsByName.getOrPut(slot.name, ::mutableListOf)
                 .add(createInventorySlot(slot, position))
         }
         updateSlotsIndex()
     }
 
     /**
-     * Returns the ItemStack found in the [n]th slot with the given [slotId],
+     * Returns the ItemStack found in the [n]th slot with the given [slotName],
      * or `null` if there are no such slot.
      *
      * By default [n] is `0`, so it will return item from the first slot for
-     * the given [slotId].
+     * the given [slotName].
      */
     @JvmOverloads
-    public fun getItem(slotId: String, n: Int = 0): ItemStack? {
-        val slot = getSlot(slotId, n) as? ContainerInventorySlot
+    public fun getItem(slotName: String, n: Int = 0): ItemStack? {
+        val slot = getSlot(slotName, n) as? ContainerInventorySlot
         return slot?.content
     }
 
-    /** Stores the given [item] at the first slot with the given [slotId]. */
-    public fun setItem(slotId: String, item: ItemStack?) {
-        setItem(slotId, n = 0, item)
+    /** Stores the given [item] at the first slot with the given [slotName]. */
+    public fun setItem(slotName: String, item: ItemStack?) {
+        setItem(slotName, n = 0, item)
     }
 
-    /** Stores the given [item] at the [n]th slot with the given [slotId]. */
-    public fun setItem(slotId: String, n: Int, item: ItemStack?) {
-        val slot = getSlot(slotId, n) as? ContainerInventorySlot
+    /** Stores the given [item] at the [n]th slot with the given [slotName]. */
+    public fun setItem(slotName: String, n: Int, item: ItemStack?) {
+        val slot = getSlot(slotName, n) as? ContainerInventorySlot
         slot?.content = item.orEmpty()
     }
 
@@ -128,14 +128,14 @@ public class CustomInventory internal constructor(
     }
 
     /**
-     * Returns the list of ItemStacks found in the slots with the given [slotId]
+     * Returns the list of ItemStacks found in the slots with the given [slotName]
      * or an empty list if there are no such slots or these slots doesn't contain
      * items.
      *
      * Returned list may not contain `null` or `AIR`.
      */
-    public fun getItems(slotId: String): List<ItemStack> {
-        return slotsById[slotId].orEmpty()
+    public fun getItems(slotName: String): List<ItemStack> {
+        return slotsByName[slotName].orEmpty()
             .asSequence()
             .filterIsInstance<ContainerInventorySlot>()
             .filterNot { it.isEmpty() }
@@ -144,29 +144,29 @@ public class CustomInventory internal constructor(
     }
 
     /**
-     * Returns the slot with the given [id][slotId], or `null`
+     * Returns the slot with the given [slotName], or `null`
      * if there are no such slot.
      *
      * By default [n] is `0`, so it will return the first slot for
-     * the given [slotId].
+     * the given [slotName].
      */
     @JvmOverloads
-    public fun getSlot(slotId: String, n: Int = 0): InventorySlot? = slotsById[slotId]?.getOrNull(n)
+    public fun getSlot(slotName: String, n: Int = 0): InventorySlot? = slotsByName[slotName]?.getOrNull(n)
 
     /**
      * Returns slot by theirs [position].
      * @throws IndexOutOfBoundsException if the given position is out of the inventory.
      */
     public fun getSlotAt(position: Int): InventorySlot {
-        val (slotId, n) = slotsIndex[position]
-        return slotsById.getValue(slotId)[n]
+        val (slotName, n) = slotsIndex[position]
+        return slotsByName.getValue(slotName)[n]
     }
 
-    /** Returns slots with the given [slotId] or empty list if there are no such slots. */
-    public fun getSlots(slotId: String): List<InventorySlot> = slotsById[slotId]?.toList().orEmpty()
+    /** Returns slots with the given [slotName] or empty list if there are no such slots. */
+    public fun getSlots(slotName: String): List<InventorySlot> = slotsByName[slotName]?.toList().orEmpty()
 
-    /** Returns map where key is slotId and value is a list of slots with this slotId. */
-    public fun getSlotsMap(): Map<String, List<InventorySlot>> = slotsById.mapValues { (_, value) -> value.toList() }
+    /** Returns map where key is slot name and value is a list of slots with this slot name. */
+    public fun getSlotsMap(): Map<String, List<InventorySlot>> = slotsByName.mapValues { (_, value) -> value.toList() }
 
     /** Returns the inventory's generic container slots. */
     public fun getGenericSlots(): List<ContainerInventorySlot> = getContainerSlots(SlotContentType.GENERIC)
@@ -200,7 +200,7 @@ public class CustomInventory internal constructor(
         val currentView = view
         if (currentView != null) return currentView
 
-        val inventoryName = placeholders.apply(name.translateColorCodes(), player)
+        val inventoryName = placeholders.apply(displayName, player)
         return Bukkit.createInventory(this, size, inventoryName).also { view ->
             view.maxStackSize = maxStackSize
             view.contents = buildViewContents(player)
@@ -209,9 +209,7 @@ public class CustomInventory internal constructor(
     }
 
     private fun buildViewContents(player: OfflinePlayer?): Array<ItemStack> {
-        return Array(size) { position ->
-            placeholders.apply(getSlotAt(position).getView(), player)
-        }
+        return Array(size) { position -> placeholders.apply(getSlotAt(position).getView(), player) }
     }
 
     /** Opens this inventory for the given [player]. */
@@ -225,16 +223,16 @@ public class CustomInventory internal constructor(
     }
 
     /**
-     * Removes [n]th slot with the specified [slotId] from the inventory.
+     * Removes [n]th slot with the specified [slotName] from the inventory.
      *
      * By default [n] is `0`, so it will remove the first slot for
-     * the given [slotId].
+     * the given [slotName].
      *
-     * @return removed slot, or `null` if there are no slot with the given id or [n].
+     * @return removed slot, or `null` if there are no slot with the given [slotName] or [n].
      */
     @JvmOverloads
-    public fun removeSlot(slotId: String, n: Int = 0): InventorySlot? {
-        val position = slotsById[slotId]?.getOrNull(n)?.position ?: return null
+    public fun removeSlot(slotName: String, n: Int = 0): InventorySlot? {
+        val position = slotsByName[slotName]?.getOrNull(n)?.position ?: return null
         return removeSlotAt(position)
     }
 
@@ -253,13 +251,13 @@ public class CustomInventory internal constructor(
      */
     public fun assignSlot(position: Int, slot: Slot): InventorySlot {
         val newSlot = createInventorySlot(slot, position)
-        val (currentSlotId, n) = slotsIndex[position]
+        val (currentSlotName, n) = slotsIndex[position]
 
-        val previousSlots = slotsById.getValue(currentSlotId)
+        val previousSlots = slotsByName.getValue(currentSlotName)
         val previousSlot = previousSlots.removeAt(n)
 
-        if (previousSlots.isEmpty()) slotsById.remove(currentSlotId)
-        slotsById.getOrPut(newSlot.id, ::mutableListOf).add(newSlot)
+        if (previousSlots.isEmpty()) slotsByName.remove(currentSlotName)
+        slotsByName.getOrPut(newSlot.name, ::mutableListOf).add(newSlot)
         updateSlotsIndex()
 
         return previousSlot
@@ -276,9 +274,9 @@ public class CustomInventory internal constructor(
     // Should be called after any operation that changes slots.
     private fun updateSlotsIndex() {
         val slotsIndex = arrayOfNulls<Pair<String, Int>?>(size)
-        for ((slotId, slots) in slotsById) {
+        for ((slotName, slots) in slotsByName) {
             slots.forEachIndexed { index, slot ->
-                slotsIndex[slot.position] = slotId to index
+                slotsIndex[slot.position] = slotName to index
             }
         }
         this.slotsIndex = slotsIndex.requireNoNulls()
@@ -509,14 +507,14 @@ public class CustomInventory internal constructor(
     }
 
     /**
-     * Clears out the [n]th slot with the given [slotId].
+     * Clears out the [n]th slot with the given [slotName].
      *
      * By default [n] is `0`, so it will clear the first slot for
-     * the given [slotId].
+     * the given [slotName].
      */
     @JvmOverloads
-    public fun clear(slotId: String, n: Int = 0) {
-        setItem(slotId, n, null)
+    public fun clear(slotName: String, n: Int = 0) {
+        setItem(slotName, n, null)
     }
 
     /** Clears out the slot assigned to the given [position]. */

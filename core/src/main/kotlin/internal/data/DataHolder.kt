@@ -57,8 +57,8 @@ internal class DataHolder(
         slots = data.slots.mapValues { (id, config) -> config.parseSlot(id, itemsRegistry) }
         inventories = data.inventories.mapValues { (id, config) -> config.parseInventoryLayout(id, slots) }
 
-        val usedSlots = inventories.values.asSequence()
-            .flatMap { it.slotsMap.values.asSequence().map(Slot::id) }
+        val usedSlots = inventories.values
+            .flatMap { it.slotsMap.values.asSequence().map(Slot::name) }
             .toSet()
         val unusedSlots = slots.keys - usedSlots
         if (unusedSlots.isNotEmpty()) Log.w("These slots are not used and could be removed: $unusedSlots.")

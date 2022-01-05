@@ -34,11 +34,11 @@ internal class InventorySqlEntity(
 internal fun CustomInventory.toSqlEntity(): InventorySqlEntity {
     val yaml = YamlConfiguration()
     getSlotsMap()
-        .forEach { (slotId, slots) ->
+        .forEach { (slotName, slots) ->
             slots.asSequence()
                 .filterIsInstance<ContainerInventorySlot>()
                 .filterNot(ContainerInventorySlot::isEmpty)
-                .forEachIndexed { n, slot -> yaml["$slotId:$n"] = slot.content }
+                .forEachIndexed { n, slot -> yaml["$slotName:$n"] = slot.content }
         }
 
     return InventorySqlEntity(id, type, yaml.saveToString())
@@ -49,9 +49,9 @@ internal fun InventorySqlEntity.toDomain(layout: InventoryLayout): CustomInvento
     val inventory = CustomInventory(id, layout)
     yaml.getKeys(false).forEach { key ->
         val parts = key.split(":", limit = 2)
-        val slotId = parts.first()
+        val slotName = parts.first()
         val n = parts.getOrNull(1)?.toIntOrNull() ?: 0
-        inventory.setItem(slotId, n, yaml.getItemStack(key))
+        inventory.setItem(slotName, n, yaml.getItemStack(key))
     }
     return inventory
 }

@@ -176,7 +176,7 @@ public class ContainerInventorySlot(
     public fun canHold(item: ItemStack): Boolean = contentValidator.isValid(item)
 
     override fun toString(): String {
-        return "InventorySlot(id=$id, position=$position, content=$content)"
+        return "ContainerInventorySlot(name=$name, position=$position, content=$content)"
     }
 
     private fun updateHolderMaxStackSize() {

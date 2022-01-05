@@ -34,11 +34,11 @@ internal fun parseSlotPositions(value: String, errorPrefix: String = ""): IntRan
 }
 
 internal fun parseSlotPosition(value: String, errorPrefix: String = ""): Int {
-    val slotId = requireNotNull(value.toIntOrNull()) {
+    val position = requireNotNull(value.toIntOrNull()) {
         "$errorPrefix Slot position should be a number, but it was '$value'.".trimStart()
     }
-    require(slotId in 0..MAX_SLOT_POSITION) {
-        "$errorPrefix Slot position should be in range 0..$MAX_SLOT_POSITION, but it was '$slotId'.".trimStart()
+    require(position in 0..MAX_SLOT_POSITION) {
+        "$errorPrefix Slot position should be in range 0..$MAX_SLOT_POSITION, but it was '$position'.".trimStart()
     }
-    return slotId
+    return position
 }
