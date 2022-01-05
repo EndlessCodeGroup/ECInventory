@@ -213,7 +213,8 @@ public class CustomInventory internal constructor(
 
     /** This method should be called when inventory close. */
     internal fun onClose() {
-        this.view = null
+        // Remove view if it was the last viewer
+        scheduler.runOnMain { if (viewers.isEmpty()) view = null }
     }
 
     /**
