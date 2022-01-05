@@ -30,6 +30,7 @@ import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryAction.*
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.internal.InstantTaskScheduler
+import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.listener.PlaceSlotContent
 import ru.endlesscode.inventory.internal.listener.SwapSlotContent
 import ru.endlesscode.inventory.internal.listener.TakeSlotContent
@@ -98,7 +99,7 @@ class SlotInteractionsTest : FeatureSpec({
         ) {
             event = TestInventoryClickEvent(inventoryView, action)
             slot.content = content
-            event.currentItem = slot.getView()
+            event.currentItem = slot.getView(DI.placeholders, mockk())
 
             initSlotContent = content
             initEventCursor = AIR
@@ -134,7 +135,7 @@ class SlotInteractionsTest : FeatureSpec({
             event = TestInventoryClickEvent(inventoryView, action)
             slot.content = current
             event.cursor = cursor
-            event.currentItem = slot.getView()
+            event.currentItem = slot.getView(DI.placeholders, mockk())
 
             initSlotContent = current
             initEventCursor = cursor
@@ -212,7 +213,7 @@ class SlotInteractionsTest : FeatureSpec({
         ) {
             event = TestInventoryClickEvent(inventoryView, HOTBAR_SWAP)
             slot.content = content
-            event.currentItem = slot.getView()
+            event.currentItem = slot.getView(DI.placeholders, mockk())
 
             initSlotContent = content
             initEventCursor = AIR

@@ -19,8 +19,10 @@
 
 package ru.endlesscode.inventory.slot
 
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.CustomInventory
+import ru.endlesscode.inventory.util.Placeholders
 
 /** Inventory GUI slot, that can't contain items. */
 public class GuiInventorySlot(
@@ -36,7 +38,9 @@ public class GuiInventorySlot(
         get() = super.onClickListeners
 
     /** Always returns [texture] as a view. */
-    override fun getView(): ItemStack = texture
+    override fun getView(placeholders: Placeholders, player: Player): ItemStack {
+        return placeholders.apply(texture, player)
+    }
 
     init {
         require(prototype !is InventorySlot) { "InventorySlot can't be used as prototype" }

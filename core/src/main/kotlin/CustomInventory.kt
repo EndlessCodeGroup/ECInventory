@@ -203,7 +203,7 @@ public class CustomInventory internal constructor(
     }
 
     private fun buildViewContents(): Array<ItemStack> {
-        return Array(size) { position -> placeholders.apply(getSlotAt(position).getView(), holder) }
+        return Array(size) { position -> getSlotAt(position).getView(placeholders, holder) }
     }
 
     /** Opens this inventory for the given [player]. */
@@ -519,7 +519,7 @@ public class CustomInventory internal constructor(
     internal fun syncSlotWithView(slot: ContainerInventorySlot) {
         // Do sync on the next tick for the case if it was called from click event
         scheduler.runOnMain {
-            view?.setItem(slot.position, slot.getView())
+            view?.setItem(slot.position, slot.getView(placeholders, holder))
         }
     }
 
@@ -582,7 +582,7 @@ public class CustomInventory internal constructor(
 
     /** Takes item from this slot and returns result of this interaction. */
     private fun ContainerInventorySlot.takeItemInteraction(amount: Int = content.amount): SlotInteractionResult {
-        val expectedCursor = getView().cloneWithAmount(amount)
+        val expectedCursor = getView(placeholders, this@CustomInventory.holder).cloneWithAmount(amount)
         val actualCursor = takeItem(amount)
         return when {
             actualCursor.isEmpty() -> Deny
