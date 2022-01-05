@@ -28,6 +28,7 @@ import ru.endlesscode.inventory.internal.util.isEmpty
 import ru.endlesscode.inventory.internal.util.orEmpty
 import ru.endlesscode.inventory.slot.*
 import ru.endlesscode.inventory.slot.action.SlotActionBinding
+import ru.endlesscode.inventory.slot.action.SlotClickBindings
 import ru.endlesscode.mimic.items.BukkitItemsRegistry
 
 @Serializable
@@ -41,6 +42,9 @@ internal data class SlotConfig(
     val deniedItems: List<String> = emptyList(),
     val maxStackSize: Int = type.defaultStackSize,
 ) {
+
+    private val onClickListeners: List<InventorySlot.OnClickListener>
+        get() = listOf(SlotClickBindings(actions))
 
     fun parseSlot(id: String, itemsRegistry: BukkitItemsRegistry): Slot {
         val prefix = "Parsing slot '$id':"
@@ -83,6 +87,7 @@ internal data class SlotConfig(
             name = name,
             description = description,
             texture = texture,
+            onClickListeners = onClickListeners,
             contentType = contentType,
             contentValidator = WildcardItemValidator(allowedItems, deniedItems),
             maxStackSize = correctMaxStackSize,
@@ -108,6 +113,7 @@ internal data class SlotConfig(
             name = name,
             description = description,
             texture = texture,
+            onClickListeners = onClickListeners,
         )
     }
 }
