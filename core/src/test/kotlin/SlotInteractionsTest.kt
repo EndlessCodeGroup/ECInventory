@@ -23,6 +23,7 @@ import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.shouldBe
+import io.mockk.mockk
 import io.mockk.spyk
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction
@@ -59,7 +60,7 @@ class SlotInteractionsTest : FeatureSpec({
     )
 
     // SUT
-    val inventory = spyk(CustomInventory(UUID.randomUUID(), inventoryLayout, InstantTaskScheduler()))
+    val inventory = spyk(CustomInventory(UUID.randomUUID(), inventoryLayout, mockk(), InstantTaskScheduler()))
     val slot = inventory.getSlotAt(1) as ContainerInventorySlot
 
     val inventoryView = TestInventoryView()

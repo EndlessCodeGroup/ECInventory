@@ -23,6 +23,7 @@ import io.kotest.assertions.assertSoftly
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.inspectors.forAll
 import io.kotest.matchers.shouldBe
+import io.mockk.mockk
 import io.mockk.spyk
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction.MOVE_TO_OTHER_INVENTORY
@@ -66,7 +67,7 @@ class InventoryInteractionsTest : FeatureSpec({
                 defaultSlot = EmptyGuiSlot,
                 slotsMap = slots.associateWith(::containerSlot).toSortedMap(),
             )
-            inventory = spyk(CustomInventory(UUID.randomUUID(), inventoryLayout, InstantTaskScheduler()))
+            inventory = spyk(CustomInventory(UUID.randomUUID(), inventoryLayout, mockk(), InstantTaskScheduler()))
         }
 
         fun setSlotsContent(vararg bindings: Pair<Int, ItemStack>) {

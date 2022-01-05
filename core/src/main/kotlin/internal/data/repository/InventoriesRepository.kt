@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2021 EndlessCode Group and contributors
+ * Copyright (c) 2021-2022 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -41,29 +41,25 @@ internal class InventoriesRepository(
 
     private val cache = InventoriesCache()
 
-    fun getInventory(player: Player, type: String): CustomInventory = getInventory(player.uniqueId, type)
-
-    fun getInventory(holderId: UUID, type: String): CustomInventory {
-        val inventory = cache.getInventories(holderId).find { it.type == type }
-        return inventory ?: createInventory(holderId, type)
+    fun getInventory(player: Player, type: String): CustomInventory {
+        val inventory = cache.getInventories(player.uniqueId).find { it.type == type }
+        return inventory ?: createInventory(player, type)
     }
 
-    private fun createInventory(holderId: UUID, type: String): CustomInventory {
-        val inventory = CustomInventory(getLayout(type))
-        cache.addInventory(holderId, inventory)
-        scheduler.runAsync { dao.addInventory(holderId, inventory.toSqlEntity()) }
+    private fun createInventory(player: Player, type: String): CustomInventory {
+        val inventory = CustomInventory(getLayout(type), player)
+        cache.addInventory(player.uniqueId, inventory)
+        scheduler.runAsync { dao.addInventory(player.uniqueId, inventory.toSqlEntity()) }
         return inventory
     }
 
-    fun loadInventories(player: Player) = loadInventories(player.uniqueId)
-
-    fun loadInventories(holderId: UUID) {
+    fun loadInventories(player: Player) {
         scheduler.runAsync {
-            val holderInventories = dao.getInventories(holderId).asSequence()
-                .map { it.toDomain(getLayout(it.layout)) }
+            val holderInventories = dao.getInventories(player.uniqueId).asSequence()
+                .map { it.toDomain(getLayout(it.layout), player) }
                 .associateBy { it.id }
 
-            runOnMain { cache.setInventories(holderId, holderInventories) }
+            runOnMain { cache.setInventories(player.uniqueId, holderInventories) }
         }
     }
 

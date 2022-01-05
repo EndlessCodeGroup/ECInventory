@@ -20,6 +20,7 @@
 package ru.endlesscode.inventory.internal.data.sql.entity
 
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.entity.Player
 import ru.endlesscode.inventory.CustomInventory
 import ru.endlesscode.inventory.InventoryLayout
 import ru.endlesscode.inventory.slot.ContainerInventorySlot
@@ -44,9 +45,9 @@ internal fun CustomInventory.toSqlEntity(): InventorySqlEntity {
     return InventorySqlEntity(id, type, yaml.saveToString())
 }
 
-internal fun InventorySqlEntity.toDomain(layout: InventoryLayout): CustomInventory {
+internal fun InventorySqlEntity.toDomain(layout: InventoryLayout, holder: Player): CustomInventory {
     val yaml = YamlConfiguration.loadConfiguration(content.reader())
-    val inventory = CustomInventory(id, layout)
+    val inventory = CustomInventory(id, layout, holder)
     yaml.getKeys(false).forEach { key ->
         val parts = key.split(":", limit = 2)
         val slotName = parts.first()

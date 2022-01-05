@@ -21,7 +21,6 @@ package ru.endlesscode.inventory
 
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.OfflinePlayer
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -41,17 +40,19 @@ import java.util.function.Predicate
  * Inventory consisting of [InventorySlot]s.
  *
  * @property id Unique ID of the inventory.
+ * @property holder The player holding this inventory
  * @param layout Layout of the inventory.
  */
 public class CustomInventory internal constructor(
     public val id: UUID,
     private val layout: InventoryLayout,
+    public val holder: Player,
     private val scheduler: TaskScheduler = DI.scheduler,
     private val placeholders: Placeholders = DI.placeholders,
 ) : InventoryHolder {
 
     /** Returns inventory name displayed to players. */
-    public val displayName: String get() = layout.displayName.translateColorCodes()
+    public val displayName: String get() = placeholders.apply(layout.displayName.translateColorCodes(), holder)
 
     /** Returns inventory layout ID. It can be considered as an inventory type. */
     public val type: String get() = layout.id
@@ -82,10 +83,10 @@ public class CustomInventory internal constructor(
     public val viewers: List<HumanEntity>
         get() = view?.viewers.orEmpty()
 
-    public constructor(layout: InventoryLayout) : this(
+    public constructor(layout: InventoryLayout, holder: Player) : this(
         id = UUID.randomUUID(),
         layout = layout,
-        scheduler = DI.scheduler,
+        holder = holder,
     )
 
     init {
@@ -193,28 +194,21 @@ public class CustomInventory internal constructor(
     public fun getGuiSlots(): List<GuiInventorySlot> = slotsSequence.filterIsInstance<GuiInventorySlot>().toList()
 
     /** Constructs and returns [Inventory] that can be shown to a player. */
-    override fun getInventory(): Inventory = getInventory(player = null)
-
-    /** Constructs and returns [Inventory] that can be shown to the given [player]. */
-    private fun getInventory(player: OfflinePlayer?): Inventory {
-        val currentView = view
-        if (currentView != null) return currentView
-
-        val inventoryName = placeholders.apply(displayName, player)
-        return Bukkit.createInventory(this, size, inventoryName).also { view ->
+    override fun getInventory(): Inventory {
+        return view ?: Bukkit.createInventory(this, size, displayName).also { view ->
             view.maxStackSize = maxStackSize
-            view.contents = buildViewContents(player)
+            view.contents = buildViewContents()
             this.view = view
         }
     }
 
-    private fun buildViewContents(player: OfflinePlayer?): Array<ItemStack> {
-        return Array(size) { position -> placeholders.apply(getSlotAt(position).getView(), player) }
+    private fun buildViewContents(): Array<ItemStack> {
+        return Array(size) { position -> placeholders.apply(getSlotAt(position).getView(), holder) }
     }
 
     /** Opens this inventory for the given [player]. */
     public fun open(player: Player) {
-        player.openInventory(getInventory(player))
+        player.openInventory(inventory)
     }
 
     /** This method should be called when inventory close. */
