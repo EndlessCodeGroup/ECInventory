@@ -20,6 +20,7 @@
 package ru.endlesscode.inventory.internal.data
 
 import kotlinx.serialization.Serializable
+import ru.endlesscode.inventory.slot.action.SlotActionBinding
 
 @Serializable
 internal data class SlotConfig(
@@ -27,6 +28,7 @@ internal data class SlotConfig(
     val description: List<String> = emptyList(),
     val texture: String? = null,
     val type: SlotConfigType = SlotConfigType.GENERIC,
+    val actions: List<SlotActionBinding> = emptyList(),
     val allowedItems: List<String> = listOf("*"),
     val deniedItems: List<String> = emptyList(),
     val maxStackSize: Int = type.defaultStackSize,

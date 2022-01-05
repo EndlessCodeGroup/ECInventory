@@ -37,6 +37,18 @@ public enum class SlotClickType {
     /** Holding shift while pressing the right mouse button. */
     SHIFT_RIGHT;
 
+    /** Returns `true` if this click type represents a left click. */
+    public val isLeftClick: Boolean
+        get() = this == LEFT || this == SHIFT_LEFT
+
+    /** Returns `true` if this click type represents a right click. */
+    public val isRightClick: Boolean
+        get() = this == RIGHT || this == SHIFT_RIGHT
+
+    /** Returns `true` if this click type represents a Shift click. */
+    public val isShiftClick: Boolean
+        get() = this == SHIFT_LEFT || this == SHIFT_RIGHT
+
     public companion object {
 
         /** Returns equivalent for the given [clickType] or `null` if click type is not suppoerted. */
