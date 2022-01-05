@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2021 EndlessCode Group and contributors
+ * Copyright (c) 2021-2022 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,7 +22,9 @@ package ru.endlesscode.inventory.internal
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.arguments.Argument
 import dev.jorel.commandapi.arguments.MultiLiteralArgument
+import dev.jorel.commandapi.arguments.PlayerArgument
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
+import org.bukkit.entity.Player
 import ru.endlesscode.inventory.internal.di.DI
 
 private val rootCommand get() = CommandAPICommand("inventories").withAliases("inv")
@@ -30,6 +32,7 @@ private val rootCommand get() = CommandAPICommand("inventories").withAliases("in
 internal fun registerCommand() {
     rootCommand
         .withSubcommand(subcommandOpen())
+        .withSubcommand(subcommandOpenOthers())
         .register()
 }
 
@@ -37,9 +40,19 @@ private fun subcommandOpen(): CommandAPICommand =
     CommandAPICommand("open")
         .withArguments(inventoryArgument())
         .executesPlayer(PlayerCommandExecutor { sender, args ->
-            val type = args.first() as String
-            val inventory = DI.data.inventoriesRepository.getInventory(sender, type)
-            inventory.open(sender)
+            openInventory(sender, type = args.first() as String)
+        })
+
+private fun subcommandOpenOthers(): CommandAPICommand =
+    CommandAPICommand("open")
+        .withArguments(inventoryArgument(), PlayerArgument("target"))
+        .executesPlayer(PlayerCommandExecutor { sender, args ->
+            openInventory(sender, type = args.first() as String, target = args[1] as Player)
         })
 
 private fun inventoryArgument(): Argument = MultiLiteralArgument(*DI.data.inventories.keys.toTypedArray())
+
+private fun openInventory(sender: Player, type: String, target: Player = sender) {
+    val inventory = DI.data.inventoriesRepository.getInventory(target, type)
+    inventory.open(sender)
+}
