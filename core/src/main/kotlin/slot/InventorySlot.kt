@@ -29,7 +29,7 @@ import ru.endlesscode.inventory.internal.util.translateColorCodes
 import ru.endlesscode.inventory.util.Placeholders
 
 /** Represents inventory slot. */
-public abstract class InventorySlot : Slot {
+public abstract class InventorySlot(prototype: Slot) : Slot by prototype {
 
     /** The inventory that contain this slot. */
     public abstract val holder: CustomInventory
@@ -37,20 +37,25 @@ public abstract class InventorySlot : Slot {
     /** Position of the slot in the inventory. */
     public abstract val position: Int
 
-    private val _onClickListeners = mutableListOf<OnClickListener>()
+    /** Returns texture items with configured name and lore. */
+    override val texture: ItemStack = prototype.texture
+        get() = field.clone().editItemMeta {
+            setDisplayNameAllowingEmpty(displayName.translateColorCodes())
+            lore = description.translateColorCodes()
+            addItemFlags(*ItemFlag.values())
+        }
+
+    private val _onClickListeners = prototype.onClickListeners.toMutableList()
 
     override val onClickListeners: List<OnClickListener>
-        get() = _onClickListeners
+        get() = _onClickListeners.toList()
+
+    init {
+        require(prototype !is InventorySlot) { "InventorySlot can't be used as prototype" }
+    }
 
     /** Returns stack that should be used as a slot view for the given [player]. */
     public abstract fun getView(placeholders: Placeholders, player: Player): ItemStack
-
-    /** Returns texture items with configured name and lore. */
-    protected fun prepareTexture(texture: ItemStack): ItemStack = texture.clone().editItemMeta {
-        setDisplayNameAllowingEmpty(displayName.translateColorCodes())
-        lore = description.translateColorCodes()
-        addItemFlags(*ItemFlag.values())
-    }
 
     /**
      * Called when [player] clicked the slot.

@@ -29,22 +29,11 @@ public class GuiInventorySlot(
     prototype: Slot,
     override val holder: CustomInventory,
     override val position: Int,
-) : InventorySlot(), Slot by prototype {
-
-    override val texture: ItemStack = prototype.texture
-        get() = prepareTexture(field)
-
-    override val onClickListeners: List<OnClickListener>
-        get() = super.onClickListeners
+) : InventorySlot(prototype) {
 
     /** Always returns [texture] as a view. */
     override fun getView(placeholders: Placeholders, player: Player): ItemStack {
         return placeholders.apply(texture, player)
-    }
-
-    init {
-        require(prototype !is InventorySlot) { "InventorySlot can't be used as prototype" }
-        prototype.onClickListeners.forEach(::addOnClickListener)
     }
 
     override fun toString(): String {
