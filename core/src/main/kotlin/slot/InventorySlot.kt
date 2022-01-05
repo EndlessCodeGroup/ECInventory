@@ -40,7 +40,7 @@ public abstract class InventorySlot(prototype: Slot) : Slot by prototype {
     /** Returns texture items with configured name and lore. */
     override val texture: ItemStack = prototype.texture
         get() = field.clone().editItemMeta {
-            setDisplayNameAllowingEmpty(displayName.translateColorCodes())
+            setDisplayNameAllowingEmpty(this@InventorySlot.displayName.translateColorCodes())
             lore = description.translateColorCodes()
             addItemFlags(*ItemFlag.values())
         }
