@@ -38,6 +38,7 @@ internal fun registerCommand() {
 
 private fun subcommandOpen(): CommandAPICommand =
     CommandAPICommand("open")
+        .withPermission("ecinventory.open")
         .withArguments(inventoryArgument())
         .executesPlayer(PlayerCommandExecutor { sender, args ->
             openInventory(sender, type = args.first() as String)
@@ -45,6 +46,7 @@ private fun subcommandOpen(): CommandAPICommand =
 
 private fun subcommandOpenOthers(): CommandAPICommand =
     CommandAPICommand("open")
+        .withPermission("ecinventory.open.others")
         .withArguments(inventoryArgument(), PlayerArgument("target"))
         .executesPlayer(PlayerCommandExecutor { sender, args ->
             openInventory(sender, type = args.first() as String, target = args[1] as Player)
