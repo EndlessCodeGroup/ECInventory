@@ -25,10 +25,11 @@ import ru.endlesscode.inventory.InventoryLayout
 import ru.endlesscode.inventory.InventoryLayout.Companion.MAX_ROWS
 import ru.endlesscode.inventory.InventoryLayoutImpl
 import ru.endlesscode.inventory.internal.config.ConfigurationCollector
+import ru.endlesscode.inventory.internal.data.SlotConfigType.*
 import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.util.Log
 import ru.endlesscode.inventory.internal.util.MAX_STACK_SIZE
-import ru.endlesscode.inventory.internal.util.isNullOrEmpty
+import ru.endlesscode.inventory.internal.util.isEmpty
 import ru.endlesscode.inventory.internal.util.orEmpty
 import ru.endlesscode.inventory.slot.*
 import ru.endlesscode.mimic.items.BukkitItemsRegistry
@@ -76,9 +77,9 @@ internal class DataHolder(
             requireNotNull(itemsRegistry.getItem(it)) {
                 "$prefix Unknown texture '${config.texture}'. $errorMimicIdExplanation"
             }
-        }
+        }.orEmpty()
 
-        if (textureItem.isNullOrEmpty() && (config.name.isNotEmpty() || config.description.isNotEmpty())) {
+        if (textureItem.isEmpty() && (config.name.isNotEmpty() || config.description.isNotEmpty())) {
             Log.w(
                 "$prefix 'name' and 'description' is present but 'texture' is not specified.",
                 "Slot name and description can't be shown without texture.",
@@ -86,8 +87,8 @@ internal class DataHolder(
         }
 
         return when (config.type) {
-            SlotConfigType.GENERIC, SlotConfigType.EQUIPMENT -> createContainerSlot(id, config, textureItem.orEmpty(), prefix)
-            SlotConfigType.GUI -> createGuiSlot(id, config, textureItem.orEmpty(), prefix)
+            GENERIC, EQUIPMENT -> createContainerSlot(id, config, textureItem, prefix)
+            GUI -> createGuiSlot(id, config, textureItem, prefix)
         }
     }
 
@@ -101,8 +102,8 @@ internal class DataHolder(
         }
 
         val contentType = when (config.type) {
-            SlotConfigType.GENERIC -> SlotContentType.GENERIC
-            SlotConfigType.EQUIPMENT -> SlotContentType.EQUIPMENT
+            GENERIC -> SlotContentType.GENERIC
+            EQUIPMENT -> SlotContentType.EQUIPMENT
             else -> error("$prefix Unexpected slot type '${config.type}'.")
         }
 
@@ -121,7 +122,7 @@ internal class DataHolder(
         val redundantOptions = mapOf(
             "allowed-items" to { config.allowedItems.singleOrNull() == "*" },
             "denied-items" to { config.deniedItems.isEmpty() },
-            "max-stack-size" to { config.maxStackSize == SlotConfigType.GUI.defaultStackSize },
+            "max-stack-size" to { config.maxStackSize == GUI.defaultStackSize },
         ).filterValues { isDefault -> !isDefault() }.keys
 
         if (redundantOptions.isNotEmpty()) {

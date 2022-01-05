@@ -62,6 +62,10 @@ internal fun ItemStack?.isNullOrEmpty(): Boolean {
     return this == null || type.isAir
 }
 
+@JvmName("isNullOrEmptyNonNullable")
+@Deprecated(message = "May be replaced with isEmpty", replaceWith = ReplaceWith("this.isEmpty()"))
+internal fun ItemStack.isNullOrEmpty(): Boolean = isEmpty()
+
 /** Clones [ItemStack] and sets the given [amount]. */
 internal fun ItemStack.cloneWithAmount(amount: Int = this.amount): ItemStack {
     return clone().also { it.amount = amount }
