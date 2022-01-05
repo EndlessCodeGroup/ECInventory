@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2019-2021 EndlessCode Group and contributors
+ * Copyright (c) 2019-2022 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -20,9 +20,7 @@
 package ru.endlesscode.inventory.internal.config
 
 import com.typesafe.config.ConfigFactory
-import com.typesafe.config.ConfigObject
 import com.typesafe.config.ConfigRenderOptions
-import com.typesafe.config.ConfigValueFactory
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.serializer
@@ -32,19 +30,16 @@ import kotlin.io.path.writeText
 internal inline fun <reified T : Any> ConfigurationSerializer(
     fileName: String,
     description: String? = null,
-    noinline convertToMap: (T) -> Map<String, Any?>,
 ) = ConfigurationSerializer(
-    serializer = serializer(),
+    serializer = serializer<T>(),
     fileName = fileName,
     description = description,
-    convertToMap = convertToMap,
 )
 
 internal data class ConfigurationSerializer<T : Any>(
     val serializer: KSerializer<T>,
     val fileName: String,
     val description: String? = null,
-    val convertToMap: (T) -> Map<String, Any?>,
 )
 
 internal fun <T : Any> Hocon.decodeFromFile(configSerializer: ConfigurationSerializer<T>, path: Path): T {
@@ -52,11 +47,9 @@ internal fun <T : Any> Hocon.decodeFromFile(configSerializer: ConfigurationSeria
     return decodeFromConfig(configSerializer.serializer, config.resolve())
 }
 
-@Suppress("unused") // Hocon will be used soon https://github.com/Kotlin/kotlinx.serialization/pull/1740
 internal fun <T : Any> Hocon.encodeToFile(configSerializer: ConfigurationSerializer<T>, value: T, path: Path) {
-    val configValue = ConfigValueFactory.fromAnyRef(configSerializer.convertToMap(value), configSerializer.description)
-    check(configValue is ConfigObject)
-    path.writeText(configValue.render(configRenderOptions))
+    val config = encodeToConfig(configSerializer.serializer, value)
+    path.writeText(config.root().render(configRenderOptions))
 }
 
 private val configRenderOptions = ConfigRenderOptions.defaults().setOriginComments(false)

@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2019-2021 EndlessCode Group and contributors
+ * Copyright (c) 2019-2022 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,11 +29,6 @@ internal data class TestConfiguration(
 ) {
 
     companion object {
-        val SERIALIZER = ConfigurationSerializer<TestConfiguration>(fileName = "test") { config ->
-            mapOf(
-                "a-string" to config.aString,
-                "an-int" to config.anInt,
-            )
-        }
+        val SERIALIZER = ConfigurationSerializer<TestConfiguration>(fileName = "test")
     }
 }

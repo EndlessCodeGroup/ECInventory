@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2019-2021 EndlessCode Group and contributors
+ * Copyright (c) 2019-2022 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -34,19 +34,6 @@ internal class MainConfigurationImpl(
         val SERIALIZER = ConfigurationSerializer<MainConfigurationImpl>(
             fileName = "main",
             description = "ECInventory configuration",
-        ) { config ->
-            mapOf(
-                "enabled" to config.enabled,
-                "locale" to config.locale,
-                "database" to mapOf(
-                    "type" to config.database.type.name.lowercase(),
-                    "host" to config.database.host,
-                    "port" to config.database.port,
-                    "name" to config.database.name,
-                    "username" to config.database.username,
-                    "password" to config.database.password,
-                )
-            )
-        }
+        )
     }
 }

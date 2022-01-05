@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2019-2021 EndlessCode Group and contributors
+ * Copyright (c) 2019-2022 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,7 +29,7 @@ import kotlin.io.path.notExists
 /**
  * ConfigurationHolder helps to load and save [config].
  *
- * @param configsDirectory Path that points to a configs directory.
+ * @param configsDirectory Path that points to a configs' directory.
  * @param serializer       A loader used to load and save config.
  */
 internal class ConfigurationHolder<T : Any>(
