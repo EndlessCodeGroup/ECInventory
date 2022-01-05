@@ -211,6 +211,11 @@ public class CustomInventory internal constructor(
         player.openInventory(inventory)
     }
 
+    /** Closes this inventory for all [viewers]. */
+    public fun close() {
+        viewers.toList().forEach(HumanEntity::closeInventory)
+    }
+
     /** This method should be called when inventory close. */
     internal fun onClose() {
         // Remove view if it was the last viewer

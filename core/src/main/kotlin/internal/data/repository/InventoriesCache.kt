@@ -27,6 +27,9 @@ internal class InventoriesCache {
     private val inventories = mutableMapOf<UUID, CustomInventory>()
     private val bindings = mutableMapOf<UUID, Set<UUID>>()
 
+    val holderIds: Set<UUID>
+        get() = bindings.keys
+
     fun getInventories(holderId: UUID): Sequence<CustomInventory> {
         return bindings[holderId].orEmpty()
             .asSequence()
