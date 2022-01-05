@@ -45,6 +45,7 @@ internal class DataModule(val dataPath: Path) {
     val inventoriesRepository: InventoriesRepository by lazy { InventoriesRepository() }
 
     fun reload() {
+        inventoriesRepository.unloadAll()
         configHolder.reload()
         dataHolder.reload()
         locale.reload(config.locale)

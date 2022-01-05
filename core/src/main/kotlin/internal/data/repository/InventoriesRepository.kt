@@ -71,8 +71,13 @@ internal class InventoriesRepository(
 
     fun unloadInventories(holderId: UUID) {
         val inventories = cache.removeInventories(holderId)
-            .map { it.toSqlEntity() }
+            .onEach(CustomInventory::close)
+            .map(CustomInventory::toSqlEntity)
             .toList()
         scheduler.runAsync { dao.updateInventories(inventories) }
+    }
+
+    fun unloadAll() {
+        cache.holderIds.forEach(::unloadInventories)
     }
 }
