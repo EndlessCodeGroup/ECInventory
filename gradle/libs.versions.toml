@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.5.31"
+kotlin = "1.6.10"
 bukkit = "1.17.1"
 
 [libraries]

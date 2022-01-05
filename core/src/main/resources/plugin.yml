@@ -5,8 +5,8 @@ softdepend:
   - PlaceholderAPI
   - ProRPGItems # We want to use its ItemsRegistry.
 libraries:
-  - org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31
-  - org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.3.0
+  - org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10
+  - org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.3.2
   - com.zaxxer:HikariCP:5.0.0
 permissions:
   ecinventory.open:
