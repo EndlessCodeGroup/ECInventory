@@ -46,8 +46,11 @@ private fun subcommandOpen(): CommandAPICommand =
 
 private fun subcommandOpenOthers(): CommandAPICommand =
     CommandAPICommand("open")
-        .withPermission("ecinventory.open.others")
-        .withArguments(inventoryArgument(), PlayerArgument("target"))
+        .withPermission("ecinventory.open")
+        .withArguments(
+            inventoryArgument(),
+            PlayerArgument("target").withPermission("ecinventory.open.others"),
+        )
         .executesPlayer(PlayerCommandExecutor { sender, args ->
             openInventory(sender, type = args.first() as String, target = args[1] as Player)
         })
