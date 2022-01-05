@@ -32,10 +32,14 @@ public class GuiInventorySlot(
     override val texture: ItemStack = prototype.texture
         get() = prepareTexture(field)
 
+    override val onClickListeners: List<OnClickListener>
+        get() = super.onClickListeners
+
     /** Always returns [texture] as a view. */
     override fun getView(): ItemStack = texture
 
     init {
         require(prototype !is InventorySlot) { "InventorySlot can't be used as prototype" }
+        prototype.onClickListeners.forEach(::addOnClickListener)
     }
 }

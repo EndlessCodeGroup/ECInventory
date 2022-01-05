@@ -27,6 +27,7 @@ internal data class SlotImpl(
     override val name: String,
     override val description: List<String>,
     override val texture: ItemStack,
+    override val onClickListeners: List<InventorySlot.OnClickListener>,
 ) : Slot
 
 internal data class ContainerSlotImpl(
@@ -34,6 +35,7 @@ internal data class ContainerSlotImpl(
     override val name: String,
     override val description: List<String>,
     override val texture: ItemStack,
+    override val onClickListeners: List<InventorySlot.OnClickListener>,
     override val contentType: SlotContentType,
     override val contentValidator: ItemValidator,
     override val maxStackSize: Int,
