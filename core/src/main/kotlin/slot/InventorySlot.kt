@@ -26,6 +26,7 @@ import ru.endlesscode.inventory.CustomInventory
 import ru.endlesscode.inventory.internal.util.editItemMeta
 import ru.endlesscode.inventory.internal.util.setDisplayNameAllowingEmpty
 import ru.endlesscode.inventory.internal.util.translateColorCodes
+import ru.endlesscode.inventory.util.Placeholders
 
 /** Represents inventory slot. */
 public abstract class InventorySlot : Slot {
@@ -41,8 +42,8 @@ public abstract class InventorySlot : Slot {
     override val onClickListeners: List<OnClickListener>
         get() = _onClickListeners
 
-    /** Returns stack that should be used as a slot view. */
-    public abstract fun getView(): ItemStack
+    /** Returns stack that should be used as a slot view for the given [player]. */
+    public abstract fun getView(placeholders: Placeholders, player: Player): ItemStack
 
     /** Returns texture items with configured name and lore. */
     protected fun prepareTexture(texture: ItemStack): ItemStack = texture.clone().editItemMeta {

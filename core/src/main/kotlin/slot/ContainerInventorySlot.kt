@@ -19,9 +19,11 @@
 
 package ru.endlesscode.inventory.slot
 
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import ru.endlesscode.inventory.CustomInventory
 import ru.endlesscode.inventory.internal.util.*
+import ru.endlesscode.inventory.util.Placeholders
 
 /**
  * Slot assigned to inventory, that can contain items.
@@ -79,7 +81,10 @@ public class ContainerInventorySlot(
     public fun isFull(): Boolean = !isEmpty() && content.amount >= maxStackSize
 
     /** Returns [content] if it isn't empty or [texture] otherwise. */
-    override fun getView(): ItemStack = if (isEmpty()) texture else content
+    override fun getView(placeholders: Placeholders, player: Player): ItemStack {
+        val item = if (isEmpty()) texture else content
+        return placeholders.apply(item, player)
+    }
 
     /** Swaps slot content with the given [item] and returns item taken from the slot. */
     public fun swapItem(item: ItemStack): ItemStack = when {
