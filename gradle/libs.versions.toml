@@ -1,6 +1,6 @@
 [versions]
 kotlin = "1.6.10"
-bukkit = "1.17.1"
+bukkit = "1.18.1"
 
 [libraries]
 mimic = "ru.endlesscode.mimic:mimic-bukkit-api:0.6.2"
