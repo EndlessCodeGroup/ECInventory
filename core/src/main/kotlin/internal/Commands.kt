@@ -35,9 +35,13 @@ private val rootCommand get() = CommandAPICommand("inventories").withAliases("in
 
 internal fun registerCommand(plugin: ECInventoryPlugin) {
     rootCommand
+        .withShortDescription("Commands for ECInventory")
         .withSubcommand(subcommandOpen())
         .withSubcommand(subcommandOpenOthers())
         .withSubcommand(subcommandReload(plugin))
+        .executes(CommandExecutor { sender, _ ->
+            sender.sendColorizedMessage("&2${plugin.name} v${plugin.description.version}")
+        })
         .register()
 }
 
@@ -67,7 +71,7 @@ private fun subcommandReload(plugin: ECInventoryPlugin): CommandAPICommand =
             val onlinePlayers = Bukkit.getServer().onlinePlayers.size
             if (onlinePlayers > 1) {
                 sender.sendColorizedMessage(
-                    "&7------------------[ &6ATTENTION!&7 ]------------------",
+                    "&7------------------- &6ATTENTION!&7 -------------------",
                     "&e/inventories reload&6 may lead to unexpected behavior,",
                     "&6use it only for debug purposes when players can't join",
                     "&6to the server.",
