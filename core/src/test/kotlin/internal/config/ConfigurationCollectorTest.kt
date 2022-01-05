@@ -26,6 +26,8 @@ import ru.endlesscode.inventory.internal.data.InventoryConfig
 import ru.endlesscode.inventory.internal.data.SlotConfig
 import ru.endlesscode.inventory.internal.data.SlotConfigType
 import ru.endlesscode.inventory.internal.util.copyTo
+import ru.endlesscode.inventory.slot.action.ActionPredicate.*
+import ru.endlesscode.inventory.slot.action.SlotActionBinding
 import ru.endlesscode.inventory.test.FileTestBase
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
@@ -82,7 +84,23 @@ class ConfigurationCollectorTest : FileTestBase() {
                     type = SlotConfigType.EQUIPMENT,
                     maxStackSize = 1,
                 ),
-                "amulet" to SlotConfig("Amulet"),
+                "amulet" to SlotConfig(
+                    name = "Amulet",
+                    actions = listOf(
+                        SlotActionBinding(
+                            predicates = listOf(LEFT_CLICK),
+                            actions = listOf("say Left click"),
+                        ),
+                        SlotActionBinding(
+                            predicates = listOf(SHIFT_LEFT_CLICK, SHIFT_RIGHT_CLICK),
+                            actions = listOf("say Shift click"),
+                        ),
+                        SlotActionBinding(
+                            predicates = listOf(CLICK),
+                            actions = listOf("say Other click"),
+                        ),
+                    )
+                ),
                 "ultimate-amulet" to SlotConfig("Ultimate Amulet"),
             ),
             inventories = mapOf(
