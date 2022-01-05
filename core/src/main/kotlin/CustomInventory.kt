@@ -575,9 +575,9 @@ public class CustomInventory internal constructor(
 
     /** Swap content with the given [item]. */
     private fun ContainerInventorySlot.swapItemInteraction(item: ItemStack): SlotInteractionResult = when {
-        item.amount > maxStackSize || !canHold(item) -> Deny
         item.isEmpty() && this.isEmpty() -> Deny
         item.isEmpty() -> takeItemInteraction()
+        item.amount > maxStackSize || !canHold(item) -> Deny
         this.isEmpty() -> placeItemInteraction(item)
 
         else -> {

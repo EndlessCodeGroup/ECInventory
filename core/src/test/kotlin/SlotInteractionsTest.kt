@@ -233,6 +233,12 @@ class SlotInteractionsTest : FeatureSpec({
             assertState(content = AIR)
         }
 
+        scenario("swap slot with empty item when validator exists") {
+            slotContentValidator.predicate = { it.type == Material.STICK }
+            swapContent(content = ItemStack(Material.STICK))
+            assertState(content = AIR)
+        }
+
         scenario("swap empty slot with item") {
             val item = ItemStack(Material.STICK, 2)
             swapContent(item = item)

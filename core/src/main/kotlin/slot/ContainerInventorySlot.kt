@@ -84,10 +84,9 @@ public class ContainerInventorySlot(
 
     /** Swaps slot content with the given [item] and returns item taken from the slot. */
     public fun swapItem(item: ItemStack): ItemStack = when {
-        item.amount > maxStackSize || !canHold(item) -> item
-
         item.isEmpty() && this.isEmpty() -> item
         item.isEmpty() -> takeItem()
+        item.amount > maxStackSize || !canHold(item) -> item
         this.isEmpty() -> placeItem(item)
 
         else -> {
@@ -173,8 +172,11 @@ public class ContainerInventorySlot(
         content = content
     }
 
-    /** Returns `true` if this slot can hold the given [item]. */
-    public fun canHold(item: ItemStack): Boolean = contentValidator.isValid(item)
+    /**
+     * Returns `true` if this slot can hold the given [item].
+     * Always returns `true` for `AIR` item.
+     */
+    public fun canHold(item: ItemStack): Boolean = item.isEmpty() || contentValidator.isValid(item)
 
     override fun toString(): String {
         return "ContainerInventorySlot(name=$name, position=$position, content=$content)"
