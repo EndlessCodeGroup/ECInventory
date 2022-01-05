@@ -25,15 +25,11 @@ import ru.endlesscode.inventory.internal.data.DataHolder
 import ru.endlesscode.inventory.internal.data.MainConfigurationImpl
 import ru.endlesscode.inventory.internal.data.repository.InventoriesRepository
 import ru.endlesscode.inventory.internal.data.sql.Database
-import ru.endlesscode.inventory.internal.locale.I18N
-import ru.endlesscode.inventory.internal.locale.I18NBukkit
 import ru.endlesscode.inventory.slot.Slot
 import java.nio.file.Path
 
 internal class DataModule(val dataPath: Path) {
     val database: Database by lazy { Database(config.database) }
-
-    val locale: I18N by lazy { I18NBukkit(dataPath, config.locale) }
 
     val configHolder by lazy { ConfigurationHolder(dataPath, MainConfigurationImpl.SERIALIZER) }
     val config: MainConfigurationImpl get() = configHolder.config
@@ -48,7 +44,6 @@ internal class DataModule(val dataPath: Path) {
         inventoriesRepository.unloadAll()
         configHolder.reload()
         dataHolder.reload()
-        locale.reload(config.locale)
         database.updateConfig(config.database)
     }
 }
