@@ -21,6 +21,7 @@ package ru.endlesscode.inventory
 
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
+import ru.endlesscode.inventory.internal.compat.BukkitVersion
 import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.di.DataModule
 import ru.endlesscode.inventory.internal.hook.PlaceholderApiPlaceholders
@@ -69,6 +70,7 @@ public class ECInventoryPlugin : JavaPlugin() {
 
     private fun loadParts(): Boolean {
         if (!checkPluginIsEnabled()) return false
+        if (!BukkitVersion.checkCompatibility()) return false
 
         return makeSure {
             initHooks()

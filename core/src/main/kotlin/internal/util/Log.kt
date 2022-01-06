@@ -42,6 +42,11 @@ internal object Log {
     }
 
     /** Writes error message to log. */
+    fun e(vararg messages: String) {
+        messages.forEach { logger?.severe(it) }
+    }
+
+    /** Writes error message to log. */
     fun e(message: String, throwable: Throwable) {
         logger?.log(Level.SEVERE, message, throwable)
     }
