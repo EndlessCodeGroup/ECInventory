@@ -19,7 +19,6 @@
 
 package ru.endlesscode.inventory.internal.data.sql
 
-import java.sql.SQLException
 import javax.sql.DataSource
 
 // language=SQL
@@ -38,13 +37,9 @@ internal class MainTableDao(dataSource: DataSource) : BaseDao(dataSource) {
             LIMIT 1;
             """
         ) {
-            try {
-                val resultSet = executeQuery()
-                if (resultSet.next()) resultSet.getInt(COLUMN_VERSION) else -1
-            } catch (_: SQLException) {
-                -1
-            }
-        }
+            val resultSet = executeQuery()
+            if (resultSet.next()) resultSet.getInt(COLUMN_VERSION) else -1
+        }.getOrElse { -1 }
     }
 
     private companion object {

@@ -45,7 +45,7 @@ internal abstract class BaseDao(private var dataSource: DataSource) {
         }
     }
 
-    protected inline fun <T> statement(sql: String, crossinline block: PreparedStatement.() -> T): T {
+    protected inline fun <T> statement(sql: String, crossinline block: PreparedStatement.() -> T): Result<T> {
         return dataSource.statement(sql.trimIndent(), block)
     }
 

@@ -28,6 +28,7 @@ import ru.endlesscode.inventory.internal.data.sql.InventoryDao
 import ru.endlesscode.inventory.internal.data.sql.entity.toDomain
 import ru.endlesscode.inventory.internal.data.sql.entity.toSqlEntity
 import ru.endlesscode.inventory.internal.di.DI
+import ru.endlesscode.inventory.internal.util.Log
 import java.util.*
 
 internal class InventoriesRepository(
@@ -55,7 +56,12 @@ internal class InventoriesRepository(
 
     fun loadInventories(player: Player) {
         scheduler.runAsync {
-            val holderInventories = dao.getInventories(player.uniqueId).asSequence()
+            val holderInventories = dao.getInventories(player.uniqueId)
+                .getOrElse { exception ->
+                    Log.e("Error on loading inventories of player ${player.name}", exception)
+                    return@runAsync
+                }
+                .asSequence()
                 .map { it.toDomain(getLayout(it.layout), player) }
                 .associateBy { it.id }
 

@@ -74,7 +74,7 @@ internal class InventoryDao(dataSource: DataSource) : BaseDao(dataSource) {
         }
     }
 
-    fun getInventories(holderId: UUID): List<InventorySqlEntity> {
+    fun getInventories(holderId: UUID): Result<List<InventorySqlEntity>> {
         return statement(
             """
             SELECT $INVENTORIES.*
