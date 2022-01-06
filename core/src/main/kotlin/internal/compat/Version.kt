@@ -78,7 +78,7 @@ internal data class Version(
             var parts = version.split("-", limit = 2)
             val qualifier = if (parts.size > 1) parts[1] else ""
 
-            parts = parts[0].split("\\.", limit = 3)
+            parts = parts[0].split(".", limit = 3)
             return try {
                 val patch = if (parts.size > 2) parts[2].toInt() else 0
                 val minor = if (parts.size > 1) parts[1].toInt() else 0
