@@ -146,7 +146,7 @@ indent_size = 2
 ij_yaml_keep_indents_on_empty_lines = false
 ij_yaml_keep_line_breaks = true
 ij_yaml_spaces_within_brackets = false
-ij_yaml_indent_sequence_value = false
+ij_yaml_indent_sequence_value = true
 
 [*.conf]
 ## Tabs and Indents
