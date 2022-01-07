@@ -15,6 +15,11 @@ const config = {
   organizationName: 'EndlessCodeGroup',
   projectName: 'ECInventory',
 
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'ru'],
+  },
+
   presets: [
     [
       'classic',
@@ -46,6 +51,10 @@ const config = {
             docId: 'intro',
             position: 'left',
             label: 'Documentation',
+          },
+          {
+            type: 'localeDropdown',
+            position: 'right',
           },
           {
             href: 'https://github.com/EndlessCodeGroup/ECInventory',
