@@ -45,6 +45,8 @@ jobs:
         with:
           upload_translations: true
           download_translations: true
+          push_translations: false
+          create_pull_request: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
