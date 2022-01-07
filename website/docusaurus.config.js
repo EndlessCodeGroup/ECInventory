@@ -44,7 +44,7 @@ const config = {
         title: 'ECInventory',
         logo: {
           alt: 'ECInventory Logo',
-          src: '../img/logo.svg',
+          src: 'img/logo.svg',
         },
         items: [
           {
@@ -79,6 +79,10 @@ const config = {
           {
             title: 'More',
             items: [
+              {
+                label: 'Translations',
+                href: 'https://crowdin.com/project/ecinventory',
+              },
               {
                 label: 'GitHub',
                 href: 'https://github.com/EndlessCodeGroup/ECInventory',
