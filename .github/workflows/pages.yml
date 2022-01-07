@@ -38,7 +38,7 @@ jobs:
             ${{ runner.os }}-website-
 
       - name: Sync translations
-        uses: crowdin/github-action@1.4
+        uses: crowdin/github-action@1.4.4
         with:
           upload_translations: true
           download_translations: true
