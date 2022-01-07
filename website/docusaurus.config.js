@@ -8,7 +8,7 @@ const config = {
   title: 'ECInventory',
   tagline: 'Change inventories how you need',
   url: 'https://endlesscodegroup.github.io',
-  baseUrl: '/ecinventory/',
+  baseUrl: '/ECInventory/',
   trailingSlash: false,
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
