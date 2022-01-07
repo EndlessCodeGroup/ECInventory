@@ -37,6 +37,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-website-
 
+      - run: yarn install --frozen-lockfile
+      - run: yarn docusaurus write-translations
+
       - name: Sync translations
         uses: crowdin/github-action@1.4.4
         with:
@@ -46,7 +49,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
 
-      - run: yarn install --frozen-lockfile
       - run: yarn build
 
       - name: Deploy pages
