@@ -1,0 +1,22 @@
+{
+  "link.title.Community": {
+    "message": "Community",
+    "description": "The title of the footer links column with title=Community in the footer"
+  },
+  "link.title.More": {
+    "message": "More",
+    "description": "The title of the footer links column with title=More in the footer"
+  },
+  "link.item.label.Discord": {
+    "message": "Discord",
+    "description": "The label of footer link with label=Discord linking to https://discord.gg/5NfPsgb"
+  },
+  "link.item.label.GitHub": {
+    "message": "GitHub",
+    "description": "The label of footer link with label=GitHub linking to https://github.com/EndlessCodeGroup/ECInventory"
+  },
+  "copyright": {
+    "message": "Copyright © 2022 EndlessCode Group. Built with Docusaurus.",
+    "description": "The footer copyright"
+  }
+}
