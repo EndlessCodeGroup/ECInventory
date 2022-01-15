@@ -61,6 +61,11 @@ You can track progress on GitHub.
 ECInventory is ready to use!
 Try to open inventory using command `/inv open demo`.
 
+Next steps:
+
+- Check available [commands](commands.md)
+- Read [how to configure](../config/plugin.md) the plugin
+
 :::tip
 
 Please, write any questions and report problems to [Discord].
