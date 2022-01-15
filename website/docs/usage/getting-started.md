@@ -48,7 +48,7 @@ Sample data contain three files:
 
 :::
 
-:::CAUTION
+:::caution
 
 Inventory `equipments` do not work properly ("like in RPGInventory") because features ["configure vanilla inventories"][vanilla-inv] and ["slots synchronization"][slots-sync] are not implemented yet.
 These features are [planned in v0.2][v0.2].

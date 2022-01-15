@@ -8,7 +8,7 @@ sidebar_position: 1
 With it, you can make your server even more atmospheric by adding a lot of new highly customizable inventories.
 Thanks to the [Mimic] API, ECInventory can use the capabilities of other plugins (MMOItems, MMOCore, QuantumRPG, SkillAPI, PROSkillAPI, Heroes, etc.).
 
-:::CAUTION
+:::caution
 
 **ECInventory** is under development and it **IS NOT PRODUCTION READY**.
 It can't be used as a drop-in replacement of RPGInventory.
