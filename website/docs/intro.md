@@ -13,7 +13,7 @@ Thanks to the [Mimic] API, ECInventory can use the capabilities of other plugins
 **ECInventory** is under development and it **IS NOT PRODUCTION READY**.
 It can't be used as a drop-in replacement of RPGInventory.
 
-If you want to test preview version, follow ["Getting Started"](getting-started.md) guide.
+If you want to test preview version, follow ["Getting Started"](usage/getting-started.md) guide.
 
 :::
 
