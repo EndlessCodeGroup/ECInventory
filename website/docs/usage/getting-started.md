@@ -13,7 +13,7 @@ ECInventory uses [Library Loader feature][library-loader] added in Spigot 1.16.5
 
 ## 1. Install dependencies
 
-**ECInventory** can't run without the following plugins:
+**ECInventory** can not run without the following plugins:
 
 - [Mimic] - required to integrate with other plugins.
 - [CommandAPI] (v6.4.0+) - required for commands.
@@ -22,14 +22,14 @@ ECInventory uses [Library Loader feature][library-loader] added in Spigot 1.16.5
 
 Optionally you can install these plugins to extend **ECInventory** functionality:
 
-- [PlaceholderAPI] - allows using placeholders in inventories name as well as in slots name, description and commands.
+- [PlaceholderAPI] - allows using placeholders in inventories name as well as in slots name, description, and commands.
 
 ## 2. Install ECInventory
 
 Download the latest release from [GitHub Releases page][releases]. Put the `jar` file into `plugins/` directory.
 
-Run the server to check the plugin loaded correctly.
-When server is up, type command `/plugins`, ECInventory should be green in this list.
+Run the server to check if the plugin loaded correctly.
+When server is up, type the command `/plugins`, ECInventory should be green in this list.
 
 ## 3. Download sample data
 
@@ -48,11 +48,11 @@ Sample data contain three files:
 
 :::
 
-:::caution
+:::CAUTION
 
-Inventory `equipments` not works properly ("like in RPGInventory") because features ["configure vanilla inventories"][vanilla-inv] and ["slots synchronization"][slots-sync] are not implemented yet.
+Inventory `equipments` do not work properly ("like in RPGInventory") because features ["configure vanilla inventories"][vanilla-inv] and ["slots synchronization"][slots-sync] are not implemented yet.
 These features are [planned in v0.2][v0.2].
-You can track progress on GitHub.
+You can track progress on the GitHub.
 
 :::
 
@@ -69,7 +69,7 @@ Next steps:
 :::tip
 
 Please, write any questions and report problems to [Discord].
-Let's make this plugin great together!
+Let us make this plugin great together!
 
 :::
 
