@@ -27,9 +27,15 @@ import ru.endlesscode.inventory.slot.SlotClickType
 /** Binds the given [actions] to the given [predicates]. */
 @Serializable
 public data class SlotActionBinding(
-    @SerialName("on") val predicates: List<ActionPredicate>,
+    @SerialName("on") val predicates: Set<ActionPredicate>,
     @SerialName("do") val actions: List<String>,
-)
+) {
+
+    init {
+        check(predicates.isNotEmpty()) { "'on' should not be empty." }
+        check(actions.isNotEmpty()) { "'do' should not be empty." }
+    }
+}
 
 @Serializable(with = ActionPredicateSerializer::class)
 public enum class ActionPredicate {
