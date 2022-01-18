@@ -88,15 +88,15 @@ class ConfigurationCollectorTest : FileTestBase() {
                     displayName = "Amulet",
                     actions = listOf(
                         SlotActionBinding(
-                            predicates = listOf(LEFT_CLICK),
+                            predicates = setOf(LEFT_CLICK),
                             actions = listOf("say Left click"),
                         ),
                         SlotActionBinding(
-                            predicates = listOf(SHIFT_LEFT_CLICK, SHIFT_RIGHT_CLICK),
+                            predicates = setOf(SHIFT_LEFT_CLICK, SHIFT_RIGHT_CLICK),
                             actions = listOf("say Shift click"),
                         ),
                         SlotActionBinding(
-                            predicates = listOf(CLICK),
+                            predicates = setOf(CLICK),
                             actions = listOf("say Other click"),
                         ),
                     )
