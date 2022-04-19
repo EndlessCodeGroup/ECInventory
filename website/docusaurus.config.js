@@ -2,6 +2,7 @@
 
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const defaultLocale = 'en';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -17,8 +18,8 @@ const config = {
   projectName: 'ECInventory',
 
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en', 'es', 'ru'],
+    defaultLocale: defaultLocale,
+    locales: ['en', 'ru'],
   },
 
   presets: [
@@ -28,7 +29,12 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/EndlessCodeGroup/ECInventory/tree/develop/website/',
+          editUrl: ({locale, versionDocsDirPath, docPath}) => {
+            if (locale !== defaultLocale) {
+              return `https://crowdin.com/project/ecinventory/${locale}`;
+            }
+            return `https://github.com/EndlessCodeGroup/ECInventory/tree/develop/website/${versionDocsDirPath}/${docPath}`;
+          },
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
