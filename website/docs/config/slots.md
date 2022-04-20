@@ -24,7 +24,7 @@ It is recommended to use kebab-case for all config keys for consistency.
 
 :::
 
-## Slot
+## Slot {#slot}
 
 All slot properties are optional and takes default value if value is not specified. 
 
@@ -142,11 +142,11 @@ The maximal item stack size to be placed to the slot.
 max-stack-size: 1
 ```
 
-## Slot action binding
+## Slot action binding {#slot-action-binding}
 
 Binds player's interactions listed in `on` to commands listed in `do`.
 
-### `on`
+### `on` {#action-on}
 
 **Type:** set of values (`click`, `left_click`, `shift_left_click`, `right_click`, `shift_right_click`)
 
@@ -162,7 +162,7 @@ Actions matching rules:
 on: [left_click, shift_right_click]
 ```
 
-### `do`
+### `do` {#action-do}
 
 **Type:** list of [Strings][string] supporting placeholders
 
@@ -174,7 +174,7 @@ All commands will be executed from the player who interacted with the slot.
 do: ["gamemode creative"]
 ```
 
-## Item wildcards
+## Item wildcards {#item-wildcards}
 
 Item wildcards allows you to easier configure allowed and denied items.
 Instead of writing each allowed item, you can use wildcard matching to all of them:

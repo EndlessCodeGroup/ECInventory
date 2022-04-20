@@ -11,7 +11,7 @@ ECInventory uses [Library Loader feature][library-loader] added in Spigot 1.16.5
 
 :::
 
-## 1. Install dependencies
+## 1. Install dependencies {#1}
 
 **ECInventory** can not run without the following plugins:
 
@@ -24,14 +24,14 @@ Optionally you can install these plugins to extend **ECInventory** functionality
 
 - [PlaceholderAPI] - allows using placeholders in inventories name as well as in slots name, description, and commands.
 
-## 2. Install ECInventory
+## 2. Install ECInventory {#2}
 
 Download the latest release from [GitHub Releases page][releases]. Put the `jar` file into `plugins/` directory.
 
 Run the server to check if the plugin loaded correctly.
 When server is up, type the command `/plugins`, ECInventory should be green in this list.
 
-## 3. Download sample data
+## 3. Download sample data {#3}
 
 Download the sample `data.zip` attached to the latest release from [GitHub Releases page][releases].
 Unzip it into `plugins/ECInventory/data/` directory.
@@ -56,7 +56,7 @@ You can track progress on the GitHub.
 
 :::
 
-## 4. Enjoy!
+## 4. Enjoy! {#4}
 
 ECInventory is ready to use!
 Try to open inventory using command `/inv open demo`.

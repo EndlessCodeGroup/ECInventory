@@ -17,7 +17,7 @@ If you want to test preview version, follow the ["Getting Started"](usage/gettin
 
 :::
 
-## Features
+## Features {#features}
 
 - Create multiple inventories for players
 - Inventories are stored in SQL database

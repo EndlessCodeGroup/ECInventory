@@ -6,7 +6,7 @@ sidebar_position: 2
 
 Plugin configurations are specified in `main.conf`.
 
-## Base configurations
+## Base configurations {#base-configurations}
 
 ### `enabled`
 
@@ -22,7 +22,7 @@ This option is not implemented yet.
 
 :::
 
-## Database configuration
+## Database configuration {#database-configuration}
 
 ECInventory uses database to store inventories content.
 Here are described how to configure database.

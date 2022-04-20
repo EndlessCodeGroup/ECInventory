@@ -24,7 +24,7 @@ It is recommended to use kebab-case for all config keys for consistency.
 
 :::
 
-## Inventory
+## Inventory {#inventory}
 
 ### `display-name`
 

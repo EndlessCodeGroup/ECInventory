@@ -7,7 +7,7 @@ sidebar_position: 1
 ECInventory uses [HOCON] format for configuration files.
 Configuration files use the file extension `.conf`.
 
-## HOCON basics
+## HOCON basics {#hocon-basics}
 
 HOCON (Human-Optimized Config Object Notation) is a human-friendly configuration format, and a superset of JSON.
 
@@ -34,7 +34,7 @@ display-name: "My beautiful inventory"
 
 HOCON config may be very similar to YAML, but it has significant differences in objects and lists declaration.
 
-### Objects
+### Objects {#objects}
 
 YAML uses indentation for object declaration, but HOCON uses curly braces `{}`:
 
@@ -53,7 +53,7 @@ my-slot {
 my-slot { display-name: "Custom slot", type: storage }
 ```
 
-### Arrays and lists
+### Arrays and lists {#arrays-and-lists}
 
 YAML has two notations to declare list elements — using square braces `[]` or using hyphen `-` at the line start.
 HOCON supports only "square braces" style:
@@ -75,7 +75,7 @@ description: [
 description: ["First line", "Second line"]
 ```
 
-### List of objects
+### List of objects {#list}
 
 YAML allows declaring list of objects using hyphen list notation, but in HOCON we should use curly braces to declare objects in list:
 
@@ -98,12 +98,12 @@ actions: [
 ]
 ```
 
-## Types
+## Types {#types}
 
 Here are listed common types used in configs.
 Other types are described in the place of usage.
 
-### String
+### String {#string}
 
 Strings may be quoted and unquoted.
 It is recommended to always use quoted strings because unquoted strings has limited set of characters they can contain.
@@ -113,7 +113,7 @@ quoted-string: "This is a string value"
 unquoted-string: This also allowed but not recommended
 ```
 
-### Number
+### Number {#number}
 
 Numbers may be either integer, or with floating point.
 Allowed range usually specified in field specification.
@@ -123,7 +123,7 @@ integer-value: 42
 float-value: 0.5
 ```
 
-### Boolean
+### Boolean {#boolean}
 
 Primitive logical type that can have only the values `true` (aliases: `yes`, `on`) or `false` (aliases: `no`, `off`).
 
@@ -131,7 +131,7 @@ Primitive logical type that can have only the values `true` (aliases: `yes`, `on
 boolean-field: true
 ```
 
-### Item
+### Item {#item}
 
 Item ID that can be used to obtain item via [Mimic].
 You can add namespace if you want to get item from the defined source.
@@ -152,11 +152,11 @@ You can check list of available items using command:
 
 :::
 
-## Advanced HOCON
+## Advanced HOCON {#advanced-hocon}
 
 HOCON provides features good to know because it may be useful when you configure the plugin.
 
-### Path as key
+### Path as key {#path-as-key}
 
 You can use paths as a keys for values to configure nested objects:
 
@@ -173,7 +173,7 @@ other-slot.display-name: "Slot created by path keys"
 other-slot.type: generic
 ```
 
-### Substitutions
+### Substitutions {#substitutions}
 
 HOCON allows referring from value to other paths in configuration.
 Referent path should be in format `${absolute.path.to.field}`.
@@ -205,7 +205,7 @@ So you should move substitution out of the quotes the following way:
 
 :::
 
-### Concatenation and inheritance
+### Concatenation and inheritance {#concatenation-and-inheritance}
 
 HOCON allows concatenating values including objects and lists.
 It is a powerful feature in combination with [substitutions](#substitutions).
