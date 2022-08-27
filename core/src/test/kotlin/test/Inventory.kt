@@ -37,8 +37,13 @@ fun Inventory(
     val contents = Array(size) { AIR }
     return mockk(relaxUnitFun = true) {
         every { getSize() } returns size
-        every { getHolder() } answers { holder ?: InventoryHolder { this@mockk } }
+        every { getHolder() } answers { holder ?: SimpleInventoryHolder(this@mockk) }
         every { getItem(any()) } answers { contents[firstArg()] }
         every { setItem(any(), any()) } answers { contents[firstArg()] = secondArg() }
     }
+}
+
+// Required because of the issue: https://github.com/mockk/mockk/issues/868
+private class SimpleInventoryHolder(private val inventory: Inventory) : InventoryHolder {
+    override fun getInventory(): Inventory = inventory
 }

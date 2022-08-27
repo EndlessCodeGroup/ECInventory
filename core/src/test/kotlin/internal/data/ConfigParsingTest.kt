@@ -31,27 +31,25 @@ internal class ConfigParsingTest : FeatureSpec({
 
     feature("parseSlotPositions") {
 
-        scenario("valid data") {
-            withData(
-                nameFn = { (value, range) -> "$value -> $range" },
-                "42" to 42..42,
-                "0-0" to 0..0,
-                "9-17" to 9..17,
-                "0-53" to 0..53,
-            ) { (value, range) -> parseSlotPositions(value) shouldBe range }
-        }
+        // Valid data
+        withData(
+            nameFn = { (value, range) -> "$value -> $range" },
+            "42" to 42..42,
+            "0-0" to 0..0,
+            "9-17" to 9..17,
+            "0-53" to 0..53,
+        ) { (value, range) -> parseSlotPositions(value) shouldBe range }
 
-        scenario("not valid data") {
-            withData(
-                nameFn = { "'$it' is not valid range" },
-                "",
-                "-1",
-                "54",
-                "4-2",
-                "0-54",
-                "0..2",
-                "word",
-            ) { value -> shouldThrow<IllegalArgumentException> { parseSlotPositions(value) } }
-        }
+        // Not valid data
+        withData(
+            nameFn = { "'$it' is not valid range" },
+            "",
+            "-1",
+            "54",
+            "4-2",
+            "0-54",
+            "0..2",
+            "word",
+        ) { value -> shouldThrow<IllegalArgumentException> { parseSlotPositions(value) } }
     }
 })
