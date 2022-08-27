@@ -1,5 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import ru.endlesscode.bukkitgradle.dependencies.*
+import ru.endlesscode.bukkitgradle.dependencies.codemc
+import ru.endlesscode.bukkitgradle.dependencies.papermc
+import ru.endlesscode.bukkitgradle.dependencies.placeholderApi
+import ru.endlesscode.bukkitgradle.dependencies.spigotApi
 
 plugins {
     `kotlin-convention`
@@ -46,9 +49,6 @@ repositories {
     papermc()
     placeholderApi {
         content { includeGroup("me.clip") }
-    }
-    jitpack {
-        content { includeGroup("dev.jorel.CommandAPI") }
     }
 }
 

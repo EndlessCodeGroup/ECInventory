@@ -4,6 +4,10 @@
 
 - [Documentation](https://endlesscodegroup.github.io/ECInventory/docs/intro)
 
+### Changed
+
+- Update required CommandAPI to 8.0.0+
+
 ## [v0.1.2] (2022-01-07)
 
 ### Hotfix

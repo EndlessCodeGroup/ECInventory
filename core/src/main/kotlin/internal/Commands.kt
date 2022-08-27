@@ -20,7 +20,6 @@
 package ru.endlesscode.inventory.internal
 
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.arguments.Argument
 import dev.jorel.commandapi.arguments.MultiLiteralArgument
 import dev.jorel.commandapi.arguments.PlayerArgument
 import dev.jorel.commandapi.executors.CommandExecutor
@@ -81,7 +80,7 @@ private fun subcommandReload(plugin: ECInventoryPlugin): CommandAPICommand =
             plugin.reload(sender)
         })
 
-private fun inventoryArgument(): Argument = MultiLiteralArgument(*DI.data.inventories.keys.toTypedArray())
+private fun inventoryArgument() = MultiLiteralArgument(*DI.data.inventories.keys.toTypedArray())
 
 private fun openInventory(sender: Player, type: String, target: Player = sender) {
     val inventory = DI.data.inventoriesRepository.getInventory(target, type)
