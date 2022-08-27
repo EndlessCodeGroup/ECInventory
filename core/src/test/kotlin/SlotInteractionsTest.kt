@@ -134,6 +134,7 @@ class SlotInteractionsTest : FeatureSpec({
         ) {
             event = TestInventoryClickEvent(inventoryView, action)
             slot.content = current
+            @Suppress("DEPRECATION")
             event.cursor = cursor
             event.currentItem = slot.getView(DI.placeholders, mockk())
 
