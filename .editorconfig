@@ -179,6 +179,6 @@ end_of_line = crlf
 [*.properties]
 ij_properties_keep_blank_lines = true
 
-[*.js]
+[{*.js,*.json}]
 indent_size = 2
 ij_continuation_indent_size = 2
