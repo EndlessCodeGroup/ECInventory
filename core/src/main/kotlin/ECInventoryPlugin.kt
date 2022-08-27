@@ -22,6 +22,7 @@ package ru.endlesscode.inventory
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
 import ru.endlesscode.inventory.internal.compat.BukkitVersion
+import ru.endlesscode.inventory.internal.compat.Version
 import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.di.DataModule
 import ru.endlesscode.inventory.internal.hooks.EcInventoryPlayerInventory
@@ -99,6 +100,7 @@ public class ECInventoryPlugin : JavaPlugin() {
 
     private fun initHooks() {
         hookMimic()
+        checkCommandApiVersion()
         PlaceholderApiPlaceholders.hook(server.pluginManager)
     }
 
@@ -110,6 +112,19 @@ public class ECInventoryPlugin : JavaPlugin() {
             """.trimIndent()
         }
         EcInventoryPlayerInventory.hook(this)
+    }
+
+    private fun checkCommandApiVersion() {
+        val commandApi = server.pluginManager.getPlugin("CommandAPI")
+        checkNotNull(commandApi) { "CommandAPI not found. Please install it: https://github.com/JorelAli/CommandAPI" }
+
+        val version = Version.parseVersion(commandApi.description.version)
+        check(version >= 8_00_00) {
+            """
+            At least CommandAPI 8.0.0 is required.
+            Please install latest version: https://github.com/JorelAli/CommandAPI
+            """.trimIndent()
+        }
     }
 
     private fun makeSure(action: () -> Boolean): Boolean {

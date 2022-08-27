@@ -4,6 +4,7 @@
 
 - [Documentation](https://endlesscodegroup.github.io/ECInventory/docs/intro)
 - Support of Mimic PlayerInventory API to integrate with other plugins
+- Check minimal required version of Mimic and CommandAPI on plugin enable
 
 ### Changed
 
