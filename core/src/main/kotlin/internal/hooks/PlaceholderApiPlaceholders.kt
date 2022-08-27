@@ -17,7 +17,7 @@
  * along with ECInventory. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ru.endlesscode.inventory.internal.hook
+package ru.endlesscode.inventory.internal.hooks
 
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.OfflinePlayer

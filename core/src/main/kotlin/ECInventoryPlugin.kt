@@ -24,7 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import ru.endlesscode.inventory.internal.compat.BukkitVersion
 import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.di.DataModule
-import ru.endlesscode.inventory.internal.hook.PlaceholderApiPlaceholders
+import ru.endlesscode.inventory.internal.hooks.PlaceholderApiPlaceholders
 import ru.endlesscode.inventory.internal.listener.InventoryClicksRouter
 import ru.endlesscode.inventory.internal.listener.PlayerInventoriesLoader
 import ru.endlesscode.inventory.internal.registerCommand

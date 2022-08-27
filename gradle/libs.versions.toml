@@ -8,7 +8,7 @@ hocon = "org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.3.2"
 commandapi = "dev.jorel:commandapi-core:8.5.1"
 mysql = "mysql:mysql-connector-java:8.0.27"
 hikaricp = "com.zaxxer:HikariCP:5.0.0"
-placeholderapi = "me.clip:placeholderapi:2.11.1"
+placeholderapi = "me.clip:placeholderapi:2.11.2"
 
 [plugins]
 bukkitgradle = "ru.endlesscode.bukkitgradle:0.10.1"
