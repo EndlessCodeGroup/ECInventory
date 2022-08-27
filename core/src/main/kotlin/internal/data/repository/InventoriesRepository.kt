@@ -42,6 +42,8 @@ internal class InventoriesRepository(
 
     private val cache = InventoriesCache()
 
+    fun getInventories(player: Player): Sequence<CustomInventory> = cache.getInventories(player.uniqueId)
+
     fun getInventory(player: Player, type: String): CustomInventory {
         val inventory = cache.getInventories(player.uniqueId).find { it.type == type }
         return inventory ?: createInventory(player, type)

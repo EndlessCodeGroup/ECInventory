@@ -34,7 +34,7 @@ internal object DI {
     val scheduler: TaskScheduler by lazy { PluginTaskScheduler(plugin) }
 
     // Hooks
-    private val mimic: Mimic by lazy { Mimic.getInstance() }
+    val mimic: Mimic by lazy { Mimic.getInstance() }
     val itemsRegistry: BukkitItemsRegistry by lazy { mimic.getItemsRegistry() }
     var placeholders: Placeholders = DisabledPlaceholders()
 

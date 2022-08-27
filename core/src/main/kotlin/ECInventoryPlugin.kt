@@ -24,6 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import ru.endlesscode.inventory.internal.compat.BukkitVersion
 import ru.endlesscode.inventory.internal.di.DI
 import ru.endlesscode.inventory.internal.di.DataModule
+import ru.endlesscode.inventory.internal.hooks.EcInventoryPlayerInventory
 import ru.endlesscode.inventory.internal.hooks.PlaceholderApiPlaceholders
 import ru.endlesscode.inventory.internal.listener.InventoryClicksRouter
 import ru.endlesscode.inventory.internal.listener.PlayerInventoriesLoader
@@ -108,6 +109,7 @@ public class ECInventoryPlugin : JavaPlugin() {
             Please download latest version: https://www.spigotmc.org/resources/mimic.82515/
             """.trimIndent()
         }
+        EcInventoryPlayerInventory.hook(this)
     }
 
     private fun makeSure(action: () -> Boolean): Boolean {

@@ -3,6 +3,7 @@
 ### Added
 
 - [Documentation](https://endlesscodegroup.github.io/ECInventory/docs/intro)
+- Support of Mimic PlayerInventory API to integrate with other plugins
 
 ### Changed
 
