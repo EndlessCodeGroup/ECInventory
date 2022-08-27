@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [v0.1.3] (2022-08-27)
+
 ### Added
 
 - [Documentation](https://endlesscodegroup.github.io/ECInventory/docs/intro)
@@ -50,7 +52,8 @@ Commands:
 * `/inventories open <type> <target>` - Open other player's inventory https://github.com/EndlessCodeGroup/ECInventory/pull/41
 * `/inventories reload` - Reload configs https://github.com/EndlessCodeGroup/ECInventory/issues/40
 
-[Unreleased]: https://github.com/EndlessCodeGroup/ECInventory/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/EndlessCodeGroup/ECInventory/compare/v0.1.3...HEAD
+[v0.1.3]: https://github.com/EndlessCodeGroup/ECInventory/compare/v0.1.2...v0.1.3
 [v0.1.2]: https://github.com/EndlessCodeGroup/ECInventory/compare/v0.1.1...v0.1.2
 [v0.1.1]: https://github.com/EndlessCodeGroup/ECInventory/compare/v0.1...v0.1.1
 [v0.1]: https://github.com/EndlessCodeGroup/ECInventory/commits/v0.1
