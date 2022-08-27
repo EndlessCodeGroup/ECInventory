@@ -30,6 +30,7 @@ import ru.endlesscode.inventory.internal.listener.PlayerInventoriesLoader
 import ru.endlesscode.inventory.internal.registerCommand
 import ru.endlesscode.inventory.internal.util.Log
 import ru.endlesscode.inventory.internal.util.sendColorizedMessage
+import ru.endlesscode.mimic.MimicApiLevel
 
 /** This class is entry point to the plugin. */
 public class ECInventoryPlugin : JavaPlugin() {
@@ -96,7 +97,17 @@ public class ECInventoryPlugin : JavaPlugin() {
     }
 
     private fun initHooks() {
+        hookMimic()
         PlaceholderApiPlaceholders.hook(server.pluginManager)
+    }
+
+    private fun hookMimic() {
+        check(MimicApiLevel.checkApiLevel(MimicApiLevel.VERSION_0_8)) {
+            """
+            At least Mimic v0.8.0 is required.
+            Please download latest version: https://www.spigotmc.org/resources/mimic.82515/
+            """.trimIndent()
+        }
     }
 
     private fun makeSure(action: () -> Boolean): Boolean {

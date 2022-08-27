@@ -7,6 +7,7 @@
 ### Changed
 
 - Update required CommandAPI to 8.0.0+
+- Update required Mimic to 0.8.0+
 
 ## [v0.1.2] (2022-01-07)
 

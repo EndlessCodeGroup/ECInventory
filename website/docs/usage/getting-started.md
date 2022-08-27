@@ -15,7 +15,7 @@ ECInventory uses [Library Loader feature][library-loader] added in Spigot 1.16.5
 
 **ECInventory** can not run without the following plugins:
 
-- [Mimic] - required to integrate with other plugins.
+- [Mimic] (v0.8.0+) - required to integrate with other plugins.
 - [CommandAPI] (v8.0.0+) - required for commands.
   Used to implement commands with arguments suggestions.  
   *Check which version you need to install for your Spigot version on [Command API GitHub page][commandapi-gh].*

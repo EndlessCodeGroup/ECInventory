@@ -25,7 +25,7 @@ import ru.endlesscode.inventory.internal.PluginTaskScheduler
 import ru.endlesscode.inventory.internal.TaskScheduler
 import ru.endlesscode.inventory.util.DisabledPlaceholders
 import ru.endlesscode.inventory.util.Placeholders
-import ru.endlesscode.mimic.bukkit.load
+import ru.endlesscode.mimic.Mimic
 import ru.endlesscode.mimic.items.BukkitItemsRegistry
 
 internal object DI {
@@ -33,10 +33,9 @@ internal object DI {
     private lateinit var plugin: Plugin
     val scheduler: TaskScheduler by lazy { PluginTaskScheduler(plugin) }
 
-    private val servicesManager get() = plugin.server.servicesManager
-
     // Hooks
-    val itemsRegistry: BukkitItemsRegistry by lazy { checkNotNull(servicesManager.load()) }
+    private val mimic: Mimic by lazy { Mimic.getInstance() }
+    val itemsRegistry: BukkitItemsRegistry by lazy { mimic.getItemsRegistry() }
     var placeholders: Placeholders = DisabledPlaceholders()
 
     val hocon: Hocon by lazy { Hocon { useConfigNamingConvention = true } }
