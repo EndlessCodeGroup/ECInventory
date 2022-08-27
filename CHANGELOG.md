@@ -13,6 +13,7 @@
 - Update required CommandAPI to 8.0.0+
 - Update required Mimic to 0.8.0+
 - Update Kotlin to 1.7.10
+- Minimal Java version set to 11
 
 ## [v0.1.2] (2022-01-07)
 
