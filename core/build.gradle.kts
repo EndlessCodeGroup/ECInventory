@@ -32,7 +32,8 @@ kotlin {
 
 dependencies {
     compileOnly(spigotApi)
-    compileOnly(libs.hocon)
+    compileOnly(libs.serialization.core)
+    compileOnly(libs.serialization.hocon)
     compileOnly(libs.mimic)
     compileOnly(libs.commandapi)
     compileOnly(libs.placeholderapi)
@@ -40,7 +41,8 @@ dependencies {
     compileOnly(libs.hikaricp)
 
     testImplementation(spigotApi)
-    testImplementation(libs.hocon)
+    testImplementation(libs.serialization.core)
+    testImplementation(libs.serialization.hocon)
     testImplementation(libs.mimic)
 }
 
