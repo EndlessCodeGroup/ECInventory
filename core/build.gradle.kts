@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import ru.endlesscode.bukkitgradle.dependencies.codemc
 import ru.endlesscode.bukkitgradle.dependencies.papermc
 import ru.endlesscode.bukkitgradle.dependencies.placeholderApi
@@ -55,8 +54,8 @@ repositories {
     }
 }
 
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        freeCompilerArgs += "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi"
+kotlin {
+    compilerOptions {
+        optIn.add("kotlinx.serialization.ExperimentalSerializationApi")
     }
 }

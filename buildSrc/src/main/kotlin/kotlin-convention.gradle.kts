@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     kotlin("jvm")
@@ -7,17 +7,22 @@ plugins {
 
 description = rootProject.description
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+kotlin {
+    jvmToolchain(17)
+
+    compilerOptions {
+        apiVersion = KotlinVersion.KOTLIN_1_9
+        languageVersion = KotlinVersion.KOTLIN_1_9
+        optIn.add("kotlin.RequiresOptIn")
+    }
 }
 
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = "11"
-        apiVersion = "1.7"
-        languageVersion = "1.7"
-        freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+// TODO: Remove after it will be fixed in BukkitGradle
+//   https://github.com/EndlessCodeGroup/BukkitGradle/issues/60
+afterEvaluate {
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
@@ -39,8 +44,8 @@ spotless {
 }
 
 dependencies {
-    compileOnly(kotlin("stdlib-jdk8"))
-    testImplementation(kotlin("stdlib-jdk8"))
+    compileOnly(kotlin("stdlib"))
+    testImplementation(kotlin("stdlib"))
     testImplementation(kotlin("test-junit5"))
     testImplementation(platform("org.junit:junit-bom:5.9.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

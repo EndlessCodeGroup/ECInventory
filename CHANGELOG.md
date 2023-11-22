@@ -1,7 +1,9 @@
 ## [Unreleased]
 
-### Housekeeping
+### Changed
 
+- Minimal Java version set to 17
+- Update Kotlin to 1.9.20
 - Update Gradle to 8.4
 
 ## [v0.1.3] (2022-08-27)

@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(kotlin("gradle-plugin", version = "1.7.10"))
+    implementation(kotlin("gradle-plugin", version = libs.versions.kotlin.get()))
     implementation("com.diffplug.spotless:spotless-plugin-gradle:6.0.0")
 }
 
