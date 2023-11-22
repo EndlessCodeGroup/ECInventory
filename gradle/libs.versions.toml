@@ -12,6 +12,8 @@ mysql = "mysql:mysql-connector-java:8.0.30"
 hikaricp = "com.zaxxer:HikariCP:5.0.1"
 placeholderapi = "me.clip:placeholderapi:2.11.2"
 
+spotless="com.diffplug.spotless:spotless-plugin-gradle:6.22.0"
+
 [plugins]
 bukkitgradle = "ru.endlesscode.bukkitgradle:0.10.1"
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
