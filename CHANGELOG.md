@@ -1,9 +1,17 @@
 ## [Unreleased]
 
-### Changed
+### Dependency updates
 
-- Minimal Java version set to 17
-- Update Kotlin to 1.9.20
+| Dependency                  | Old version | New version |
+|-----------------------------|-------------|-------------|
+| **Java**                    | `11`        | `17`        |
+| **Spigot**                  | `1.6.5`     | `1.8`       |
+| Kotlin                      | `1.7.10`    | `1.9.20`    |
+| kotlinx-serialization-hocon | `1.4.0`     | `1.6.1`     |
+| HikariCP                    | `5.0.1`     | `5.1.0`     |
+
+### Housekeeping
+
 - Update Gradle to 8.4
 
 ## [v0.1.3] (2022-08-27)

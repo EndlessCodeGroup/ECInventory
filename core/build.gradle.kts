@@ -14,7 +14,7 @@ bukkit {
     apiVersion = libs.versions.bukkit.get()
 
     meta {
-        apiVersion = "1.16"
+        apiVersion = "1.18"
         name = "ECInventory"
         main = "ru.endlesscode.inventory.ECInventoryPlugin"
         authors = listOf("osipxd", "Dereku", "EndlessCode Group")
@@ -22,6 +22,7 @@ bukkit {
 
     server {
         coreType = CoreType.SPIGOT
+        version = "1.18.2"
         eula = true
     }
 }
@@ -32,7 +33,6 @@ kotlin {
 
 dependencies {
     compileOnly(spigotApi)
-    compileOnly(libs.serialization.core)
     compileOnly(libs.serialization.hocon)
     compileOnly(libs.mimic)
     compileOnly(libs.commandapi)
@@ -41,7 +41,6 @@ dependencies {
     compileOnly(libs.hikaricp)
 
     testImplementation(spigotApi)
-    testImplementation(libs.serialization.core)
     testImplementation(libs.serialization.hocon)
     testImplementation(libs.mimic)
 }

@@ -4,12 +4,10 @@ bukkit = "1.19.2"
 
 [libraries]
 mimic = "ru.endlesscode.mimic:mimic-bukkit-api:0.8.0"
-# TODO: Remove after the issue will be fixed https://github.com/Kotlin/kotlinx.serialization/issues/2019
-serialization-core = "org.jetbrains.kotlinx:kotlinx-serialization-core:1.4.0"
-serialization-hocon = "org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.4.0"
+serialization-hocon = "org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.6.1"
+mysql = "mysql:mysql-connector-java:8.0.33"
+hikaricp = "com.zaxxer:HikariCP:5.1.0"
 commandapi = "dev.jorel:commandapi-core:8.5.1"
-mysql = "mysql:mysql-connector-java:8.0.30"
-hikaricp = "com.zaxxer:HikariCP:5.0.1"
 placeholderapi = "me.clip:placeholderapi:2.11.2"
 
 spotless="com.diffplug.spotless:spotless-plugin-gradle:6.22.0"
