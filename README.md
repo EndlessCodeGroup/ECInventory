@@ -1,7 +1,7 @@
 # EC Inventory
 *\* formerly RPGInventory 3.0*
 
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/EndlessCodeGroup/ECInventory/CI?style=flat-square)](https://github.com/EndlessCodeGroup/ECInventory/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/EndlessCodeGroup/ECInventory/main.yml?branch=develop&style=flat-square)](https://github.com/EndlessCodeGroup/ECInventory/actions)
 
 **Docs:** [![en](https://img.shields.io/badge/en-100%25-blue?style=flat-square)](https://endlesscodegroup.github.io/ECInventory/docs/intro)
 [![ru translation](https://img.shields.io/badge/dynamic/json?color=blue&label=ru&style=flat-square&query=%24.progress.2.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-12805871-493199.json)](https://endlesscodegroup.github.io/ECInventory/ru/docs/intro)
