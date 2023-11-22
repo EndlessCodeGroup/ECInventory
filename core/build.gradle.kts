@@ -36,6 +36,7 @@ dependencies {
     compileOnly(libs.serialization.hocon)
     compileOnly(libs.mimic)
     compileOnly(libs.commandapi)
+    compileOnly(libs.commandapi.kotlin)
     compileOnly(libs.placeholderapi)
     compileOnly(libs.mysql)
     compileOnly(libs.hikaricp)

@@ -1,14 +1,16 @@
 [versions]
 kotlin = "1.9.20"
 bukkit = "1.19.2"
+commandapi = "9.2.0"
 
 [libraries]
 mimic = "ru.endlesscode.mimic:mimic-bukkit-api:0.8.0"
 serialization-hocon = "org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.6.1"
 mysql = "mysql:mysql-connector-java:8.0.33"
 hikaricp = "com.zaxxer:HikariCP:5.1.0"
-commandapi = "dev.jorel:commandapi-core:8.5.1"
-placeholderapi = "me.clip:placeholderapi:2.11.2"
+commandapi = { module = "dev.jorel:commandapi-bukkit-core", version.ref = "commandapi" }
+commandapi-kotlin = { module = "dev.jorel:commandapi-bukkit-kotlin", version.ref = "commandapi" }
+placeholderapi = "me.clip:placeholderapi:2.11.5"
 
 spotless="com.diffplug.spotless:spotless-plugin-gradle:6.22.0"
 

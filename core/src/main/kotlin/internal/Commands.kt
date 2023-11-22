@@ -1,7 +1,7 @@
 /*
  * This file is part of ECInventory
  * <https://github.com/EndlessCodeGroup/ECInventory>.
- * Copyright (c) 2021-2022 EndlessCode Group and contributors
+ * Copyright (c) 2021-2023 EndlessCode Group and contributors
  *
  * ECInventory is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,6 +24,7 @@ import dev.jorel.commandapi.arguments.MultiLiteralArgument
 import dev.jorel.commandapi.arguments.PlayerArgument
 import dev.jorel.commandapi.executors.CommandExecutor
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
+import dev.jorel.commandapi.kotlindsl.getValue
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import ru.endlesscode.inventory.ECInventoryPlugin
@@ -49,7 +50,8 @@ private fun subcommandOpen(): CommandAPICommand =
         .withPermission("ecinventory.open")
         .withArguments(inventoryArgument())
         .executesPlayer(PlayerCommandExecutor { sender, args ->
-            openInventory(sender, type = args.first() as String)
+            val type: String by args
+            openInventory(sender, type)
         })
 
 private fun subcommandOpenOthers(): CommandAPICommand =
@@ -60,7 +62,9 @@ private fun subcommandOpenOthers(): CommandAPICommand =
             PlayerArgument("target").withPermission("ecinventory.open.others"),
         )
         .executesPlayer(PlayerCommandExecutor { sender, args ->
-            openInventory(sender, type = args.first() as String, target = args[1] as Player)
+            val type: String by args
+            val target: Player by args
+            openInventory(sender, type, target)
         })
 
 private fun subcommandReload(plugin: ECInventoryPlugin): CommandAPICommand =
@@ -80,7 +84,7 @@ private fun subcommandReload(plugin: ECInventoryPlugin): CommandAPICommand =
             plugin.reload(sender)
         })
 
-private fun inventoryArgument() = MultiLiteralArgument(*DI.data.inventories.keys.toTypedArray())
+private fun inventoryArgument() = MultiLiteralArgument("type", *DI.data.inventories.keys.toTypedArray())
 
 private fun openInventory(sender: Player, type: String, target: Player = sender) {
     val inventory = DI.data.inventoriesRepository.getInventory(target, type)
