@@ -3,6 +3,7 @@ import ru.endlesscode.bukkitgradle.dependencies.codemc
 import ru.endlesscode.bukkitgradle.dependencies.papermc
 import ru.endlesscode.bukkitgradle.dependencies.placeholderApi
 import ru.endlesscode.bukkitgradle.dependencies.spigotApi
+import ru.endlesscode.bukkitgradle.server.extension.CoreType
 
 plugins {
     `kotlin-convention`
@@ -14,14 +15,14 @@ bukkit {
     apiVersion = libs.versions.bukkit.get()
 
     meta {
-        apiVersion.set("1.16")
-        name.set("ECInventory")
-        main.set("ru.endlesscode.inventory.ECInventoryPlugin")
-        authors.set(listOf("osipxd", "Dereku", "EndlessCode Group"))
+        apiVersion = "1.16"
+        name = "ECInventory"
+        main = "ru.endlesscode.inventory.ECInventoryPlugin"
+        authors = listOf("osipxd", "Dereku", "EndlessCode Group")
     }
 
     server {
-        setCore("paper")
+        coreType = CoreType.SPIGOT
         eula = true
     }
 }
