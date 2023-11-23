@@ -1,21 +1,25 @@
 // @ts-check
 
-const lightCodeTheme = require('prism-react-renderer/themes/github');
-const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+import {themes as prismThemes} from 'prism-react-renderer';
+
 const defaultLocale = 'en';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'ECInventory',
   tagline: 'Change inventories how you need',
+  favicon: 'img/favicon.ico',
+
   url: 'https://endlesscodegroup.github.io',
   baseUrl: '/ECInventory/',
   trailingSlash: false,
-  onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
-  favicon: 'img/favicon.ico',
+
+  // GitHub pages deployment config.
   organizationName: 'EndlessCodeGroup',
   projectName: 'ECInventory',
+
+  onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'warn',
 
   i18n: {
     defaultLocale: defaultLocale,
@@ -99,10 +103,19 @@ const config = {
         copyright: `Copyright © ${new Date().getFullYear()} EndlessCode Group. Built with Docusaurus.`,
       },
       prism: {
-        theme: lightCodeTheme,
-        darkTheme: darkCodeTheme,
+        theme: prismThemes.github,
+        darkTheme: prismThemes.dracula,
       },
     }),
+
+ // https://docusaurus.io/docs/migration/v3#turn-off-mdx-v1-compat
+  markdown: {
+    mdx1Compat: {
+      comments: false,
+      admonitions: false,
+      headingIds: true,
+    },
+  },
 };
 
 module.exports = config;

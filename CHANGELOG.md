@@ -14,6 +14,7 @@
 ### Housekeeping
 
 - Update Gradle to 8.4
+- Update Docusaurus to 3.0
 
 ## [v0.1.3] (2022-08-27)
 
