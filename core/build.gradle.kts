@@ -1,8 +1,9 @@
 import ru.endlesscode.bukkitgradle.dependencies.codemc
 import ru.endlesscode.bukkitgradle.dependencies.papermc
 import ru.endlesscode.bukkitgradle.dependencies.placeholderApi
+import ru.endlesscode.bukkitgradle.dependencies.spigot
 import ru.endlesscode.bukkitgradle.dependencies.spigotApi
-import ru.endlesscode.bukkitgradle.server.extension.CoreType
+import xyz.jpenilla.resourcefactory.bukkit.Permission
 
 plugins {
     `kotlin-convention`
@@ -13,15 +14,27 @@ plugins {
 bukkit {
     apiVersion = libs.versions.bukkit.get()
 
-    meta {
+    plugin {
         apiVersion = "1.18"
         name = "ECInventory"
         main = "ru.endlesscode.inventory.ECInventoryPlugin"
         authors = listOf("osipxd", "Dereku", "EndlessCode Group")
+        depend = listOf("Mimic", "CommandAPI")
+        // We want to use ProRPGItems' ItemsRegistry.
+        softDepend = listOf("PlaceholderAPI", "ProRPGItems")
+        libraries.addAll(
+            "org.jetbrains.kotlin:kotlin-stdlib:${libs.versions.kotlin.get()}",
+            libs.serialization.hocon.get().toString(),
+            libs.hikaricp.get().toString(),
+        )
+        permissions {
+            register("ecinventory.open") { default = Permission.Default.TRUE }
+            register("ecinventory.open.others") { default = Permission.Default.OP }
+            register("ecinventory.reload") { default = Permission.Default.OP }
+        }
     }
 
     server {
-        coreType = CoreType.SPIGOT
         version = "1.18.2"
         eula = true
     }
@@ -47,6 +60,8 @@ dependencies {
 }
 
 repositories {
+    mavenCentral()
+    spigot()
     codemc()
     papermc()
     placeholderApi {
