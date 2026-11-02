@@ -5,12 +5,12 @@ commandapi = "9.2.0"
 
 [libraries]
 mimic = "ru.endlesscode.mimic:mimic-bukkit-api:0.8.0"
-serialization-hocon = "org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.6.1"
-mysql = "mysql:mysql-connector-java:8.0.33"
-hikaricp = "com.zaxxer:HikariCP:5.1.0"
+serialization-hocon = "org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.12.0"
+mysql = "com.mysql:mysql-connector-j:26.10.0"
+hikaricp = "com.zaxxer:HikariCP:7.1.0"
 commandapi = { module = "dev.jorel:commandapi-bukkit-core", version.ref = "commandapi" }
 commandapi-kotlin = { module = "dev.jorel:commandapi-bukkit-kotlin", version.ref = "commandapi" }
-placeholderapi = "me.clip:placeholderapi:2.11.5"
+placeholderapi = "me.clip:placeholderapi:2.12.3"
 
 spotless="com.diffplug.spotless:spotless-plugin-gradle:8.10.4"
 

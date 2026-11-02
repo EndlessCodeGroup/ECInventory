@@ -74,3 +74,7 @@ kotlin {
         optIn.add("kotlinx.serialization.ExperimentalSerializationApi")
     }
 }
+
+tasks.test {
+    systemProperty("kotest.framework.config.fqn", "ru.endlesscode.inventory.test.ProjectConfig")
+}
