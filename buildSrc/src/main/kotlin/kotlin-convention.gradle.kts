@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-
 plugins {
     kotlin("jvm")
     id("com.diffplug.spotless")
@@ -11,18 +9,7 @@ kotlin {
     jvmToolchain(17)
 
     compilerOptions {
-        apiVersion = KotlinVersion.KOTLIN_1_9
-        languageVersion = KotlinVersion.KOTLIN_1_9
         optIn.add("kotlin.RequiresOptIn")
-    }
-}
-
-// TODO: Remove after it will be fixed in BukkitGradle
-//   https://github.com/EndlessCodeGroup/BukkitGradle/issues/60
-afterEvaluate {
-    java {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
@@ -34,7 +21,7 @@ spotless {
     ratchetFrom("origin/develop")
 
     kotlin {
-        indentWithSpaces()
+        leadingTabsToSpaces()
         endWithNewline()
         licenseHeaderFile(rootProject.file("spotless.license.kt"))
     }
